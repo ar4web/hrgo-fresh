@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="nav.files">Files | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="files" data-breadcrumb="Home > Files">
+
+<main class="main">
+<div class="page-wrapper" data-hr-files>
+
+<div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title" data-i18n="nav.files">Files</h1>
+        <div class="caption-muted page-meta" data-page-meta></div>
+      </div>
+      <div class="page-header-actions">
+        <button class="btn btn-outline btn-sm" id="fm-newfolder" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/><path d="M12 11v6M9 14l3 3 3-3"/></svg> <span data-i18n="fm.newFolder">New folder</span></button>
+        <button class="btn btn-primary btn-sm" id="fm-upload" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg> <span data-i18n="fm.upload">Upload</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS — 4-up -->
+  <div class="row pr-stats">
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="fm.total">Stored files</div><div class="stat-value-row"><span class="stat-value" id="fm-stat-total">0</span></div><div class="stat-subtext" data-i18n="fm.totalSub">Vault entries</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="fm.expiring">Expiring ≤ 30 days</div><div class="stat-value-row"><span class="stat-value" id="fm-stat-expiring">0</span></div><div class="stat-subtext" data-i18n="fm.expiringSub">Include expired</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="fm.employees">Employee files</div><div class="stat-value-row"><span class="stat-value" id="fm-stat-emps">0</span></div><div class="stat-subtext" data-i18n="fm.employeesSub">People with stored files</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="8" rx="1"/><rect x="3" y="12" width="18" height="8" rx="1"/><path d="M7 8h.01M7 16h.01"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="fm.storage">Storage used</div><div class="stat-value-row"><span class="stat-value" id="fm-stat-storage">0%</span></div><div class="stat-subtext" data-i18n="fm.storageSub">Uploads live in this browser</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR — filters left, expiring toggle right (no search: global header only) -->
+  <div class="card emp-toolbar">
+    <div class="card-body emp-toolbar-row">
+      <div class="emp-toolbar-left">
+        <select class="form-control" id="fm-emp" style="width:auto"></select>
+        <select class="form-control" id="fm-cat" style="width:auto"></select>
+        <label class="lg-toggle"><input type="checkbox" id="fm-exp-only"> <span data-i18n="fm.expiringOnly">Expiring only</span></label>
+        <span class="caption-muted" id="fm-count"></span>
+      </div>
+      <div class="emp-toolbar-right"></div>
+    </div>
+  </div>
+
+  <!-- FOLDER NAV — breadcrumbs + subfolder grid -->
+  <div id="fm-nav">
+    <nav class="fm-crumbs" id="fm-crumbs" aria-label="Folders"></nav>
+    <div class="fm-folder-grid" id="fm-folders"></div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card emp-table-card">
+    <div class="card-body p-0 emp-table-wrap">
+      <div class="table-responsive">
+        <table class="table emp-table" data-page-length="10">
+          <thead>
+            <tr>
+              <th data-i18n="fm.nameH">File</th>
+              <th data-i18n="fm.employee">Employee</th>
+              <th data-i18n="fm.category">Category</th>
+              <th data-i18n="fm.sizeH">Size</th>
+              <th data-i18n="fm.expiryH">Expiry</th>
+              <th data-i18n="fm.addedH">Added</th>
+              <th class="emp-actions-col" data-i18n="common.actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="fm-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+
+</body>
+</html>

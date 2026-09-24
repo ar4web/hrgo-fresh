@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="file.pageTitle">Employee File | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="employee-file" data-breadcrumb="Home > Employees > Employee File">
+
+<main class="main">
+<div class="page-wrapper" data-hr-employee>
+
+  <div class="page-header emp-file-header">
+    <div>
+      <a class="emp-file-back" href="employees.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+        <span data-i18n="hr.nav.employees">Employees</span>
+      </a>
+      <h1 class="page-title" data-i18n="file.pageTitle">Employee File</h1>
+      <div class="caption-muted page-meta" id="emp-file-meta" data-i18n="file.loadingRecord">Loading employee record…</div>
+      <div class="emp-file-warning" id="emp-file-warning" hidden></div>
+    </div>
+    <div class="emp-file-actions" data-i18n-aria="file.actionsAria" aria-label="Employee file actions">
+      <button class="btn btn-outline btn-sm" id="emp360-print" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+        <span data-i18n="common.print">Print</span>
+      </button>
+      <button class="btn btn-outline btn-sm" id="emp360-export" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span data-i18n="file.exportXlsx">Export XLSX</span>
+      </button>
+      <button class="btn btn-primary btn-sm" id="emp360-edit" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M17 3a2.8 2.8 0 014 4L7.5 20.5 2 22l1.5-5.5z"/></svg>
+        <span data-i18n="common.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="card emp-file-hero-card" aria-labelledby="emp-file-meta">
+    <div class="emp-file-hero">
+      <div class="cell-avatar emp-file-avatar" id="a4-avatar" aria-hidden="true">–</div>
+      <div class="emp-file-head" id="a4-head">
+        <div class="caption-muted" data-i18n="common.loading">Loading…</div>
+      </div>
+      <div class="emp-file-score" id="a4-score" aria-label="Performance score">
+        <div class="emp-score-stars" id="emp-stars" aria-hidden="true"></div>
+        <div class="emp-score-label" id="emp-score-label">—</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Metrics Row -->
+  <div class="row emp-file-metrics" id="emp-metrics" style="margin-bottom:var(--space-3)">
+    <div class="card">
+      <div class="stat stat-sm">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="stat-content">
+          <div class="stat-label" data-i18n="file.tenure">Tenure</div>
+          <div class="stat-value-row"><span class="stat-value" id="metric-tenure">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat stat-sm">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+        <div class="stat-content">
+          <div class="stat-label" data-i18n="file.saudization">Saudization</div>
+          <div class="stat-value-row"><span class="stat-value" id="metric-saudization">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat stat-sm">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l1-5h16l1 5M3 9v10a2 2 0 002 2h14a2 2 0 002-2V9M3 9h18"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/></svg></div>
+        <div class="stat-content">
+          <div class="stat-label" data-i18n="file.documentScore">Documents</div>
+          <div class="stat-value-row"><span class="stat-value" id="metric-docs">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat stat-sm">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21v-9"/><path d="M12 12C8 12 5 10 4 6c4 0 7 2 8 4 1-2 4-4 8-4-1 4-4 6-8 6z"/></svg></div>
+        <div class="stat-content">
+          <div class="stat-label" data-i18n="file.leaveBalance">Leave Balance</div>
+          <div class="stat-value-row"><span class="stat-value" id="metric-leave">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Dossier Grid -->
+  <section class="a4-grid" id="a4-grid" data-i18n-aria="file.detailsAria" aria-label="Employee details">
+    <div class="a4-card"><h3 data-i18n="common.loading">Loading</h3><div class="caption-muted" data-i18n="file.preparing">Preparing employee dossier…</div></div>
+  </section>
+
+  <section class="a4-extra" id="a4-extra" data-i18n-aria="file.notesAria" aria-label="File notes"></section>
+
+</div>
+</main>
+
+</body>
+</html>

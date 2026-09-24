@@ -1,0 +1,807 @@
+// Layout: sidebar, topbar, main, grid, footer, responsive
+
+// ────────────────────────
+//  SKIP LINK + FOCUS
+// ────────────────────────
+.skip-link {
+  position: fixed;
+  top: 8px;
+  inset-inline-start: 8px;
+  z-index: 200;
+  padding: 8px 14px;
+  background: var(--primary);
+  color: var(--on-primary);
+  border-radius: var(--radius);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  transform: translateY(-200%);
+  transition: transform 150ms ease;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+// Single visible focus style for keyboard users. :focus-visible avoids
+// rings on mouse clicks while preserving the accessibility cue on Tab.
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+.nav-link:focus-visible { outline-color: var(--primary); outline-offset: -2px; }
+.search-box input:focus-visible { outline: none; } // input's own box-shadow handles it
+#main-content:focus { outline: none; } // programmatic focus target only
+
+// ────────────────────────
+//  SIDEBAR
+// ────────────────────────
+.sidebar {
+  position: fixed;
+  inset-inline-start: 0; top: 0; bottom: 0;
+  width: var(--sidebar-w);
+  // Single source for the rail rhythm: screen-edge inset == icon↔label gap.
+  // fitSidebarToLabels() in shell.js sizes --sidebar-w to the longest label
+  // plus this edge on both sides, so the rail hugs content symmetrically.
+  --sb-edge: var(--space-3);
+  background: var(--sidebar-bg);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  // Right border/outline to visually separate sidebar from main content
+  border-inline-end: 1px solid var(--sidebar-border);
+  // Animate width changes when the rail-mode toggle fires; on mobile the
+  // sidebar uses a transform-based slide instead so this is harmless there.
+  transition: width 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.sidebar-brand-row {
+  height: var(--topbar-h);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--sb-edge);
+  border-bottom: 1px solid var(--sidebar-border);
+  flex-shrink: 0;
+}
+.sidebar-brand {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0; /* zero container padding */
+  display: flex;
+  align-items: center;
+  gap: var(--sb-edge);
+  border-bottom: none;
+}
+.brand-icon {
+  width: 28px; height: 28px;
+  background: var(--primary);
+  border-radius: 0; /* zero rounded corners */
+  display: flex; align-items: center; justify-content: center;
+  color: var(--on-primary);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 0; /* explicit zero padding */
+}
+.brand-name {
+  font-size: calc(15px * var(--font-factor));
+  font-weight: 600;
+  color: var(--sidebar-text-active);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.brand-name small {
+  font-weight: 400;
+  color: var(--sidebar-text);
+  font-size: 13px;
+  margin-inline-start: 2px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden; /* never a horizontal scrollbar — labels truncate */
+  padding: 0; /* zero container padding — edge rhythm lives on .nav-link */
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.12) transparent;
+}
+.sidebar-nav::-webkit-scrollbar { width: 4px; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 0; }
+
+// ── Sidebar search (under the logo row, above the first item) ──
+  .sidebar-search {
+    margin-inline: var(--sb-edge);
+    height: var(--control-h, 38px);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0; /* zero container padding */
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    transition: border-color 120ms;
+  }
+  .sidebar-search:focus-within { border-color: rgba(255, 255, 255, 0.14); }
+  .sidebar-search svg {
+    width: var(--nav-icon-size, 20px);
+    height: var(--nav-icon-size, 20px);
+    color: var(--sidebar-text-muted);
+    flex-shrink: 0;
+  }
+  .sidebar-search input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    background: none;
+    border: 0;
+    outline: none;
+    color: var(--sidebar-text-active);
+    font: inherit;
+    font-size: calc(13px * var(--font-factor));
+  }
+  .sidebar-search input::placeholder { color: var(--sidebar-text-muted); }
+  .sidebar-search input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+  .nav-group { padding: 0; margin-bottom: 0; }
+.nav-group + .nav-group { margin-top: 0; }
+.nav-group[hidden] { display: none; }
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: var(--sb-edge);
+  padding: 12px var(--sb-edge);
+  border-radius: 0;
+  color: var(--sidebar-text);
+  font-size: calc(14px * var(--font-factor));
+  line-height: 1.5;
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 120ms, color 120ms;
+  margin-bottom: 2px;
+  min-height: var(--control-h, 38px);
+  position: relative;
+}
+.nav-link[hidden] { display: none; }
+.nav-link .icon {
+  width: var(--nav-icon-size, 20px);
+  height: var(--nav-icon-size, 20px);
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+// Cubic icon holder — same 28px square footprint as the brand logo, so the
+// top logo, every nav glyph and the bottom settings gear share one left
+// edge and one box size down the whole rail.
+.nav-ico {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+}
+.nav-ico .icon {
+  width: var(--nav-icon-size, 20px);
+  height: var(--nav-icon-size, 20px);
+}
+.sidebar .nav-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.nav-link:hover {
+  color: var(--sidebar-text-hover);
+  background: var(--sidebar-hover);
+  text-decoration: none;
+}
+.nav-link.active {
+  color: var(--sidebar-text-active);
+  background: var(--sidebar-active);
+  font-weight: var(--font-weight-medium);
+}
+.nav-link.active::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 9px;
+  bottom: 9px;
+  width: 3px;
+  border-radius: 0;
+  background: var(--primary);
+}
+.nav-link:hover .icon, .nav-link.active .icon { opacity: 1; }
+.nav-link .badge {
+  margin-inline-start: auto;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 0;
+  line-height: 1.6;
+}
+.badge-red { background: var(--red); color: white; font-weight: 600; }
+.badge-yellow { background: var(--yellow); color: white; font-weight: 600; }
+.badge-teal { background: var(--primary-lt); color: var(--primary); }
+.badge-blue { background: var(--blue-lt); color: var(--blue); }
+
+// Cross-document navigation morphs instead of white flashes (Chromium;
+// ignored elsewhere). Prefetch (shell.js) makes the next document local,
+// this makes arriving there smooth.
+@view-transition {
+  navigation: auto;
+}
+// Graceful exit (shell.js adds .page-leave on real navigations): the old
+// page fades instead of cutting out mid-paint.
+body { transition: opacity 140ms ease; }
+body.page-leave { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  body { transition: none; }
+  body.page-leave { opacity: 1; }
+}
+
+// ────────────────────────
+//  ACTIVE SECTION PAGES (inline, no dropdowns)
+// ────────────────────────
+// The active sidebar section lists its pages beneath it as plain links with
+// a guide rail. Every other section stays a single row — the sidebar never
+// grows dropdowns.
+.nav-pages {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 0; /* zero container padding */
+}
+.nav-pages::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 35px;
+  top: 2px;
+  bottom: 10px;
+  width: 1px;
+  background: var(--sidebar-border);
+}
+.nav-page {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px var(--sb-edge);
+  font-size: calc(13px * var(--font-factor));
+  color: var(--sidebar-text);
+  border-radius: 0;
+  text-decoration: none;
+  margin: 0;
+  min-height: 36px;
+  transition: background 120ms, color 120ms;
+  border-radius: 0;
+}
+.nav-page + .nav-page { margin-top: 4px; }
+.nav-page[hidden] { display: none; }
+.nav-page:hover {
+  color: var(--sidebar-text-hover);
+  background: var(--sidebar-hover);
+  text-decoration: none;
+}
+.nav-page.active {
+  color: var(--sidebar-text-active);
+  background: var(--sidebar-active);
+  font-weight: var(--font-weight-medium);
+}
+.nav-page .badge {
+  margin-inline-start: auto;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 0;
+  line-height: 1.6;
+}
+
+// ────────────────────────
+//  TOPBAR (toggle only)
+// ────────────────────────
+.topbar {
+  position: fixed;
+  top: 0;
+  inset-inline-start: var(--sidebar-w);
+  inset-inline-end: 0;
+  height: var(--topbar-h);
+  background: var(--topbar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0; /* zero internal padding - flush to edges */
+  z-index: 90;
+  transition: inset-inline-start 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+.topbar-left { display: flex; align-items: center; gap: var(--space-3); }
+.topbar-right { display: flex; align-items: center; gap: var(--space-2); }
+
+// Theme engine toggle (light ⇄ dark). Moon shows in light mode (action:
+// go dark), sun shows in dark mode (action: go light).
+// Icon-only ghost buttons — no border, no filled circle; only a soft tint
+// on hover. Bell, theme, language and the Apps link share this treatment;
+// the active Apps link tints orange (color only, no pill).
+// Glyphs follow the sidebar icon family (nav-icon size); the button itself
+// keeps the 34px control-height hit area.
+.topbar-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-h);
+  height: var(--control-h);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 120ms, background 120ms, transform 120ms;
+}
+.topbar-icon-btn:hover {
+  color: var(--primary);
+  background: var(--bg-surface-secondary);
+}
+a.topbar-icon-btn { text-decoration: none; }
+.topbar-icon-btn.active {
+  color: var(--primary);
+}
+.topbar-icon-btn:active { transform: scale(0.94); }
+.topbar-icon-btn:focus-visible {
+  outline: 2px solid var(--primary-dk);
+  outline-offset: 1px;
+}
+// Topbar glyphs use the sidebar icon family so both rails read as one pack:
+// nav-icon size, same SVG stroke, round caps.
+.topbar-icon-btn svg {
+  width: var(--nav-icon-size, 20px);
+  height: var(--nav-icon-size, 20px);
+  flex-shrink: 0;
+  opacity: 0.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.topbar-icon-btn:hover svg { opacity: 1; }
+:root[data-theme='light'] .theme-icon-sun { display: none; }
+:root[data-theme='dark'] .theme-icon-moon { display: none; }
+:root[data-theme='dark'] .theme-icon-sun { color: var(--yellow); }
+
+// Count bubbles on bell / mail icons.
+.topbar-alert-btn { position: relative; }
+.topbar-btn-dot {
+  position: absolute;
+  top: 2px;
+  inset-inline-end: 2px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  background: var(--red);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  border: 2px solid var(--topbar-bg);
+  pointer-events: none;
+}
+.topbar-btn-dot-blue { background: var(--blue); border-radius: 0; }
+
+// Profile trigger — avatar only, no chip border/name/chevron.
+.topbar-user {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 120ms;
+}
+.topbar-user:hover { background: var(--bg-surface-secondary); }
+.topbar-user-avatar {
+  width: 34px;
+  height: 34px;
+  font-size: 13px;
+  flex-shrink: 0;
+  border-radius: 0;
+  background: linear-gradient(135deg, var(--primary), var(--primary-dk));
+  color: var(--on-primary);
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .topbar { gap: 4px; padding-inline: 10px; }
+  .topbar-right { gap: 2px; }
+  .topbar-icon-btn { width: var(--control-h); height: var(--control-h); }
+  .topbar-user { width: 38px; height: 38px; }
+}
+
+// ────────────────────────
+//  SIDEBAR FOOTER — settings gear pinned to the bottom-left corner
+// ────────────────────────
+.sidebar-footer {
+  flex-shrink: 0;
+  padding-inline: var(--sb-edge);
+  border-top: 1px solid var(--sidebar-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.sidebar-footer .nav-link { margin-bottom: 0; }
+.sidebar-footer .settings-toggle {
+    flex: 1 1 auto;
+    min-height: var(--control-h, 38px);
+    padding: 0; /* zero container padding */
+    justify-content: flex-start;
+    border-radius: 0;
+  }
+button.settings-toggle.nav-link {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  text-align: start;
+}
+.settings-toggle .icon {
+  width: var(--nav-icon-size, 20px);
+  height: var(--nav-icon-size, 20px);
+  opacity: 0.9;
+}
+.settings-toggle:hover .icon { opacity: 1; }
+
+  // Sidebar toggle lives in the dark sidebar brand row — same control-h target,
+  // tinted for the dark rail so it aligns with the rail width, not the topbar.
+  .sidebar-toggle {
+    display: inline-flex;
+    width: var(--control-h, 38px);
+    height: var(--control-h, 38px);
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 120ms, color 120ms;
+  }
+  .sidebar-search .sidebar-toggle {
+    color: var(--sidebar-text);
+    flex-shrink: 0;
+  }
+  .sidebar-search .sidebar-toggle:hover { background: var(--sidebar-hover); color: var(--sidebar-text-active); }
+  .sidebar-toggle svg { width: var(--nav-icon-size, 20px); height: var(--nav-icon-size, 20px); }
+
+  // The collapse toggle hides into the logo row: it fades in when you hover
+  // (or keyboard-focus) the brand row, so the expanded sidebar reads as pure
+  // navigation. Always visible in the collapsed rail (it is the expand
+  // control) and on touch devices (no hover).
+  @media (min-width: 769px) and (hover: hover) {
+    body:not(.sidebar-rail) .sidebar-search .sidebar-toggle {
+      opacity: 0;
+      transform: scale(0.9);
+      transition: opacity 150ms ease, transform 180ms cubic-bezier(0.2, 0, 0, 1), background 120ms, color 120ms;
+    }
+    body:not(.sidebar-rail) .sidebar-search:hover .sidebar-toggle,
+    body:not(.sidebar-rail) .sidebar-search:focus-within .sidebar-toggle {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar-brand-row .sidebar-toggle { transition: none; }
+  }
+
+  // Mobile-only drawer opener in the topbar (desktop uses the sidebar toggle).
+  .topbar-menu {
+    display: none;
+    width: var(--control-h, 38px);
+    height: var(--control-h, 38px);
+    border: none;
+    background: transparent;
+    border-radius: var(--radius-sm);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: background 120ms, color 120ms;
+  }
+  .topbar-menu:hover { background: var(--body-bg); color: var(--text); }
+  .topbar-menu svg { width: var(--nav-icon-size, 20px); height: var(--nav-icon-size, 20px); }
+
+  // Gemini-style crossfade: both icons stack, opacity/scale animates on swap.
+  .sidebar-toggle { position: relative; }
+  .sidebar-toggle .toggle-icon { display: inline-flex; transition: opacity 180ms ease, transform 220ms cubic-bezier(0.2, 0, 0, 1); }
+  .sidebar-toggle .toggle-icon[hidden] { display: none; }
+  @media (prefers-reduced-motion: reduce) { .sidebar-toggle .toggle-icon { transition: none; } }
+
+  .sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 95;
+  opacity: 1;
+  transition: opacity 180ms ease;
+}
+.sidebar-backdrop[hidden] { display: none; }
+
+.search-box {
+  position: relative;
+  width: 240px;
+}
+.search-box input {
+  width: 100%;
+  height: var(--btn-h);
+  padding: 0 10px 0 32px;
+  background: var(--body-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 0;
+  font: inherit;
+  font-size: calc(13px * var(--font-factor));
+  color: var(--text);
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.search-box input::placeholder { color: var(--text-disabled); }
+.search-box input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-lt);
+}
+.search-box .s-icon {
+  position: absolute;
+  inset-inline-start: 9px; top: 50%;
+  transform: translateY(-50%);
+  width: 14px; height: 14px;
+  color: var(--text-muted);
+}
+.search-box kbd {
+  position: absolute;
+  inset-inline-end: 6px; top: 50%;
+  transform: translateY(-50%);
+  padding: 0 5px;
+  font-family: inherit;
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 0;
+  line-height: 18px;
+}
+
+// ────────────────────────
+//  MAIN LAYOUT
+// ────────────────────────
+.main {
+  margin-inline-start: var(--sidebar-w);
+  padding-top: var(--topbar-h);
+  min-height: 100vh;
+  transition: margin-inline-start 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+.page-wrapper { padding: 12px 16px 24px; }
+// Fixed bottom action rail (.emp-action-rail) overlaps page content —
+// reserve clearance on pages that render one.
+body:has(.emp-action-rail) .page-wrapper { padding-bottom: 76px; }
+
+// Page header
+.page-header { margin-bottom: 12px; }
+// Pretitle hidden: it repeats the sidebar group label on every page while
+// the section tabs + H1 already state where you are. Kept in the DOM (not
+// deleted from 50+ pages) so i18n keys and tests stay intact.
+.page-pretitle {
+  display: block;
+  order: 2;
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text-muted);
+}
+// Accent heading: orange kicker line above + gradient title text
+.page-pretitle-accent {
+  order: 0;
+  margin: 0 0 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+}
+.page-title-accent {
+  background: linear-gradient(100deg, var(--text) 55%, var(--primary) 130%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text);
+  margin: 0;
+  order: 1;
+}
+.page-header-row > div:first-child { display: flex; flex-direction: column; }
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.page-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+// Uniform page-header meta line under the H1 (dashboard pattern, every page).
+.page-meta {
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ────────────────────────
+//  GRID
+// ────────────────────────
+.row { display: grid; gap: var(--space-3); margin-bottom: 12px; }
+.row:last-child { margin-bottom: 0; }
+// minmax(0, …) lets wide intrinsic content (tables, charts, long text)
+// stay contained within its grid track instead of pushing the track wider
+// than its share. Critical for tables and chart cards.
+.col-4   { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.col-3   { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.col-2   { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.col-8-4 { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+.col-4-8 { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+.col-1   { grid-template-columns: minmax(0, 1fr); }
+
+// ────────────────────────
+//  RESPONSIVE
+// ────────────────────────
+// Asymmetric 8-4 / 4-8 splits stack first — the narrow column gets cramped
+// well before 3-col rows do (charts legend, sidebar widgets need ~340px).
+@media (max-width: 1100px) {
+  .col-8-4, .col-4-8 { grid-template-columns: minmax(0, 1fr); }
+}
+// col-4 → col-2 first since 4 wide tiles cramp earliest
+@media (max-width: 1200px) {
+  .col-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+// 3-col rows drop to 2 here — at this width with the sidebar visible the
+// content area is ~640px, so 3 cards (~210px each) become uncomfortably
+// narrow for stat sparklines + value rows.
+@media (max-width: 920px) {
+  .col-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 768px) {
+.sidebar {
+    width: min(var(--sidebar-w), 84vw);
+    transform: translateX(-100%);
+    transition: transform 220ms ease;
+    will-change: transform;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-inline-start: 0; }
+  .topbar { inset-inline-start: 0; padding: 0 12px; }
+  // minmax(0, 1fr) — without it a wide intrinsic child (table, code block,
+  // long unbroken text) pushes the column wider than the viewport, which
+  // forces the mobile browser to scale the whole layout to fit.
+  .col-4, .col-3, .col-2 { grid-template-columns: minmax(0, 1fr); }
+  .page-wrapper { padding: 12px; }
+  .topbar-menu { display: inline-flex; }
+  body.sidebar-open { overflow: hidden; }
+  // Mobile rail mode never applies — drawer handles narrow viewports.
+  body.sidebar-rail .sidebar { width: var(--sidebar-w); }
+}
+@media (min-width: 769px) {
+  .sidebar-backdrop { display: none !important; }
+}
+
+// ────────────────────────
+  //  RAIL MODE (desktop sidebar collapsed to icons)
+  // ────────────────────────
+  // Activated by `body.sidebar-rail`. Shrinks the sidebar to a 76px icon column
+  // while keeping all click targets reachable. Submenus collapse and re-open as
+  // flyout menus (handled in shell.js). Only applies above 768px — mobile uses
+  // the drawer instead.
+  @media (min-width: 769px) {
+    body.sidebar-rail {
+      --sidebar-w: 76px;
+    }
+    body.sidebar-rail .sidebar { overflow: visible; }
+    body.sidebar-rail .sidebar-brand-row {
+      flex-direction: column;
+      height: auto;
+      padding: 10px 0 8px;
+      gap: 8px;
+    }
+    body.sidebar-rail .sidebar-brand {
+      padding: 0;
+      justify-content: center;
+    }
+    body.sidebar-rail .brand-name { display: none; }
+    body.sidebar-rail .nav-group { padding: 0 12px; }
+    body.sidebar-rail .sidebar-search { justify-content: center; }
+    body.sidebar-rail .sidebar-search > svg,
+    body.sidebar-rail .sidebar-search input { display: none; }
+    body.sidebar-rail .sidebar-footer {
+      flex-direction: column;
+      padding: var(--space-3) 0 var(--space-3);
+      gap: var(--space-2);
+    }
+    body.sidebar-rail .sidebar-footer .settings-toggle {
+      flex: 0 0 auto;
+      width: var(--sidebar-w);
+      min-height: var(--control-h, 38px);
+      padding: 0;
+      justify-content: center;
+    }
+    // Rail: icon-only, no label — the gear is the whole button.
+    body.sidebar-rail .sidebar-footer .settings-toggle .nav-text { display: none; }
+    body.sidebar-rail .nav-link {
+      justify-content: center;
+      gap: 0;
+      padding: 8px;
+      position: relative;
+    }
+    body.sidebar-rail .nav-link .nav-text,
+    body.sidebar-rail .nav-link .badge { display: none; }
+    // Rail shows icons only — inline pages need the full sidebar.
+    body.sidebar-rail .nav-pages { display: none; }
+
+
+
+  // Hover tooltip — uses ::after off the nav-link so we don't add markup.
+  // The tooltip text comes from a `data-rail-label` attribute that we set
+  // dynamically in shell.js when rail mode is enabled.
+  body.sidebar-rail .nav-link[data-rail-label]::after {
+    content: attr(data-rail-label);
+    position: absolute;
+    inset-inline-start: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%) translateX(-4px);
+    background: var(--text);
+    color: var(--bg-surface);
+    font-size: 12px;
+    font-weight: var(--font-weight-medium);
+    padding: 12px;
+    border-radius: 0;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 120ms, transform 120ms;
+    z-index: 110;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+  }
+  body.sidebar-rail .nav-link[data-rail-label]:hover::after,
+  body.sidebar-rail .nav-link[data-rail-label]:focus-visible::after {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+
+  // Icon swap is handled by hidden toggle in shell.js — no rotation needed.
+}

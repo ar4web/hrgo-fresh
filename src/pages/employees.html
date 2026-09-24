@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="nav.hr-employees">Employees | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="employees" data-breadcrumb="Home > Employees">
+
+<main class="main">
+<div class="page-wrapper" data-hr-employees>
+
+  <!-- UNIFIED PAGE RAIL — single line, max 1 inch (96px), right-to-left tools, 5px gap from navbar -->
+  <div class="page-rail" role="toolbar" data-i18n-aria="ro.empRailAria" aria-label="Employee tools">
+    <div class="page-rail-left">
+      <div class="page-rail-pretitle" data-i18n="hr.ui.pretitle">HR &amp; Operations</div>
+      <h1 class="page-rail-title" data-i18n="hr.nav.employees">Employees</h1>
+      <div class="caption-muted page-meta" data-page-meta></div>
+    </div>
+    <div class="page-rail-right" role="toolbar" data-i18n-aria="ro.empRailToolsAria" aria-label="Employee tools">
+      <!-- Sort -->
+      <div class="page-rail-group">
+        <label class="page-rail-label" data-i18n="ro.sort">Sort</label>
+        <select class="form-control page-rail-select" id="emp-sort" aria-label="Sort">
+          <option value="Code" data-i18n="emp.code">Code</option>
+          <option value="name" data-i18n="ro.sortName">Name A–Z</option>
+          <option value="join" data-i18n="emp.joinDate">Join date</option>
+          <option value="basic" data-i18n="ro.salary">Salary</option>
+          <option value="iqamaExp" data-i18n="ro.iqamaExpiryOpt">Iqama expiry</option>
+        </select>
+      </div>
+      <!-- Filter -->
+      <div class="page-rail-group">
+        <button class="btn btn-outline page-rail-btn" id="emp-filter-btn" type="button" aria-expanded="false" aria-controls="emp-filter-pop">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+          <span data-i18n="ro.filter">Filter</span>
+          <span class="badge badge-teal" id="emp-filter-count" hidden></span>
+        </button>
+      </div>
+      <!-- Export -->
+      <button class="btn btn-outline page-rail-btn" id="emp-export" type="button" data-i18n="common.export" aria-label="Export">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+      </button>
+      <!-- Import -->
+      <button class="btn btn-outline page-rail-btn" id="emp-import" type="button" data-i18n="common.import" aria-label="Import">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V3m0 12L8 11m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+      </button>
+      <!-- Add -->
+      <button class="btn btn-primary page-rail-btn" id="emp-add" type="button" data-i18n="ro.addEmployee" aria-label="Add employee">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTER POPOVER -->
+  <div class="emp-filter-pop" id="emp-filter-pop" hidden>
+    <div class="emp-filter-head">
+      <span class="emp-filter-head-title" data-i18n="ro.filters">Filters</span>
+      <button class="emp-filter-clear" id="emp-filter-clear" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        <span data-i18n="ro.clearFilters">Clear filters</span>
+      </button>
+    </div>
+    <label class="emp-filter-field"><span data-i18n="file.nationality">Nationality</span><select class="form-control" id="emp-nat"><option value="" data-i18n="common.all">All</option></select></label>
+    <label class="emp-filter-field"><span data-i18n="file.department">Department</span><select class="form-control" id="emp-dept"><option value="" data-i18n="common.all">All</option></select></label>
+    <label class="emp-filter-field"><span data-i18n="file.site">Site</span><select class="form-control" id="emp-site"><option value="" data-i18n="common.all">All</option></select></label>
+    <label class="emp-filter-field"><span data-i18n="file.profession">Profession</span><select class="form-control" id="emp-prof"><option value="" data-i18n="common.all">All</option></select></label>
+    <label class="emp-filter-field"><span data-i18n="ro.experience">Experience</span><select class="form-control" id="emp-exp"><option value="" data-i18n="common.all">All</option></select></label>
+    <label class="emp-filter-field"><span data-i18n="file.sponsor">Sponsor</span><select class="form-control" id="emp-sponsor"><option value="" data-i18n="common.all">All</option></select></label>
+    <label class="emp-filter-field"><span data-i18n="ro.age">Age</span><select class="form-control" id="emp-age"><option value="" data-i18n="common.all">All</option></select></label>
+    <label class="emp-filter-field"><span data-i18n="common.status">Status</span><select class="form-control" id="emp-status"><option value="" data-i18n="common.all">All</option></select></label>
+  </div>
+
+  <!-- ALERT TICKER — merged alerts + expiry stream -->
+  <div class="card emp-ticker-card">
+    <div class="ticker" id="emp-ticker" data-i18n-aria="ro.priorityAlerts" aria-label="Priority alerts" tabindex="0">
+      <div class="ticker-track" id="emp-ticker-track"></div>
+    </div>
+  </div>
+
+  <!-- STATS — proportional 6-up grid -->
+  <div class="row emp-stats">
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="ro.total">Total</div><div class="stat-value-row"><span class="stat-value" id="emp-stat-total">0</span><span class="stat-change up" id="stat-change-total">●</span></div><div class="stat-subtext" id="stat-sub-total" data-i18n="ro.allHeads">All heads</div></div>
+        <div class="stat-spark" id="spark-total"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="ro.saudi">Saudi</div><div class="stat-value-row"><span class="stat-value" id="emp-stat-saudi">0</span></div><div class="stat-subtext" id="stat-sub-saudi">—</div></div>
+        <div class="stat-spark" id="spark-saudi"></div>
+      </div>
+      <div class="card-body-flush"><div class="progress-thin"><div class="bar" id="bar-saudi" style="width:0%;background:var(--green)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l1-5h16l1 5M3 9v10a2 2 0 002 2h14a2 2 0 002-2V9M3 9h18"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="ro.expat">Expat</div><div class="stat-value-row"><span class="stat-value" id="emp-stat-expat">0</span></div><div class="stat-subtext" id="stat-sub-expat">—</div></div>
+        <div class="stat-spark" id="spark-expat"></div>
+      </div>
+      <div class="card-body-flush"><div class="progress-thin"><div class="bar" id="bar-expat" style="width:0%;background:var(--blue)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="status.deployed">Deployed</div><div class="stat-value-row"><span class="stat-value" id="emp-stat-deployed">0</span></div><div class="stat-subtext" id="stat-sub-deployed">—</div></div>
+        <div class="stat-spark" id="spark-deployed"></div>
+      </div>
+      <div class="card-body-flush"><div class="progress-thin"><div class="bar" id="bar-deployed" style="width:0%;background:var(--purple)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21v-9"/><path d="M12 12C8 12 5 10 4 6c4 0 7 2 8 4 1-2 4-4 8-4-1 4-4 6-8 6z"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="status.bench">Bench</div><div class="stat-value-row"><span class="stat-value" id="emp-stat-bench">0</span></div><div class="stat-subtext" id="stat-sub-bench" data-i18n="ro.available">Available</div></div>
+        <div class="stat-spark" id="spark-bench"></div>
+      </div>
+      <div class="card-body-flush"><div class="progress-thin"><div class="bar" id="bar-bench" style="width:0%;background:var(--yellow)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M9 10l3 3 3-3"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="an.kpiSaudization">Saudization</div><div class="stat-value-row"><span class="stat-value" id="emp-stat-saud">0%</span></div><div class="stat-subtext" id="stat-sub-saud">—</div></div>
+        <div class="stat-spark" id="spark-saud"></div>
+      </div>
+      <div class="card-body-flush"><div class="progress-thin"><div class="bar" id="bar-saud" style="width:0%;background:var(--red)"></div></div></div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card emp-table-card">
+    <div class="card-body p-0 emp-table-wrap">
+      <div class="table-responsive">
+        <table class="table emp-table" data-page-length="10">
+          <thead>
+            <tr>
+              <th class="cb-col"><input type="checkbox" id="emp-select-all" data-i18n-aria="ro.selectAll" aria-label="Select all"></th>
+              <th data-sort="code" data-i18n="ro.empId">Employee ID</th>
+              <th data-sort="name" data-i18n="dash.employee">Employee</th>
+              <th data-sort="nat" data-i18n="file.nationality">Nationality</th>
+              <th data-i18n="file.sponsor">Sponsor</th>
+              <th data-i18n="ro.iqamaStatus">Iqama Status</th>
+              <th data-sort="iqamaExp" data-i18n="ro.expiryDate">Expiry Date</th>
+              <th data-i18n="file.iqamaProfession">Iqama Profession</th>
+              <th data-i18n="ro.employmentType">Employment Type</th>
+              <th data-i18n="file.workStatus">Work Status</th>
+              <th data-i18n="ro.siteCity">Site / City</th>
+              <th data-i18n="ro.hiredBy">Hired By</th>
+              <th data-i18n="ro.reference">Reference</th>
+              <th data-i18n="ro.docStatusH">Document Status</th>
+              <th data-i18n="ro.vacEligibleH">Vacation Eligible</th>
+              <th data-i18n="file.insurance">Insurance</th>
+              <th class="emp-actions-col" data-i18n="common.actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="emp-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM ACTION RAIL — All actions on the right -->
+  <div class="emp-action-rail" role="toolbar" data-i18n-aria="ro.empActionsAria" aria-label="Employee actions">
+    <span class="emp-rail-right">
+      <button class="btn btn-primary" id="emp-add" type="button" data-i18n="ro.addEmployee">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
+        <span data-i18n="ro.addEmployee">Add employee</span>
+      </button>
+      <button class="btn btn-outline" id="emp-import" type="button" data-i18n="common.import">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V3m0 12L8 11m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span data-i18n="common.import">Import</span>
+      </button>
+      <button class="btn btn-outline" id="emp-export" type="button" data-i18n="common.export">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span data-i18n="common.export">Export</span>
+      </button>
+    </span>
+  </div>
+
+</div>
+</main>
+
+</body>
+</html>

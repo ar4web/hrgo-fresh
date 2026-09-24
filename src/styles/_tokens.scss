@@ -1,0 +1,281 @@
+// goHR — Design tokens.
+// DNA: charcoal sidebar · orange accent · light or dark content surfaces.
+// Runtime-customizable tokens are driven by the Settings studio
+// (src/components/customize.js): every var marked 「studio」 below is set on
+// :root from a persisted preference, with the value here as the default.
+
+:root {
+  // ── Studio: layout sizing factors (defaults; overridden inline at boot) ──
+  --font-factor: 1;
+  --icon-scale: 1;
+  --spacing-factor: 1;
+  --radius-base: 0;
+  --control-h: 34px;
+  --btn-h: 32px;
+  --topbar-h: 56px;
+
+  // ── Sidebar ─────────────────────────────────────────────────────────────
+  --sidebar-bg: #16181c;
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-active: rgba(249, 115, 22, 0.10);
+  --sidebar-text: #d1d5db;
+  --sidebar-text-muted: #9ca3af;
+  --sidebar-text-hover: #cbd2da;
+  --sidebar-text-active: #ffffff;
+  --sidebar-border: rgba(255,255,255,0.07);
+  --sidebar-w: 290px;
+
+  // ── Accent — construction orange, shared by light & dark ────────────────
+  --primary: #f97316;
+  --primary-lt: rgba(249,115,22,0.1);
+  --primary-dk: #ea6a0c;
+  // RGB triplet of the accent for rgba() tints; repainted per theme/brand.
+  --primary-rgb: 249, 115, 22;
+  --yellow-dk: #7a5200;
+  /* Dark ink on the bright orange keeps AA contrast. */
+  --on-primary: #241100;
+  /* Avatar palette — dark variants so white initials pass AA (4.5:1+). */
+  --avatar-teal: #0C6B57;
+  --avatar-blue: #0B5CAD;
+  --avatar-azure: #1668B0;
+  --avatar-green: #1E7A2E;
+  --avatar-yellow: #7A5200;
+  --avatar-red: #A82A2A;
+  --avatar-purple: #7E2A93;
+
+  // ── Surfaces (light theme) ──────────────────────────────────────────────
+  --body-bg: #f3f5f8;
+  --bg-surface: #ffffff;
+  --bg-surface-secondary: #f6f7f9;
+  // Card fill — explicit form of the var(--card-bg, #fff) fallbacks used
+  // across HR screens; dark theme repaints it.
+  --card-bg: #ffffff;
+  // Translucent, blurred topbar.
+  --topbar-bg: rgba(255, 255, 255, 0.85);
+  color-scheme: light;
+
+  --border-color: #e3e6ea;
+  --border-color-light: #eceef1;
+  --border-translucent: rgba(20, 28, 42, 0.08);
+
+  --text: #191d23;
+  --text-secondary: #5b6572;
+  --text-muted: #79828f;
+  --text-disabled: #b9c0c9;
+
+  // Ink color for text sitting on pale status tints (green-lt, yellow-lt).
+  // Dark theme swaps these for bright pastels.
+  --ok-ink: #1e7e34;
+  --warn-ink: #b45309;
+  --danger-ink: #a31228;
+
+  // Hover ring for cards — tinted with the accent in each theme.
+  --card-hover-border: rgba(249, 115, 22, 0.22);
+
+  --blue: #066fd1;
+  --azure: #4299e1;
+  --green: #2fb344;
+  --lime: #74b816;
+  --yellow: #f59f00;
+  --orange: #f76707;
+  --red: #d63939;
+  --pink: #d6336c;
+  --purple: #ae3ec9;
+  --indigo: #4263eb;
+  --cyan: #17a2b8;
+
+  --green-lt: rgba(47,179,68,0.07);
+  --red-lt: rgba(214,57,57,0.07);
+  --yellow-lt: rgba(245,159,0,0.08);
+  --blue-lt: rgba(6,111,209,0.07);
+  --azure-lt: rgba(66,153,225,0.07);
+  --purple-lt: rgba(174,62,201,0.07);
+  --cyan-lt: rgba(23,162,184,0.07);
+
+  // ── Studio: corners derived from a single base ──────────────────────────
+  --radius-sm: 0;
+  --radius: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+
+  /* Transition */
+  --transition: 150ms ease;
+  --transition-slow: 250ms ease;
+
+  /* Card system */
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px var(--border-translucent);
+  --card-shadow-hover: 0 4px 12px rgba(0,0,0,0.08);
+  --card-radius: 0;
+
+  /* ── Studio: spacing scale — 4px base × spacing factor. var(--space-4) is
+     16px at factor 1, like Tailwind's p-4. ─────────────────────────────── */
+  --space-1: calc(4px * var(--spacing-factor));
+  --space-2: calc(8px * var(--spacing-factor));
+  --space-3: calc(12px * var(--spacing-factor));
+  --space-4: calc(16px * var(--spacing-factor));
+  --space-5: calc(24px * var(--spacing-factor));
+  --space-6: calc(32px * var(--spacing-factor));
+  --space-7: calc(48px * var(--spacing-factor));
+  --space-8: calc(64px * var(--spacing-factor));
+
+  --shadow: rgba(25,29,35,0.04) 0 2px 4px 0;
+  --shadow-card: 0 0 0 1px var(--border-translucent), rgba(25,29,35,0.04) 0 2px 4px 0;
+
+  // ── Studio: typography ──────────────────────────────────────────────────
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  // Arabic-first stack used when <html lang="ar">.
+  --font-ar: 'IBM Plex Sans Arabic', 'Inter', 'Segoe UI', Tahoma, sans-serif;
+  --font-system: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'SF Mono', Monaco, Consolas, 'Liberation Mono', monospace;
+  // Font-size tokens scale with --font-factor (set from the studio slider).
+  --font-size: calc(0.875rem * var(--font-factor));
+  --font-size-sm: calc(0.8125rem * var(--font-factor));
+  --font-size-xs: calc(0.75rem * var(--font-factor));
+  --line-height: 1.4286;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  // ── Studio: icon sizes scale together ───────────────────────────────────
+  --icon-size: calc(18px * var(--icon-scale));
+  --nav-icon-size: calc(18px * var(--icon-scale));
+  --btn-icon-size: calc(14px * var(--icon-scale));
+
+  /* Status colors */
+  --status-active: #2fb344;
+  --status-pending: #f59f00;
+  --status-critical: #d63939;
+  --status-info: #066fd1;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// DARK ORANGE theme — charcoal surfaces with the same orange accent.
+// Activated on <html data-theme="dark"> by the theme engine / studio.
+// ─────────────────────────────────────────────────────────────────────────
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --sidebar-bg: #0B0D10;
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-active: rgba(249, 115, 22, 0.10);
+  --sidebar-text: #d1d5db;
+  --sidebar-text-muted: #9ca3af;
+  --sidebar-text-hover: #cdd3db;
+  --sidebar-text-active: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+
+  --primary-lt: rgba(249, 115, 22, 0.14);
+  --yellow-dk: #ffd98a;
+
+  --avatar-teal: #12977d;
+  --avatar-blue: #2f86de;
+  --avatar-azure: #3b93d6;
+  --avatar-green: #39a84d;
+  --avatar-yellow: #c79100;
+  --avatar-red: #d05151;
+  --avatar-purple: #c061da;
+
+  --body-bg: #0B0D10;
+  --bg-surface: #16191E;
+  --bg-surface-secondary: #1D2127;
+  --card-bg: #1b1e23;
+  --topbar-bg: rgba(18, 20, 23, 0.82);
+
+  --border-color: #2c3138;
+  --border-color-light: #262a30;
+  --border-translucent: rgba(255, 255, 255, 0.08);
+
+  --text: #e6e9ee;
+  --text-secondary: #a8b0bb;
+  --text-muted: #7d8794;
+  --text-disabled: #616976;
+
+  --ok-ink: #5fd67f;
+  --warn-ink: #ffc65a;
+  --danger-ink: #ff9aa6;
+
+  --card-hover-border: rgba(249, 115, 22, 0.4);
+
+  --blue: #4d9fff;
+  --azure: #63b3ff;
+  --green: #44c464;
+  --lime: #97d848;
+  --yellow: #ffc53d;
+  --orange: #fb8c3f;
+  --red: #f0616d;
+  --pink: #e8659b;
+  --purple: #c763dd;
+  --indigo: #7c93ff;
+  --cyan: #3cc7dd;
+
+  --green-lt: rgba(68, 196, 100, 0.14);
+  --red-lt: rgba(240, 97, 109, 0.14);
+  --yellow-lt: rgba(255, 197, 61, 0.14);
+  --blue-lt: rgba(77, 159, 255, 0.14);
+  --azure-lt: rgba(99, 179, 255, 0.14);
+  --purple-lt: rgba(199, 99, 221, 0.14);
+  --cyan-lt: rgba(60, 199, 221, 0.14);
+
+  --status-active: #44c464;
+  --status-pending: #ffc53d;
+  --status-critical: #f0616d;
+  --status-info: #4d9fff;
+
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--border-translucent);
+  --card-shadow-hover: 0 10px 28px rgba(0, 0, 0, 0.5);
+  --shadow: rgba(0, 0, 0, 0.35) 0 2px 6px 0;
+  --shadow-card: 0 0 0 1px var(--border-translucent), rgba(0, 0, 0, 0.35) 0 2px 6px 0;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font);
+  font-size: var(--font-size);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height);
+  color: var(--text);
+  background: var(--body-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+// Arabic UI — every var(--font) consumer (inputs, command palette, popovers,
+// tables) switches to the Arabic stack. The customization studio can replace
+// both stacks at runtime.
+html[lang='ar'] {
+  --font: var(--font-ar);
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 0; }
+
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+// Inline SVG icons in HTML pages don't always have width/height attributes.
+// Without them, browsers render unsized SVGs at the default 300×150 — which
+// causes a giant-icon flash during navigation in dev (CSS injected via JS)
+// and on slow networks. Default unsized SVGs to 1em so they render close to
+// their final size on first paint. Specific .icon / .tb-btn svg / etc. rules
+// have higher specificity and override this.
+// :where() keeps the rule but drops it to 0-specificity so any class-based
+// override (.icon-cell svg, .feature .icon svg, etc.) wins cleanly.
+:where(svg):not([width]):not([height]) { width: 1em; height: 1em; }
+
+// Cross-document view transitions: smooth cross-fade between same-origin
+// pages in Chrome 126+. Other browsers ignore the at-rule. The default
+// transition duration (250ms) feels slightly heavy; trim to 180ms.
+@view-transition { navigation: auto; }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation-duration: 0s; }
+}

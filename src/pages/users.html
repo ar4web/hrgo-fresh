@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User management | goHR</title>
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="users" data-breadcrumb="Home > Settings > User management">
+  <main class="main" data-own-actions>
+  <div class="page-wrapper">
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title" data-i18n="um.title">User management</h1>
+        <div class="caption-muted page-meta" data-page-meta></div>
+      </div>
+      <div class="page-header-actions">
+        <button class="btn btn-primary btn-sm" id="um-add" type="button" data-i18n="um.add">Add user</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <div class="um-layout">
+    <div class="card um-main-card um-card">
+      <div class="card-header">
+        <div class="card-title" data-i18n="um.accountsTitle">Accounts</div>
+        <span class="caption-muted" id="um-count"></span>
+      </div>
+      <div class="card-body">
+        <div class="um-toolbar">
+          <div class="um-roles" id="um-roles"></div>
+        </div>
+        <div class="table-wrap um-table-wrap">
+          <table class="table um-table" id="um-table">
+            <thead>
+              <tr>
+                <th data-i18n="um.loginId">Login ID</th>
+                <th data-i18n="um.name">Name</th>
+                <th data-i18n="um.role">Account type</th>
+                <th data-i18n="um.phone">Phone</th>
+                <th data-i18n="um.status">Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="um-rows"></tbody>
+          </table>
+        </div>
+        <div class="caption-muted um-note" id="um-note" data-i18n="um.note">ID prefixes: ADM = admin · MGR = manager · EMP = employee · VND = vendor</div>
+      </div>
+    </div>
+
+    <!-- Side rail: security + database -->
+    <div class="um-rail">
+    <!-- Security settings -->
+    <div class="card" id="sec-card">
+      <div class="card-header"><div class="card-title" data-i18n="sec.title">Security</div></div>
+      <div class="card-body">
+        <div class="set-sub" data-i18n="sec.sub">Login protection, password policy and geofence</div>
+        <div id="sec-admin">
+          <div class="um-set">
+            <div class="um-set-label"><div class="cell-strong" data-i18n="sec.selfSignup">Allow self sign-up</div><div class="caption-muted" data-i18n="sec.selfSignupHint">Shows "Create account" on the login page (EMP / VND IDs only)</div></div>
+            <button class="toggle" id="sec-signup" type="button" role="switch" aria-checked="false"><span></span></button>
+          </div>
+          <div class="um-set">
+            <div class="um-set-label"><div class="cell-strong" data-i18n="sec.pwMin">Minimum password length</div><div class="caption-muted" data-i18n="sec.pwMinHint">Applies to new accounts, resets and changes</div></div>
+            <span class="um-set-ctrl">
+              <input class="form-control" id="sec-pwmin" type="number" min="6" max="32" style="width:84px">
+              <button class="btn btn-outline btn-sm" id="sec-pw-save" type="button" data-i18n="sec.save">Save</button>
+            </span>
+          </div>
+          <div class="um-set">
+            <div class="um-set-label"><div class="cell-strong" data-i18n="sec.geofence">Allowed countries</div><div class="caption-muted" data-i18n="sec.geofenceHint">Two-letter codes, comma separated — logins from other countries are blocked</div></div>
+            <span class="um-set-ctrl">
+              <input class="form-control" id="sec-countries" placeholder="SA, AE" style="width:110px">
+              <select class="form-control" id="sec-failmode" style="width:150px">
+                <option value="open" data-i18n="sec.failOpen">Unknown location → allow</option>
+                <option value="closed" data-i18n="sec.failClosed">Unknown location → block</option>
+              </select>
+              <button class="btn btn-outline btn-sm" id="sec-geo-save" type="button" data-i18n="sec.save">Save</button>
+            </span>
+          </div>
+          <div class="um-set um-set-last">
+            <div class="um-set-label"><div class="cell-strong" data-i18n="sec.changePw">Change my password</div><div class="caption-muted" data-i18n="sec.changePwHint">Signing out every other session</div></div>
+            <div class="um-pw-grid">
+              <input class="form-control" id="sec-cur" type="password" placeholder="Current" autocomplete="current-password">
+              <input class="form-control" id="sec-new" type="password" placeholder="New" autocomplete="new-password">
+              <button class="btn btn-primary" id="sec-chpw" type="button" data-i18n="sec.changePw">Change</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Database connection status (admin; filled by the API) -->
+    <div class="card" id="db-card" hidden>
+      <div class="card-header"><div class="card-title" data-i18n="db.title">Database</div></div>
+      <div class="card-body">
+        <div class="set-sub" data-i18n="db.sub">Where accounts, sessions and audit history are stored</div>
+        <div class="um-set"><div class="um-set-label"><div class="cell-strong" data-i18n="db.driver">Driver</div></div><span class="cell-mono" id="db-driver">—</span></div>
+        <div class="um-set"><div class="um-set-label"><div class="cell-strong" data-i18n="db.file">Database file</div></div><span class="cell-mono" id="db-file" style="font-size:11px;word-break:break-all">—</span></div>
+        <div class="um-set"><div class="um-set-label"><div class="cell-strong" data-i18n="db.integrity">Integrity check</div></div><span class="set-inline"><span class="cell-mono" id="db-integrity">—</span><span class="chip" id="db-badge" hidden>OK</span></span></div>
+        <div class="um-set um-set-last"><div class="um-set-label"><div class="cell-strong" data-i18n="db.rows">Records</div></div><span class="caption-muted" id="db-rows">—</span></div>
+      </div>
+    </div>
+    </div>
+    </div>
+  </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,50 @@
+AGENT_CEREBRUM.md
+
+
+
+
+
+To lock OpenCode and Kilo into a senior-level development framework, we have consolidated every critical constraint, design token, Saudi labor law requirement, and loop-prevention rule from our past strategy sessions into a single, master AGENT_CEREBRUM.md file.
+
+Create this file in your root folder right now to establish a source of truth that your AI agents cannot bypass.
+
+# 📑 AGENT_CEREBRUM.md — MASTER SYSTEM CONTEXT & MEMORY## 🎯 
+
+1. PROJECT CORE MANDATE & CONSTRAINTS* **Application Scope:** Enterprise-grade HRMS tailored strictly for the **Saudi Labor Market**. Do not use generic Western HR logic.* **Completion Status:** **70% Built**. Protect functioning code from accidental deletion. Optimize and upgrade existing codebase logic instead of recreating it.* **Layout Restrictions:** 
+  * Only **ONE global search bar**, located exclusively in the global header navigation bar. 
+  * Individual sub-pages are **strictly forbidden** from rendering standalone page-specific search boxes.
+
+---## 🛠️ 2. VISUAL DESIGN SYSTEM TOKENS (PRO ESSENTIALS)* **Color Palette:** Professional executive system tokens. Base theme utilizes **deep gray-on-navy blue backgrounds** (`--body-bg` / `--bg-dark`) paired with crisp light-grey structural borders.* **Layout Density:** High-density, compact executive layout to maximize information scannability without looking cheap.
+* **Form Controls & Inputs:** Enforce a strict control height of **34px** with structured `space-x-3` or `space-y-3` padding matrices. Input text fields must always **align left**.
+* **KPI Metrics & Stats:** Data numbers must display as clear, clean bold values with tightly compacted vertical padding (`space-y-2`). Component color swatches must use rounded shapes.* **Tables & Lists:** Rows must react dynamically to background hover states. Hidden secondary contextual action buttons should only reveal themselves cleanly when a row is actively hovered.
+* **Iconography:** Strict alignment using **Lucide React** ONLY. Sizing rule: **size 16** (`size={16}`) for all inline elements/buttons, **size 20** (`size={20}`) for navigation bars. Fixed stroke width: `2`.
+* **Charts & Graphs:** Built via Recharts or Tremor UI. Hardcoded inline hex color strings (e.g., `#3b82f6`) are **prohibited**. Visual fills and strokes must pull dynamically from Tailwind theme variables (`hsl(var(--primary))`, `hsl(var(--chart-1))`).
+
+---## ⚖️ 3. SAUDI LABOR COMPLIANCE (HARD SYSTEM CONSTRAINTS)1. **Saudization & Nitaqat Engine:** Headcount tracking charts and metrics must compute national vs. foreign expat percentages according to current MHRSD activity bands.2. **Dual Calendars:** Datepickers, contract timelines, and scheduling modules must maintain simultaneous, synchronized Hijri and Gregorian tracking to support accurate GOSI submissions.3. **Wages Protection System (WPS):** Batch file tools must handle, parse, and validate strict, bank-mandated CSV structures (Mudad/WPS formatting).4. **End of Service Benefits (ESB):** Employee offboarding calculations must strictly compute payouts using Article 84 and 85 parameters of the Saudi Labor Law.
+
+---## 🔒 4. ACCESS CONTROL MATRIX (RBAC) & AUTH BOUNDARIES* **Super Admin (HR Manager / Owner):** Unrestricted write, read, delete capabilities, and full access to compliance audit logs.* **Line Manager / Approver:** Access limited to team evaluation charts, employee timesheets, and vacation approval workflows.* **Standard Employee:** Read-only access to personal profiles, individual attendance metrics, and payslip file downloads.* **Demo Guest (Sandbox):** Triggered via a 'Launch Live Demo' toggle switch on the login view. This must assign a mock guest token that renders all destructive mutation buttons (Save, Delete, Export, Submit) as grayed out and **disabled** across the entire UI.
+
+---## 🧠 5. SENIOR ENGINEERING LOGIC & REFACTORING RULES* **Data Fetching Hooks:** Do not write inline API or database client queries inside UI layout elements. Abstract database fetching operations into performance-optimized custom React hooks.* **State Minimization:** Keep client component states lean. Derive structural counts and metrics on the fly from baseline arrays instead of saving duplicate, desynced values in local state.* **Component Splitting:** If any view layout file exceeds 250 lines of script, split it up. Isolate row actions, item cards, and toolbars into distinct sub-components.
+* **Defensive Coding:** Secure all deep object structures with optional chaining (e.g., `employee?.allowances?.gosi`) to prevent runtime page crashes. Wrap analytical components and tables in localized error boundaries with clean fallback layouts.
+* **Strict Type Safety:** The use of `any` is strictly prohibited. Build exact interface definitions for all data collections.
+
+---## 🚨 6. AGENT STALL, LOOP PREVENTION, & FREEZE PROTOCOL1. **STRICT HALT MANDATE:** If you forget design tokens, lose system layout context, or lack explicit architectural data, you are **FORBIDDEN** from guessing or writing temporary placeholder code (`// TODO`).2. **IMMEDIATE EXECUTION BREAK:** Freeze your script execution instantly and stop generating code.3. **MANDATORY CLARIFICATION SEEKING:** Output a direct, plain-text diagnostic request detailing exactly what layout variable, token, or context is missing.4. **RESUME CONDITION:** Do not modify any code until the human supervisor has provided the required clarification text.5. **FAIL-SAFE ROLLBACK:** If a local terminal build fails or an auto-test throws a syntax error following an edit, immediately revert the file to its last stable version and output the compiler error log. Do not guess a secondary fix.
+
+------------------------------
+## How to Initialize This with OpenCode & Kilo
+
+   1. Save this exact content into a root file named AGENT_CEREBRUM.md.
+   2. Toggle OpenCode into Plan Mode (Press <TAB>) or put Kilo into Architect Mode.
+   3. Run this exact warm-up prompt to activate the system safety rules:
+
+CRITICAL PROFILE OVERRIDE: 
+Read the newly created `AGENT_CEREBRUM.md` file in the workspace root. 
+
+Before generating any code, respond with a single sentence confirming what you will do if you encounter a bug, lose track of our 34px input token, or find yourself guessing an implementation detail. Wait for my confirmation.
+
+Let's apply these rules to your first senior-level sprint. Tell me:
+
+* Which page is currently giving you the biggest headache? (e.g., rewriting the Analytics layout, building the Demo Login toggle, or setting up the WPS CSV Exporter)
+* Are you using Tailwind CSS classes or a global SCSS file to manage your design system?
+
+

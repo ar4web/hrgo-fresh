@@ -1,0 +1,264 @@
+// ─────────────────────────────────────────────────────────────────────────
+// Analytics page — KPI hero strip, gauge, flow polish, scroll reveal.
+// Every color/size consumes design tokens, so the page follows the active
+// theme and the customization studio (radius, spacing, font/icon factors).
+// ─────────────────────────────────────────────────────────────────────────
+
+// Controls bar -------------------------------------------------------------
+.an-controls {
+  padding: 10px 12px;
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+.an-controls-left,
+.an-controls-right {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.an-controls .form-control {
+  height: var(--btn-h);
+  min-width: 150px;
+  font-size: calc(12.5px * var(--font-factor));
+}
+.an-controls .btn svg { transition: transform 200ms ease; }
+.an-refresh-icon.spinning { animation: an-spin 0.7s linear; }
+@keyframes an-spin { to { transform: rotate(360deg); } }
+
+// ── KPI hero strip ────────────────────────────────────────────────────────
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.kpi-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: transform 160ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 160ms ease, border-color 160ms ease;
+}
+.kpi-card::before {
+  // Accent hairline across the top edge, tinted per card tone.
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  background: var(--kpi-tone, var(--primary));
+  opacity: 0.9;
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: var(--card-hover-border);
+}
+.kpi-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.kpi-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--kpi-tint, var(--primary-lt));
+  color: var(--kpi-tone, var(--primary));
+  flex-shrink: 0;
+}
+.kpi-icon svg { width: 18px; height: 18px; }
+.kpi-tone-primary { --kpi-tone: var(--primary); --kpi-tint: var(--primary-lt); }
+.kpi-tone-green   { --kpi-tone: var(--green);   --kpi-tint: var(--green-lt); }
+.kpi-tone-yellow  { --kpi-tone: var(--yellow);  --kpi-tint: var(--yellow-lt); }
+.kpi-tone-blue    { --kpi-tone: var(--blue);    --kpi-tint: var(--blue-lt); }
+.kpi-tone-red     { --kpi-tone: var(--red);     --kpi-tint: var(--red-lt); }
+.kpi-tone-purple  { --kpi-tone: var(--purple);  --kpi-tint: var(--purple-lt); }
+
+.kpi-label {
+  font-size: calc(11.5px * var(--font-factor));
+  font-weight: var(--font-weight-medium);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.kpi-value {
+  font-size: 26px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.1;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+.kpi-sub {
+  font-size: calc(11.5px * var(--font-factor));
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.kpi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: calc(11px * var(--font-factor));
+  font-weight: var(--font-weight-semibold);
+  padding: 1px 7px;
+  border-radius: 0;
+}
+.kpi-delta.up { background: var(--green-lt); color: var(--ok-ink); }
+.kpi-delta.down { background: var(--red-lt); color: var(--danger-ink); }
+.kpi-delta.flat { background: var(--bg-surface-secondary); color: var(--text-muted); }
+.kpi-spark { margin-top: 2px; }
+.kpi-spark svg {
+  width: 100%;
+  height: 34px;
+  display: block;
+  overflow: visible;
+  transform-origin: center;
+}
+// SVG coordinates are always drawn left-to-right; in RTL mirror so the
+// trend reads right-to-left like the rest of the chrome.
+[dir='rtl'] .kpi-spark svg {
+  transform: scaleX(-1);
+}
+
+// ── Inset cards inside zones (nested cards on the secondary fill) ─────────
+.card.an-inset {
+  background: var(--bg-surface);
+  border-color: var(--border-color-light);
+}
+
+// ── Scroll reveal (zone + trailing cards) ─────────────────────────────────
+// Cards rise AND travel along the inline axis (from the reading-start edge:
+// left in LTR, right in RTL), so the entrance follows the UI direction.
+.an-reveal {
+  opacity: 0;
+  transform: translateY(12px) translateX(-14px);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0, 0, 1);
+}
+[dir='rtl'] .an-reveal {
+  transform: translateY(12px) translateX(14px);
+}
+.an-reveal.in-view {
+  opacity: 1;
+  transform: none;
+}
+
+// ── Zone heads: chevron + hover take the accent ───────────────────────────
+details.zone .zone-head { transition: background 120ms ease; }
+details.zone .zone-head:hover { background: var(--bg-surface-secondary); }
+details.zone .zone-head::before {
+  border-color: var(--primary);
+  opacity: 0.65;
+}
+
+// ── Nitaqat gauge ─────────────────────────────────────────────────────────
+.nitaqat-wrap {
+  display: grid;
+  grid-template-columns: minmax(200px, 240px) 1fr;
+  gap: var(--space-4);
+  align-items: center;
+}
+.nitaqat-gauge { height: 170px; }
+.nitaqat-facts { display: flex; flex-direction: column; gap: 10px; }
+.nitaqat-fact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: calc(12.5px * var(--font-factor));
+  color: var(--text-secondary);
+  border-bottom: 1px dashed var(--border-color-light);
+  padding-bottom: 8px;
+}
+.nitaqat-fact-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.nitaqat-fact-row strong {
+  font-size: calc(14px * var(--font-factor));
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+// ── Deployment mix bars ───────────────────────────────────────────────────
+@keyframes an-bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.hr-bar-fill {
+  transition: width 0.9s cubic-bezier(0.2, 0, 0, 1);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(0, 0, 0, 0.08));
+  transform-origin: left;
+  animation: an-bar-grow 0.9s cubic-bezier(0.2, 0, 0, 1) both;
+}
+[dir='rtl'] .hr-bar-fill { transform-origin: right; }
+
+// ── Skills cloud: cycling tints + hover lift ──────────────────────────────
+.skill-tag {
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+.skill-tag:nth-child(7n+1) { background: var(--primary-lt); border-color: transparent; }
+.skill-tag:nth-child(7n+2) { background: var(--blue-lt); border-color: transparent; }
+.skill-tag:nth-child(7n+3) { background: var(--green-lt); border-color: transparent; }
+.skill-tag:nth-child(7n+4) { background: var(--yellow-lt); border-color: transparent; }
+.skill-tag:nth-child(7n+5) { background: var(--purple-lt); border-color: transparent; }
+.skill-tag:nth-child(7n+6) { background: var(--azure-lt); border-color: transparent; }
+.skill-tag:hover {
+  transform: translateY(-2px) scale(1.04);
+  border-color: var(--card-hover-border);
+}
+
+// ── City filter chips act like buttons ────────────────────────────────────
+#city-chips .an-city {
+  font: inherit;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  padding: 3px 11px;
+  border-radius: 0;
+  background: var(--bg-surface);
+  line-height: 1.5;
+  transition: transform 120ms ease, box-shadow 120ms ease,
+    background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+#city-chips .an-city::before { content: none; }
+#city-chips .an-city:hover {
+  transform: translateY(-1px);
+  border-color: var(--card-hover-border);
+  background: var(--blue-lt);
+}
+#city-chips .an-city.an-city-active {
+  background: var(--primary);
+  border-color: var(--primary-dk);
+  color: var(--on-primary);
+  box-shadow: 0 2px 8px rgba(var(--primary-rgb), 0.35);
+}
+
+@media (max-width: 700px) {
+  .nitaqat-wrap { grid-template-columns: 1fr; }
+  .nitaqat-gauge { height: 190px; }
+  .an-controls { flex-direction: column; align-items: stretch; }
+  .an-controls-left, .an-controls-right { justify-content: space-between; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .an-reveal { opacity: 1; transform: none; transition: none; }
+  .an-refresh-icon.spinning { animation: none; }
+  .kpi-card:hover { transform: none; }
+  .skill-tag:hover { transform: none; }
+  .hr-bar-fill { animation: none; }
+}

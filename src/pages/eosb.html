@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="nav.eosb">End of Service | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="eosb" data-breadcrumb="Home > End of Service">
+
+<main class="main">
+<div class="page-wrapper" data-hr-eosb>
+
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title" data-i18n="nav.eosb">End of Service</h1>
+        <div class="caption-muted page-meta" data-page-meta></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS — 4-up -->
+  <div class="row pr-stats">
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l8 3v6c0 5-3.5 9.5-8 11-4.5-1.5-8-6-8-11V5l8-3z"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="eosb.liability">Accrued liability</div><div class="stat-value-row"><span class="stat-value" id="eo-stat-liab">0</span></div><div class="stat-subtext" data-i18n="eosb.liabSub">All staff · termination basis</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="eosb.avgYears">Avg service</div><div class="stat-value-row"><span class="stat-value" id="eo-stat-avg">0</span></div><div class="stat-subtext" data-i18n="eosb.avgSub">Years per employee</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="eosb.veterans">5+ years</div><div class="stat-value-row"><span class="stat-value" id="eo-stat-vet">0</span></div><div class="stat-subtext" data-i18n="eosb.vetSub">Employees in the full-month band</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="eosb.longest">Longest serving</div><div class="stat-value-row"><span class="stat-value" id="eo-stat-long">—</span></div><div class="stat-subtext" id="eo-stat-long-sub">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BENEFIT CALCULATOR + LIABILITY BY DEPARTMENT -->
+  <div class="card">
+    <div class="card-header"><div class="card-title" data-i18n="eosb.calcTitle">Benefit calculator — Liability by department</div></div>
+    <div class="card-body eosb-combined">
+      <div class="eosb-hero">
+        <div class="eosb-inputs">
+          <label class="modal-form-row"><span data-i18n="dash.employee">Employee</span>
+            <select class="form-control" id="eo-emp"></select></label>
+          <label class="modal-form-row"><span data-i18n="eosb.asOf">Exit date (as of)</span>
+            <input type="date" class="form-control" id="eo-asof"></label>
+          <label class="modal-form-row" style="margin-bottom:0"><span data-i18n="eosb.reason">Exit reason</span>
+            <select class="form-control" id="eo-reason">
+              <option value="termination" data-i18n="eosb.rTermination">Termination / contract end</option>
+              <option value="resignation" data-i18n="eosb.rResign">Resignation (indefinite)</option>
+              <option value="resignation-fixed" data-i18n="eosb.rResignFixed">Resignation (fixed-term)</option>
+              <option value="art80" data-i18n="eosb.rArt80">Dismissal — Article 80</option>
+              <option value="art81" data-i18n="eosb.rArt81">Exit — Article 81</option>
+            </select></label>
+          <div class="eosb-rules" id="eo-rules"></div>
+        </div>
+        <div class="eosb-result">
+          <div class="eosb-kv"><span data-i18n="eosb.service">Years of service</span><strong id="eo-years">0</strong></div>
+          <div class="eosb-kv"><span data-i18n="eosb.gross">Gross award</span><strong id="eo-gross">0</strong></div>
+          <div class="eosb-kv" id="eo-cut-row" hidden><span data-i18n="eosb.haircut">Haircut</span><strong id="eo-cut">0</strong></div>
+          <div class="eosb-kv" id="eo-factor-row" hidden><span data-i18n="eosb.factor">Entitlement factor</span><strong id="eo-factor">1</strong></div>
+          <div class="payslip-net"><span data-i18n="eosb.net">Net benefit</span><strong id="eo-net">0</strong></div>
+          <div style="font-size:12px;color:var(--text-secondary)" id="eo-payterm"></div>
+        </div>
+      </div>
+
+      <div class="eosb-dept">
+        <div class="eosb-dept-head" data-i18n="eosb.deptChart">Liability by department</div>
+        <div class="chart-box chart-sm" id="chart-eo-dept"></div>
+        <div id="eo-dept-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card emp-table-card">
+    <div class="card-body p-0 emp-table-wrap">
+      <div class="table-responsive">
+        <table class="table emp-table" data-page-length="10">
+          <thead>
+            <tr>
+              <th data-i18n="ro.empId">Employee ID</th>
+              <th data-i18n="dash.employee">Employee</th>
+              <th data-i18n="file.department">Department</th>
+              <th data-i18n="eosb.years">Years</th>
+              <th data-i18n="eosb.basic">Basic</th>
+              <th data-i18n="eosb.award">Award</th>
+              <th data-i18n="eosb.net">Net</th>
+            </tr>
+          </thead>
+          <tbody id="eo-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+
+</body>
+</html>

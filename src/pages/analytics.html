@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="hr.nav.analytics">Analytics | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="analytics" data-breadcrumb="Home > Analytics">
+
+<main class="main">
+<div class="page-wrapper" data-hr-dashboard>
+
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title" data-i18n="hr.nav.analytics">Analytics</h1>
+        <div class="caption-muted page-meta" data-page-meta></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-head" id="dash-head"></div>
+
+  <!-- KPI hero strip — filled live by hr-dashboard.js -->
+  <div class="kpi-strip" id="analytics-kpis" aria-live="polite"></div>
+
+  <!-- Analytics controls — purpose-built for analysis -->
+  <div class="card an-controls">
+
+  <div class="an-head">
+    <div class="an-head-left">
+      <div class="card-title" data-i18n="an.title">Analysis controls</div>
+      <div class="caption-muted" data-i18n="an.caption">Adjust parameters to recalculate projections</div>
+    </div>
+    <div class="an-tabs">
+      <button class="chart-tab active" data-tab="projection" data-i18n="an.tabProjection">Projection</button>
+      <button class="chart-tab" data-tab="simulation" data-i18n="an.tabSimulation">Simulation</button>
+    </div>
+  </div>
+
+  <div class="an-body">
+    <!-- Projection controls -->
+    <div class="an-panel" data-panel="projection">
+      <div class="an-row">
+        <label class="an-field"><span data-i18n="an.monthsAhead">Months ahead</span><input type="number" class="form-control" id="an-months" value="12" min="1" max="60"></label>
+        <label class="an-field"><span data-i18n="an.growthRate">Growth rate %</span><input type="number" class="form-control" id="an-growth" value="5" step="0.1"></label>
+        <label class="an-field"><span data-i18n="an.turnoverRate">Turnover %</span><input type="number" class="form-control" id="an-turnover" value="10" step="0.1"></label>
+      </div>
+      <div class="an-row">
+        <label class="an-field"><span data-i18n="an.hiringRate">Hiring rate</span><input type="number" class="form-control" id="an-hiring" value="3" step="0.1"></label>
+        <label class="an-field"><span data-i18n="an.avgSalary">Avg salary (SAR)</span><input type="number" class="form-control" id="an-salary" value="10000" step="100"></label>
+        <label class="an-field"><span data-i18n="an.gosiRate">GOSI rate %</span><input type="number" class="form-control" id="an-gosi" value="12" step="0.1"></label>
+      </div>
+    </div>
+
+    <!-- Simulation controls -->
+    <div class="an-panel" data-panel="simulation" hidden>
+      <div class="an-row">
+        <label class="an-field"><span data-i18n="an.scenario">Scenario</span>
+          <select class="form-control" id="an-scenario">
+            <option value="base" data-i18n="an.base">Base</option>
+            <option value="optimistic" data-i18n="an.optimistic">Optimistic</option>
+            <option value="pessimistic" data-i18n="an.pessimistic">Pessimistic</option>
+          </select>
+        </label>
+        <label class="an-field"><span data-i18n="an.hiringMultiplier">Hiring multiplier</span><input type="number" class="form-control" id="an-hireMul" value="1" step="0.1"></label>
+        <label class="an-field"><span data-i18n="an.turnoverMultiplier">Turnover multiplier</span><input type="number" class="form-control" id="an-turnMul" value="1" step="0.1"></label>
+      </div>
+      <div class="an-row">
+        <label class="an-field"><span data-i18n="an.salaryMultiplier">Salary multiplier</span><input type="number" class="form-control" id="an-salMul" value="1" step="0.05"></label>
+        <label class="an-field"><span data-i18n="an.turnoverMultiplier">Turnover multiplier</span><input type="number" class="form-control" id="an-turnMul" value="1" step="0.1"></label>
+        <label class="an-field"><span data-i18n="an.monthsAhead">Months ahead</span><input type="number" class="form-control" id="an-simMonths" value="12" min="1" max="60"></label>
+      </div>
+    </div>
+
+    <div class="an-actions">
+      <button class="btn btn-primary" id="an-run" type="button" data-i18n="an.run">Run analysis</button>
+      <button class="btn btn-outline" id="an-export" type="button" data-i18n="an.export">Export CSV</button>
+    </div>
+  </div>
+</div>
+
+  <!-- KPI hero strip — filled live by hr-dashboard.js -->
+  <div class="kpi-strip" id="analytics-kpis" aria-live="polite"></div>
+
+  <!-- Analytics charts — purpose-built for analysis -->
+  <div class="row col-2 stack-gap">
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="an.projectionTitle">Workforce projection</div></div>
+      <div class="card-body"><div class="chart-box chart-lg" id="chart-an-projection"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="an.costTitle">Cost projection</div></div>
+      <div class="card-body"><div class="chart-box chart-lg" id="chart-an-cost"></div></div>
+    </div>
+  </div>
+
+  <div class="row col-3 stack-gap">
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="an.headcountTitle">Headcount trend</div></div>
+      <div class="card-body"><div class="chart-box chart-sm" id="chart-an-headcount"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="an.costBreakdownTitle">Cost breakdown</div></div>
+      <div class="card-body"><div class="chart-box chart-sm" id="chart-an-cost"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="an.revenueTitle">Revenue projection</div></div>
+      <div class="card-body"><div class="chart-box chart-sm" id="chart-an-revenue"></div></div>
+    </div>
+  </div>
+
+</div>
+</main>
+
+</body>
+</html>

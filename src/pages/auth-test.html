@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth API &amp; test tools | goHR</title>
+  <script type="module" src="/src/pages/auth-test.js"></script>
+</head>
+<body data-page="login">
+  <main class="login-wrap">
+    <div class="login-card card">
+      <header class="login-head">
+        <div class="login-brand">
+          <span class="login-mark" aria-hidden="true">goHR</span>
+          <span class="login-sub" data-i18n="auth.toolsSub">Auth API — flows, RBAC and session tools</span>
+        </div>
+        <a class="btn btn-ghost btn-sm" href="login.html" data-i18n="auth.backToLogin">Back to sign in</a>
+      </header>
+
+      <!-- dev-only quick access -->
+      <div class="auth-dev" id="auth-dev-box">
+        <div class="auth-dev-label" data-i18n="auth.devBox">DEV ONLY — instant role login (bypasses geofence)</div>
+        <div class="auth-dev-row">
+          <button class="btn btn-outline btn-sm" type="button" data-test-role="admin">Admin</button>
+          <button class="btn btn-outline btn-sm" type="button" data-test-role="manager">Manager</button>
+          <button class="btn btn-outline btn-sm" type="button" data-test-role="employee">Employee</button>
+          <button class="btn btn-outline btn-sm" type="button" data-test-role="vendor">Vendor</button>
+        </div>
+      </div>
+
+      <!-- auth methods -->
+      <div class="auth-tabs" role="tablist">
+        <button class="chip active" data-auth-tab="otp" type="button" role="tab" aria-selected="true" data-i18n="auth.tabOtp">Mobile OTP</button>
+        <button class="chip" data-auth-tab="iqama" type="button" role="tab" aria-selected="false" data-i18n="auth.tabIqama">Iqama number</button>
+        <button class="chip" data-auth-tab="google" type="button" role="tab" aria-selected="false">Google</button>
+      </div>
+
+      <section class="auth-pane" data-auth-pane="otp">
+        <label class="auth-field"><span data-i18n="auth.phone">Mobile number</span>
+          <input class="form-control" id="otp-phone" type="tel" placeholder="+966500000001" autocomplete="tel">
+        </label>
+        <button class="btn btn-primary" id="otp-send" type="button" data-i18n="auth.sendCode">Send code</button>
+        <div class="auth-challenge" id="otp-challenge" hidden>
+          <div class="caption-muted" id="otp-hint"></div>
+          <label class="auth-field"><span data-i18n="auth.code">6-digit code</span>
+            <input class="form-control" id="otp-code" type="text" inputmode="numeric" maxlength="6" placeholder="••••••">
+          </label>
+          <button class="btn btn-primary" id="otp-verify" type="button" data-i18n="auth.verify">Verify &amp; sign in</button>
+        </div>
+      </section>
+
+      <section class="auth-pane" data-auth-pane="iqama" hidden>
+        <label class="auth-field"><span data-i18n="auth.iqama">Iqama number</span>
+          <input class="form-control" id="iqama-no" type="text" inputmode="numeric" maxlength="10" placeholder="2XXXXXXXXX">
+          <small class="caption-muted" data-i18n="auth.iqamaHint">Starts with 2 · 10 digits</small>
+        </label>
+        <button class="btn btn-primary" id="iqama-send" type="button" data-i18n="auth.sendCode">Send code</button>
+        <div class="auth-challenge" id="iqama-challenge" hidden>
+          <div class="caption-muted" id="iqama-hint"></div>
+          <label class="auth-field"><span data-i18n="auth.code">6-digit code</span>
+            <input class="form-control" id="iqama-code" type="text" inputmode="numeric" maxlength="6" placeholder="••••••">
+          </label>
+          <button class="btn btn-primary" id="iqama-verify" type="button" data-i18n="auth.verify">Verify &amp; sign in</button>
+        </div>
+      </section>
+
+      <section class="auth-pane" data-auth-pane="google" hidden>
+        <p class="caption-muted" data-i18n="auth.googleHint">Sign in with your Google account (OAuth 2.0 + PKCE). In dev, an account-picker mock completes the round-trip without credentials.</p>
+        <button class="btn btn-outline" id="google-start" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Google
+        </button>
+      </section>
+
+      <div class="auth-msg" id="auth-msg" role="status" hidden></div>
+
+      <!-- session -->
+      <section class="auth-session" id="auth-session" hidden>
+        <div class="auth-session-head">
+          <span class="cell-strong" id="sess-name"></span>
+          <span class="chip active" id="sess-role"></span>
+        </div>
+        <div class="caption-muted" id="sess-exp"></div>
+        <div class="auth-perms" id="sess-perms"></div>
+        <div class="auth-dev-row">
+          <button class="btn btn-outline btn-sm" id="sess-refresh" type="button" data-i18n="auth.refresh">Refresh token</button>
+          <button class="btn btn-outline btn-sm" id="sess-logout" type="button" data-i18n="auth.logout">Logout</button>
+          <button class="btn btn-ghost btn-sm" id="sess-logout-all" type="button" data-i18n="auth.logoutAll">Sign out all devices</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- RBAC playground -->
+    <div class="login-card card" id="playground">
+      <div class="card-header"><div class="card-title" data-i18n="auth.playground">RBAC playground — run calls as your role</div></div>
+      <div class="card-body">
+        <table class="theme-kit-table auth-api-table">
+          <thead><tr><th data-i18n="auth.endpoint">Endpoint</th><th data-i18n="auth.perm">Required permission</th><th></th><th></th></tr></thead>
+          <tbody>
+            <tr><td>GET /api/attendance</td><td>attendance.read / self</td><td><button class="btn btn-outline btn-sm" type="button" data-api="GET /api/attendance">Run</button></td><td class="auth-api-out"></td></tr>
+            <tr><td>POST /api/attendance</td><td>attendance.write (or own)</td><td><button class="btn btn-outline btn-sm" type="button" data-api="POST /api/attendance">Run</button></td><td class="auth-api-out"></td></tr>
+            <tr><td>GET /api/employees</td><td>employees.read</td><td><button class="btn btn-outline btn-sm" type="button" data-api="GET /api/employees">Run</button></td><td class="auth-api-out"></td></tr>
+            <tr><td>GET /api/admin/users</td><td>users.read (admin/manager)</td><td><button class="btn btn-outline btn-sm" type="button" data-api="GET /api/admin/users">Run</button></td><td class="auth-api-out"></td></tr>
+            <tr><td>POST /api/admin/users</td><td>users.write (admin)</td><td><button class="btn btn-outline btn-sm" type="button" data-api="POST /api/admin/users">Run</button></td><td class="auth-api-out"></td></tr>
+            <tr><td>GET /api/admin/ping</td><td>admin only</td><td><button class="btn btn-outline btn-sm" type="button" data-api="GET /api/admin/ping">Run</button></td><td class="auth-api-out"></td></tr>
+            <tr><td>GET /auth/logs</td><td>audit.read (admin)</td><td><button class="btn btn-outline btn-sm" type="button" data-api="GET /auth/logs">Run</button></td><td class="auth-api-out"></td></tr>
+          </tbody>
+        </table>
+        <details class="auth-curl">
+          <summary data-i18n="auth.curl">curl commands</summary>
+          <pre id="curl-sheet"></pre>
+        </details>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

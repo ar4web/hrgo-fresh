@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="nav.attendance">Attendance | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="attendance" data-breadcrumb="Home > Attendance">
+
+<main class="main">
+<div class="page-wrapper" data-hr-attendance>
+
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title" data-i18n="nav.attendance">Attendance</h1>
+        <div class="caption-muted page-meta" data-page-meta></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS — proportional 6-up grid (latest working day) -->
+  <div class="row emp-stats">
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="status.present">Present</div><div class="stat-value-row"><span class="stat-value" id="att-stat-present">0</span></div><div class="stat-subtext" data-i18n="att.presentSub">On-time check-ins</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="status.late">Late</div><div class="stat-value-row"><span class="stat-value" id="att-stat-late">0</span></div><div class="stat-subtext" data-i18n="att.lateSub">After shift start</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="status.absent">Absent</div><div class="stat-value-row"><span class="stat-value" id="att-stat-absent">0</span></div><div class="stat-subtext" data-i18n="att.absentSub">No show</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21v-9"/><path d="M12 12C8 12 5 10 4 6c4 0 7 2 8 4 1-2 4-4 8-4-1 4-4 6-8 6z"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="status.on-leave">On leave</div><div class="stat-value-row"><span class="stat-value" id="att-stat-leave">0</span></div><div class="stat-subtext" data-i18n="att.leaveSub">Approved absences</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="att.rate">Attendance rate</div><div class="stat-value-row"><span class="stat-value" id="att-stat-rate">0%</span></div><div class="stat-subtext" data-i18n="att.rateSub">Of scheduled staff</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="att.avgHours">Avg hours</div><div class="stat-value-row"><span class="stat-value" id="att-stat-avg">0</span></div><div class="stat-subtext" data-i18n="att.avgSub">Hours per employee</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS — two-week trend + latest day breakdown -->
+  <div class="row col-2 stack-gap">
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="att.trendTitle">Daily attendance · last two weeks</div></div>
+      <div class="card-body"><div class="chart-box chart-sm" id="chart-att-trend"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="att.dayBreakdown">Latest day breakdown</div></div>
+      <div class="card-body"><div class="chart-box chart-sm" id="chart-att-day"></div></div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR — count left, Filter right (same roster pattern) -->
+  <div class="card emp-toolbar">
+    <div class="card-body emp-toolbar-row">
+      <div class="emp-toolbar-left">
+        <span class="caption-muted" id="att-count"></span>
+      </div>
+      <div class="emp-toolbar-right" role="toolbar" data-i18n-aria="ro.filters" aria-label="Attendance filters">
+        <button class="btn btn-primary btn-sm" id="att-filter-btn" type="button" aria-expanded="false" aria-controls="att-filter-pop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M7 12h10M10 18h4"/></svg> <span data-i18n="ro.filter">Filter</span> <span class="badge badge-teal" id="att-filter-count" hidden></span></button>
+      </div>
+    </div>
+    <div class="emp-filter-pop" id="att-filter-pop" hidden>
+      <div class="emp-filter-head">
+        <span class="emp-filter-head-title" data-i18n="ro.filters">Filters</span>
+        <button class="emp-filter-clear" id="att-filter-clear" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          <span data-i18n="ro.clearFilters">Clear filters</span>
+        </button>
+      </div>
+      <label class="emp-filter-field"><span data-i18n="att.date">Date</span><select class="form-control" id="att-date"></select></label>
+      <label class="emp-filter-field"><span data-i18n="file.department">Department</span><select class="form-control" id="att-dept"><option value="" data-i18n="common.all">All</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="common.status">Status</span><select class="form-control" id="att-st"><option value="" data-i18n="common.all">All</option><option value="present" data-i18n="status.present">Present</option><option value="late" data-i18n="status.late">Late</option><option value="absent" data-i18n="status.absent">Absent</option><option value="leave" data-i18n="status.on-leave">On leave</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="ro.sort">Sort</span><select class="form-control" id="att-sort"><option value="date" data-i18n="att.sortDate">Newest first</option><option value="name" data-i18n="ro.sortName">Name A–Z</option><option value="cin" data-i18n="att.sortIn">Check-in time</option><option value="hours" data-i18n="att.sortHours">Hours</option></select></label>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card emp-table-card">
+    <div class="card-body p-0 emp-table-wrap">
+      <div class="table-responsive">
+        <table class="table emp-table" data-page-length="10">
+          <thead>
+            <tr>
+              <th data-sort="code" data-i18n="ro.empId">Employee ID</th>
+              <th data-sort="name" data-i18n="dash.employee">Employee</th>
+              <th data-i18n="file.department">Department</th>
+              <th data-sort="date" data-i18n="att.date">Date</th>
+              <th data-i18n="common.status">Status</th>
+              <th data-sort="cin" data-i18n="att.checkIn">Check-in</th>
+              <th data-i18n="att.checkOut">Check-out</th>
+              <th data-sort="hours" data-i18n="att.hours">Hours</th>
+              <th data-i18n="att.lateMin">Late (min)</th>
+            </tr>
+          </thead>
+          <tbody id="att-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM ACTION RAIL — All actions on the right -->
+  <div class="emp-action-rail" role="toolbar" data-i18n-aria="att.logAttendance" aria-label="Attendance actions">
+    <span class="emp-rail-right">
+      <button class="btn btn-primary" id="att-log" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        <span data-i18n="att.logAttendance">Log attendance</span>
+      </button>
+      <button class="btn btn-outline" id="att-import" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V3m0 12L8 11m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span data-i18n="common.import">Import</span>
+      </button>
+      <button class="btn btn-outline" id="att-export" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span data-i18n="common.export">Export</span>
+      </button>
+    </span>
+  </div>
+
+</div>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,229 @@
+// ─────────────────────────────────────────────────────────────────────────
+// Customization studio (src/components/customize.js)
+// Cards, segmented theme switch, swatches, sliders, logo uploader. Every
+// color/size here consumes design tokens, so the studio restyles itself.
+// ─────────────────────────────────────────────────────────────────────────
+
+.cz-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.cz-card {
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface-secondary);
+  overflow: hidden;
+}
+.cz-card-head {
+  padding: 10px var(--space-4);
+  border-bottom: 1px solid var(--border-color-light);
+}
+.cz-card-title {
+  font-size: calc(13px * var(--font-factor));
+  font-weight: var(--font-weight-semibold);
+  color: var(--text);
+}
+.cz-card-desc {
+  margin-top: 2px;
+  font-size: calc(11.5px * var(--font-factor));
+  color: var(--text-muted);
+}
+.cz-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+// Labeled control rows -----------------------------------------------------
+.cz-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: var(--control-h);
+}
+.cz-row-stack { flex-direction: column; align-items: stretch; gap: var(--space-2); }
+.cz-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex: 0 0 200px;
+  font-size: calc(12.5px * var(--font-factor));
+  font-weight: var(--font-weight-medium);
+  color: var(--text);
+}
+.cz-row-stack .cz-label { flex-basis: auto; }
+.cz-value,
+.cz-hex {
+  font-size: calc(11px * var(--font-factor));
+  font-weight: var(--font-weight-semibold);
+  color: var(--primary);
+  background: var(--primary-lt);
+  border-radius: var(--radius-sm);
+  padding: 1px 7px;
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+}
+.cz-select {
+  width: 220px;
+  max-width: 50%;
+  height: var(--control-h);
+}
+
+// Range sliders ------------------------------------------------------------
+.cz-range {
+  flex: 1;
+  max-width: 320px;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 0;
+  background: var(--border-color);
+  outline: none;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+.cz-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 0;
+  background: var(--primary);
+  border: 2px solid var(--bg-surface);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  transition: transform 100ms ease;
+}
+.cz-range::-webkit-slider-thumb:hover { transform: scale(1.15); }
+.cz-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 0;
+  background: var(--primary);
+  border: 2px solid var(--bg-surface);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+// Full hue spectrum track.
+.cz-hue {
+  max-width: none;
+  background: linear-gradient(to right,
+    hsl(0, 82%, 53%), hsl(60, 82%, 53%), hsl(120, 82%, 45%),
+    hsl(180, 82%, 45%), hsl(240, 82%, 60%), hsl(300, 82%, 55%), hsl(360, 82%, 53%));
+}
+
+// Segmented Light / Dark switch -------------------------------------------
+.cz-seg {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+}
+.cz-seg-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: calc(12.5px * var(--font-factor));
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background 120ms, color 120ms;
+}
+.cz-seg-btn:hover { color: var(--text); }
+.cz-seg-btn.active {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.cz-seg-icon { display: inline-flex; }
+
+// Accent row ---------------------------------------------------------------
+.cz-accent-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.cz-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.cz-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 0;
+  border: 2px solid var(--bg-surface);
+  outline: 1px solid var(--border-color);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 110ms ease;
+}
+.cz-swatch:hover { transform: scale(1.12); }
+.cz-swatch.active {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+.cz-color {
+  width: 34px;
+  height: 30px;
+  padding: 2px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  cursor: pointer;
+}
+
+// Company / logo -----------------------------------------------------------
+.cz-logo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.cz-logo-preview {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-weight: var(--font-weight-bold);
+  font-size: calc(17px * var(--font-factor));
+}
+.cz-logo-preview img { width: 100%; height: 100%; object-fit: contain; }
+.cz-logo-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.cz-field-hint {
+  font-size: calc(11.5px * var(--font-factor));
+  color: var(--text-muted);
+}
+.cz-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+.cz-field { display: flex; flex-direction: column; gap: 5px; }
+.cz-field-label {
+  font-size: calc(12px * var(--font-factor));
+  font-weight: var(--font-weight-medium);
+  color: var(--text-secondary);
+}
+.cz-field .form-control { width: 100%; }
+
+@media (max-width: 600px) {
+  .cz-grid-2 { grid-template-columns: 1fr; }
+  .cz-label { flex-basis: 140px; }
+  .cz-select { width: 50%; }
+}

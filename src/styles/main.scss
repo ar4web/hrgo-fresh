@@ -1,0 +1,17 @@
+// goHR — main style entry
+// Self-contained design system, no Bootstrap (uses own .row/.col-* grid).
+
+@use "tokens";
+@use "layout";
+@use "components";
+@use "customize";
+@use "analytics";
+@use "forms";
+@use "widgets";
+@use "pages";
+@use "datatable";
+@use "apps";
+@use "hr";
+@use "ksa";
+@use "mobile";
+@use "theme-dark";

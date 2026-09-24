@@ -1,0 +1,21 @@
+// HR + Operations — Saudi/KSA presentation (Arabic type, SAR numerals, Hijri).
+// The Arabic font stack itself lives in _tokens.scss (html[lang='ar'] → --font)
+// so inputs, the command palette and popovers inherit it too.
+
+// SAR money: tabular numerals so columns align in both languages.
+.sar {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+// Hijri date companion text.
+.hijri {
+  color: var(--text-muted);
+  font-size: 0.92em;
+}
+
+// Keep LTR identifiers (Iqama, IBAN, codes) readable inside RTL layout.
+html[dir="rtl"] .ltr-id {
+  direction: ltr;
+  unicode-bidi: embed;
+}

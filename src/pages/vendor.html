@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vendor portal | goHR</title>
+  <script type="module" src="/src/pages/vendor.js"></script>
+</head>
+<body data-page="vendor">
+  <main class="login-simple-wrap">
+    <div class="login-card card">
+      <div class="login-brand-center">
+        <span class="login-mark" aria-hidden="true">goHR</span>
+        <span class="login-sub" data-i18n="vendor.portal">Vendor portal</span>
+      </div>
+      <div class="vendor-welcome">
+        <span class="user-panel-avatar" id="vendor-avatar">V</span>
+        <div>
+          <div class="cell-strong" id="vendor-name"></div>
+          <span class="chip active" data-i18n="auth.roleVendor">Vendor</span>
+        </div>
+      </div>
+      <div class="auth-perms" id="vendor-perms"></div>
+      <div class="set-sub" data-i18n="vendor.note">Your account was created by the goHR administrator. Available self-service tools appear here as they are enabled for vendors.</div>
+      <div class="auth-challenge" style="border-top:1px dashed var(--border-color-light);padding-top:var(--space-3)">
+        <div class="cell-strong" data-i18n="sec.changePw">Change my password</div>
+        <input class="form-control" id="vp-cur" type="password" placeholder="Current password" autocomplete="current-password">
+        <input class="form-control" id="vp-new" type="password" placeholder="New password" autocomplete="new-password">
+        <button class="btn btn-outline btn-sm" id="vp-chpw" type="button" data-i18n="sec.changePw">Change</button>
+      </div>
+      <div class="auth-dev-row">
+        <button class="btn btn-outline btn-sm" id="vendor-signout" type="button" data-i18n="auth.logout">Logout</button>
+      </div>
+      <footer class="login-foot">
+        <button class="btn btn-ghost btn-sm" id="auth-lang" type="button">العربية</button>
+      </footer>
+    </div>
+  </main>
+</body>
+</html>

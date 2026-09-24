@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="nav.renewals">Renewals | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="renewals" data-breadcrumb="Home > Renewals">
+
+<main class="main">
+<div class="page-wrapper" data-hr-renewals>
+
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title" data-i18n="nav.renewals">Renewals</h1>
+        <div class="caption-muted page-meta" data-page-meta></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS — 4-up alert bands -->
+  <div class="row pr-stats">
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="rx.expired">Expired documents</div><div class="stat-value-row"><span class="stat-value" id="rx-stat-expired">0</span></div><div class="stat-subtext" data-i18n="rx.expiredSub">Past expiry date</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v5M12 16.5v.5"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="rx.critical">Due ≤ 7 days</div><div class="stat-value-row"><span class="stat-value" id="rx-stat-critical">0</span></div><div class="stat-subtext" data-i18n="rx.criticalSub">Renew immediately</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="rx.urgent">Due ≤ 30 days</div><div class="stat-value-row"><span class="stat-value" id="rx-stat-urgent">0</span></div><div class="stat-subtext" data-i18n="rx.urgentSub">Book government appointments</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="rx.soon">Due ≤ 90 days</div><div class="stat-value-row"><span class="stat-value" id="rx-stat-soon">0</span></div><div class="stat-subtext" data-i18n="rx.soonSub">Plan the renewals</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOWER -->
+  <div class="card">
+    <div class="card-header"><div class="card-title" data-i18n="rx.tower">Document tower</div></div>
+    <div class="card-body">
+      <div class="rx-tower" id="rx-tower"></div>
+      <div class="rx-tower-sub" data-i18n="rx.towerSub">Documents by status — click a segment to filter</div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR — count left, filters right -->
+  <div class="card emp-toolbar">
+    <div class="card-body emp-toolbar-row">
+      <div class="emp-toolbar-left">
+        <span class="caption-muted" id="rx-count"></span>
+      </div>
+      <div class="emp-toolbar-right" role="toolbar" data-i18n-aria="ro.filters" aria-label="Renewal filters">
+        <button class="btn btn-ghost btn-sm" id="rx-export" type="button" data-i18n-aria="common.export" aria-label="Export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg></button>
+        <button class="btn btn-primary btn-sm" id="rx-filter-btn" type="button" aria-expanded="false" aria-controls="rx-filter-pop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M7 12h10M10 18h4"/></svg> <span data-i18n="ro.filter">Filter</span> <span class="badge badge-teal" id="rx-filter-count" hidden></span></button>
+      </div>
+    </div>
+    <div class="emp-filter-pop" id="rx-filter-pop" hidden>
+      <div class="emp-filter-head">
+        <span class="emp-filter-head-title" data-i18n="ro.filters">Filters</span>
+        <button class="emp-filter-clear" id="rx-filter-clear" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          <span data-i18n="ro.clearFilters">Clear filters</span>
+        </button>
+      </div>
+      <label class="emp-filter-field"><span data-i18n="rx.type">Document type</span><select class="form-control" id="rx-type"><option value="" data-i18n="common.all">All</option><option value="iqama" data-i18n="rx.docIqama">Iqama</option><option value="passport" data-i18n="rx.docPassport">Passport</option><option value="insurance" data-i18n="rx.docInsurance">Medical insurance</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="common.status">Status</span><select class="form-control" id="rx-band"><option value="" data-i18n="common.all">All</option><option value="expired" data-i18n="rx.bExpired">Expired</option><option value="critical" data-i18n="rx.bCritical">Critical</option><option value="urgent" data-i18n="rx.bUrgent">Urgent</option><option value="soon" data-i18n="rx.bSoon">Soon</option><option value="ok" data-i18n="rx.bValid">Valid</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="file.department">Department</span><select class="form-control" id="rx-dept"><option value="" data-i18n="common.all">All</option></select></label>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card emp-table-card">
+    <div class="card-body p-0 emp-table-wrap">
+      <div class="table-responsive">
+        <table class="table emp-table" data-page-length="10">
+          <thead>
+            <tr>
+              <th data-i18n="rx.employeeH">Employee</th>
+              <th data-i18n="rx.documentH">Document</th>
+              <th data-i18n="rx.expiryH">Expiry</th>
+              <th data-i18n="rx.statusH">Status</th>
+              <th class="emp-actions-col" data-i18n="common.actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="rx-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+
+</body>
+</html>

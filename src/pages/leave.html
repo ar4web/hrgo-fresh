@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="nav.leave">Leave | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="leave" data-breadcrumb="Home > Leave">
+
+<main class="main">
+<div class="page-wrapper" data-hr-leave>
+
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title" data-i18n="nav.leave">Leave</h1>
+        <div class="caption-muted page-meta" data-page-meta></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS — proportional 6-up grid -->
+  <div class="row emp-stats">
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21v-9"/><path d="M12 12C8 12 5 10 4 6c4 0 7 2 8 4 1-2 4-4 8-4-1 4-4 6-8 6z"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="lv.onLeaveToday">On leave today</div><div class="stat-value-row"><span class="stat-value" id="lv-stat-out">0</span></div><div class="stat-subtext" data-i18n="lv.onLeaveSub">Approved · spans today</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="lv.pendingReqs">Pending requests</div><div class="stat-value-row"><span class="stat-value" id="lv-stat-pending">0</span></div><div class="stat-subtext" data-i18n="lv.pendingSub">Awaiting approval</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="lv.approvedDays">Approved days</div><div class="stat-value-row"><span class="stat-value" id="lv-stat-approved">0</span></div><div class="stat-subtext" data-i18n="lv.thisYear">This year</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v6M16 4v6"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="lv.remainingBalance">Annual balance</div><div class="stat-value-row"><span class="stat-value" id="lv-stat-balance">0</span></div><div class="stat-subtext" data-i18n="lv.balSub">Remaining days · workforce</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="lv.sickDays">Sick days</div><div class="stat-value-row"><span class="stat-value" id="lv-stat-sick">0</span></div><div class="stat-subtext" data-i18n="lv.sickSub">Certified absences</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3a9 9 0 109 9" /><path d="M12 7v5l3 2M21 3v5h-5"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="lv.returnsWeek">Returning this week</div><div class="stat-value-row"><span class="stat-value" id="lv-stat-returns">0</span></div><div class="stat-subtext" data-i18n="lv.returnsSub">Back within 7 days</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS — 12-month trend + department balances -->
+  <div class="row col-2 stack-gap">
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="lv.monthlyTrend">Leave days · last 12 months</div></div>
+      <div class="card-body"><div class="chart-box chart-sm" id="chart-lv-trend"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="lv.balanceDept">Annual balance by department</div></div>
+      <div class="card-body"><div class="chart-box chart-sm" id="chart-lv-dept"></div></div>
+    </div>
+  </div>
+
+  <!-- TOOLBAR — count left, Filter right -->
+  <div class="card emp-toolbar">
+    <div class="card-body emp-toolbar-row">
+      <div class="emp-toolbar-left">
+        <span class="caption-muted" id="lv-count"></span>
+      </div>
+      <div class="emp-toolbar-right" role="toolbar" data-i18n-aria="ro.filters" aria-label="Leave filters">
+        <button class="btn btn-primary btn-sm" id="lv-filter-btn" type="button" aria-expanded="false" aria-controls="lv-filter-pop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M7 12h10M10 18h4"/></svg> <span data-i18n="ro.filter">Filter</span> <span class="badge badge-teal" id="lv-filter-count" hidden></span></button>
+      </div>
+    </div>
+    <div class="emp-filter-pop" id="lv-filter-pop" hidden>
+      <div class="emp-filter-head">
+        <span class="emp-filter-head-title" data-i18n="ro.filters">Filters</span>
+        <button class="emp-filter-clear" id="lv-filter-clear" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          <span data-i18n="ro.clearFilters">Clear filters</span>
+        </button>
+      </div>
+      <label class="emp-filter-field"><span data-i18n="file.nationality">Nationality</span><select class="form-control" id="lv-nat"><option value="" data-i18n="common.all">All</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="file.department">Department</span><select class="form-control" id="lv-dept"><option value="" data-i18n="common.all">All</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="file.site">Site</span><select class="form-control" id="lv-site"><option value="" data-i18n="common.all">All</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="file.profession">Profession</span><select class="form-control" id="lv-prof"><option value="" data-i18n="common.all">All</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="ro.experience">Experience</span><select class="form-control" id="lv-exp"><option value="" data-i18n="common.all">All</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="file.sponsor">Sponsor</span><select class="form-control" id="lv-sponsor"><option value="" data-i18n="common.all">All</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="ro.age">Age</span><select class="form-control" id="lv-age"><option value="" data-i18n="common.all">All</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="common.status">Status</span><select class="form-control" id="lv-status"><option value="" data-i18n="common.all">All</option></select></label>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card emp-table-card">
+    <div class="card-body p-0 emp-table-wrap">
+      <div class="table-responsive">
+        <table class="table emp-table" data-page-length="10">
+          <thead>
+            <tr>
+              <th data-sort="code" data-i18n="ro.empId">Employee ID</th>
+              <th data-sort="name" data-i18n="dash.employee">Employee</th>
+              <th data-i18n="file.department">Department</th>
+              <th data-i18n="lv.leaveType">Leave type</th>
+              <th data-i18n="lv.from">From</th>
+              <th data-i18n="lv.to">To</th>
+              <th data-i18n="lv.days">Days</th>
+              <th data-i18n="common.status">Status</th>
+              <th class="emp-actions-col" data-i18n="common.actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="lv-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+
+</body>
+</html>

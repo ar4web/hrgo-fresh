@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="nav.expenses">Expenses | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="expenses" data-breadcrumb="Home > Expenses">
+
+<main class="main">
+<div class="page-wrapper" data-hr-expenses>
+
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title" data-i18n="nav.expenses">Expenses</h1>
+        <div class="caption-muted page-meta" data-page-meta></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS — 4-up -->
+  <div class="row pr-stats">
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="xp.thisMonth">This month</div><div class="stat-value-row"><span class="stat-value" id="xp-stat-month">0</span></div><div class="stat-subtext" id="xp-stat-month-sub"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v5M12 16.5v.5"/><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="xp.pending">Pending approval</div><div class="stat-value-row"><span class="stat-value" id="xp-stat-pending">0</span></div><div class="stat-subtext" data-i18n="xp.pendingSub">Awaiting your sign-off</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="xp.approved">Approved · unpaid</div><div class="stat-value-row"><span class="stat-value" id="xp-stat-approved">0</span></div><div class="stat-subtext" data-i18n="xp.approvedSub">Ready for the payment run</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 6.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 1.6 2.6 5 3.2 5 1.6 5 3.8-2.2 3-5 3-5-1.1-5-3"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="xp.paidYear">Paid this year</div><div class="stat-value-row"><span class="stat-value" id="xp-stat-year">0</span></div><div class="stat-subtext" data-i18n="xp.paidYearSub">All categories, incl. VAT</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="row col-2 stack-gap">
+    <div class="card"><div class="card-header"><div class="card-title" data-i18n="xp.chartMonth">Spend by month</div></div><div class="card-body"><div class="chart-box chart-sm" id="chart-xp-month"></div></div></div>
+    <div class="card"><div class="card-header"><div class="card-title" data-i18n="xp.chartCat">Spend by category</div></div><div class="card-body"><div class="chart-box chart-sm" id="chart-xp-cat"></div></div></div>
+  </div>
+
+  <!-- TOOLBAR — count left, filters right -->
+  <div class="card emp-toolbar">
+    <div class="card-body emp-toolbar-row">
+      <div class="emp-toolbar-left">
+        <span class="caption-muted" id="xp-count"></span>
+      </div>
+      <div class="emp-toolbar-right" role="toolbar" data-i18n-aria="ro.filters" aria-label="Expense filters">
+        <button class="btn btn-ghost btn-sm" id="xp-filter-btn" type="button" aria-expanded="false" aria-controls="xp-filter-pop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M7 12h10M10 18h4"/></svg> <span data-i18n="ro.filter">Filter</span> <span class="badge badge-teal" id="xp-filter-count" hidden></span></button>
+      </div>
+    </div>
+    <div class="emp-filter-pop" id="xp-filter-pop" hidden>
+      <div class="emp-filter-head">
+        <span class="emp-filter-head-title" data-i18n="ro.filters">Filters</span>
+        <button class="emp-filter-clear" id="xp-filter-clear" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          <span data-i18n="ro.clearFilters">Clear filters</span>
+        </button>
+      </div>
+      <label class="emp-filter-field"><span data-i18n="xp.category">Category</span><select class="form-control" id="xp-f-cat"><option value="" data-i18n="common.all">All</option><option value="gov" data-i18n="xp.cat.gov">Government & permits</option><option value="medical" data-i18n="xp.cat.medical">Medical insurance</option><option value="camp" data-i18n="xp.cat.camp">Camp & housing</option><option value="office" data-i18n="xp.cat.office">Office rent</option><option value="utilities" data-i18n="xp.cat.utilities">Utilities</option><option value="fuel" data-i18n="xp.cat.fuel">Fuel & transport</option><option value="maintenance" data-i18n="xp.cat.maintenance">Maintenance</option><option value="ppe" data-i18n="xp.cat.ppe">PPE & equipment</option><option value="other" data-i18n="xp.cat.other">Other</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="common.status">Status</span><select class="form-control" id="xp-f-status"><option value="" data-i18n="common.all">All</option><option value="pending" data-i18n="xp.st.pending">Pending</option><option value="approved" data-i18n="xp.st.approved">Approved</option><option value="paid" data-i18n="xp.st.paid">Paid</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="xp.date">Date</span><select class="form-control" id="xp-f-month"><option value="" data-i18n="common.all">All</option></select></label>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card emp-table-card">
+    <div class="card-body p-0 emp-table-wrap">
+      <div class="table-responsive">
+        <table class="table emp-table" data-page-length="10">
+          <thead>
+            <tr>
+              <th data-i18n="xp.noH">Ref.</th>
+              <th data-i18n="xp.dateH">Date</th>
+              <th data-i18n="xp.categoryH">Category</th>
+              <th data-i18n="xp.amountH">Amount</th>
+              <th data-i18n="xp.statusH">Status</th>
+              <th data-i18n="xp.approvedByH">Approved by</th>
+              <th class="emp-actions-col" data-i18n="common.actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="xp-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+
+</body>
+</html>

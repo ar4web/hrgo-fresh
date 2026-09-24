@@ -1,0 +1,101 @@
+// ─────────────────────────────────────────────────────────────────────────
+// DARK ORANGE — component-level darkening that token swaps cannot reach.
+// The full palette lives in _tokens.scss under :root[data-theme='dark'];
+// this file only covers hardcoded tints, SVG data-URIs and print surfaces.
+// ─────────────────────────────────────────────────────────────────────────
+
+// Window-level webkit scrollbar (pseudo lives on <html> itself, not a child).
+:root[data-theme='dark']::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+}
+:root[data-theme='dark'] ::selection {
+  background: rgba(249, 115, 22, 0.32);
+}
+
+:root[data-theme='dark'] {
+  --text-muted: #8f99a8; // Better contrast for muted text
+  --text-disabled: #737c8b;
+}
+
+// Solid status buttons carry white ink in light mode; the brightened dark
+// palette hues need near-black ink for the same contrast.
+:root[data-theme='dark'] .btn-success { color: #06280f; border-color: var(--green); }
+:root[data-theme='dark'] .btn-success:hover { background: color-mix(in srgb, var(--green) 88%, #000); }
+:root[data-theme='dark'] .btn-warning { color: #2a1c00; border-color: var(--yellow); }
+:root[data-theme='dark'] .btn-warning:hover { background: color-mix(in srgb, var(--yellow) 88%, #000); }
+:root[data-theme='dark'] .btn-danger { color: #3d070c; border-color: var(--red); }
+:root[data-theme='dark'] .btn-danger:hover { background: color-mix(in srgb, var(--red) 88%, #000); }
+
+// Avatar-red/green double as semantic text colors — use the bright dark
+// status hues instead of their white-initial avatar variants.
+:root[data-theme='dark'] .text-danger { color: var(--red); }
+:root[data-theme='dark'] .text-success { color: var(--green); }
+:root[data-theme='dark'] .btn-outline.btn-danger {
+  color: var(--red);
+  border-color: var(--red);
+}
+
+// Ticker pills use fixed pastel fills in light mode — re-tint for charcoal.
+:root[data-theme='dark'] .ticker-band.red {
+  background: rgba(240, 97, 109, 0.14);
+  color: var(--danger-ink);
+  border-color: rgba(240, 97, 109, 0.28);
+}
+:root[data-theme='dark'] .ticker-band.green {
+  background: rgba(68, 196, 100, 0.14);
+  color: var(--ok-ink);
+  border-color: rgba(68, 196, 100, 0.28);
+}
+:root[data-theme='dark'] .ticker-band.dark {
+  background: #2a2f36;
+  color: #fff;
+}
+
+// DataTables sort chevrons are SVG data-URIs with a baked-in teal active
+// glyph — repaint the active glyph orange and the idle mate slate.
+:root[data-theme='dark'] table.dataTable thead th.dt-ordering-asc .dt-column-order {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath fill='%23f97316' d='M5 1L1 5h8z'/%3E%3Cpath fill='%235a636e' d='M5 13L1 9h8z'/%3E%3C/svg%3E");
+}
+:root[data-theme='dark'] table.dataTable thead th.dt-ordering-desc .dt-column-order {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 14'%3E%3Cpath fill='%235a636e' d='M5 1L1 5h8z'/%3E%3Cpath fill='%23f97316' d='M5 13L1 9h8z'/%3E%3C/svg%3E");
+}
+// White ink fails on the bright orange current-page button.
+:root[data-theme='dark'] .dt-paging .dt-paging-button.current {
+  color: var(--on-primary);
+}
+
+// Fixed bottom action rail needs a deeper shadow on charcoal.
+:root[data-theme='dark'] .emp-action-rail {
+  box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.45);
+}
+
+// Drop shadows vanish on charcoal; floating panels separate with a deep
+// shadow plus a faint hairline ring (not a visible outline).
+:root[data-theme='dark'] .emp-filter-pop {
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+// Printed paper is always white, even when the app is in dark mode —
+// flatten surfaces and inks to the light set inside print output.
+@media print {
+  :root[data-theme='dark'] {
+    color-scheme: light;
+    --body-bg: #ffffff;
+    --bg-surface: #ffffff;
+    --bg-surface-secondary: #f9fafb;
+    --card-bg: #ffffff;
+    --topbar-bg: #ffffff;
+    --border-color: #e6e7eb;
+    --border-color-light: #eff0f3;
+    --border-translucent: rgba(4, 32, 69, 0.08);
+    --text: #1e2633;
+    --text-secondary: #626d7d;
+    --text-muted: #7e8896;
+    --ok-ink: #1e7e34;
+    --warn-ink: #b45309;
+    --danger-ink: #a31228;
+    --shadow: none;
+    --shadow-card: none;
+    --card-shadow: none;
+  }
+}

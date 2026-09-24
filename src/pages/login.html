@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in | goHR</title>
+  <script type="module" src="/src/pages/login.js"></script>
+</head>
+<body data-page="login">
+  <main class="login-simple-wrap">
+    <div class="login-card card">
+      <div class="login-brand-center">
+        <span class="login-mark" aria-hidden="true">goHR</span>
+        <span class="login-sub" data-i18n="auth.subBrand">By Basmat Almaward</span>
+      </div>
+
+      <button class="link-btn login-create" id="show-signup" type="button" data-i18n="auth.createAccount">Create account</button>
+
+      <button class="btn btn-gmail" id="google-start" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path fill="#EA4335" d="M12 5.04c1.7 0 3.22.59 4.42 1.73l3.29-3.29C17.73 1.63 15.09.5 12 .5 7.43.5 3.5 3.12 1.66 6.93l3.85 2.99C6.43 7.05 8.98 5.04 12 5.04z"/><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45c-.28 1.48-1.12 2.73-2.39 3.57l3.72 2.89c2.17-2.01 3.72-4.97 3.72-8.65z"/><path fill="#FBBC05" d="M5.51 14.08a7.2 7.2 0 0 1 0-4.16L1.66 6.93a11.5 11.5 0 0 0 0 10.14l3.85-2.99z"/><path fill="#34A853" d="M12 23.5c3.09 0 5.69-1.02 7.58-2.77l-3.72-2.89c-1.03.69-2.35 1.1-3.86 1.1-3.02 0-5.57-2.01-6.49-4.86l-3.85 2.99C3.5 20.88 7.43 23.5 12 23.5z"/></svg>
+        <span data-i18n="auth.googleFast">Continue with Google</span>
+      </button>
+
+      <form id="login-form" class="login-form" autocomplete="username">
+        <input class="form-control" id="login-id" type="text" placeholder="Username" autocomplete="username" required>
+        <div class="pw-wrap">
+          <input class="form-control" id="login-pw" type="password" placeholder="Password" data-i18n-placeholder="auth.pw" autocomplete="current-password" required>
+          <button class="pw-toggle" id="pw-toggle" type="button" aria-label="Show password" data-i18n-aria="auth.showPw">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.5"/></svg>
+          </button>
+        </div>
+        <button class="btn btn-primary btn-lg" id="login-submit" type="submit" data-i18n="auth.signIn">Sign in</button>
+      </form>
+
+      <div class="login-foot">
+        <button class="link-btn" id="pw-forgot" type="button" data-i18n="auth.forgot">Forgot password?</button>
+        <div class="login-foot-actions">
+          <button class="topbar-icon-btn" id="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme" title="Switch to dark theme">
+            <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 14.2A8.6 8.6 0 0 1 9.8 3.4a8.6 8.6 0 1 0 10.8 10.8Z"/></svg>
+            <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+          </button>
+          <button class="btn btn-ghost btn-sm" id="auth-lang" type="button">العربية</button>
+        </div>
+      </div>
+
+      <div class="auth-dev" id="auth-demo">
+        <div class="auth-dev-label" data-i18n="auth.demoTitle">Demo accounts — instant sign in</div>
+        <div class="auth-dev-row">
+          <button class="btn btn-outline btn-sm" type="button" data-demo-role="admin" data-i18n="auth.demoAdmin">Admin</button>
+          <button class="btn btn-outline btn-sm" type="button" data-demo-role="manager" data-i18n="auth.demoManager">Manager</button>
+          <button class="btn btn-outline btn-sm" type="button" data-demo-role="employee" data-i18n="auth.demoEmployee">Employee</button>
+          <button class="btn btn-outline btn-sm" type="button" data-demo-role="vendor" data-i18n="auth.demoVendor">Vendor</button>
+        </div>
+      </div>
+
+      <div class="auth-msg" id="auth-msg" role="status" hidden></div>
+
+      <div class="login-bottom">
+        <span class="caption-muted">©goHR all rights and received 2026</span>
+        <span class="login-credit">ar4web — Built with Love</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

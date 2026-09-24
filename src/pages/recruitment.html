@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="nav.recruitment">Recruitment | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="recruitment" data-breadcrumb="Home > Recruitment">
+
+<main class="main">
+<div class="page-wrapper" data-hr-recruit>
+
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title" data-i18n="nav.recruitment">Recruitment</h1>
+        <div class="caption-muted page-meta" data-page-meta></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS — 4-up -->
+  <div class="row pr-stats">
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M8 8V6a2 2 0 012-2h4a2 2 0 012 2v2M3 13h18"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="rc.vacancies">Open vacancies</div><div class="stat-value-row"><span class="stat-value" id="rc-stat-vac">0</span></div><div class="stat-subtext" data-i18n="rc.vacanciesSub">Positions being filled</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 014-4h6a4 4 0 014 4v2"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="rc.active">Active candidates</div><div class="stat-value-row"><span class="stat-value" id="rc-stat-active">0</span></div><div class="stat-subtext" data-i18n="rc.activeSub">In the pipeline (not hired/rejected)</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="rc.offers">Offers out</div><div class="stat-value-row"><span class="stat-value" id="rc-stat-offers">0</span></div><div class="stat-subtext" data-i18n="rc.offersSub">Awaiting acceptance</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6L9 17l-5-5"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="rc.hired">Hired in 2026</div><div class="stat-value-row"><span class="stat-value" id="rc-stat-hired">0</span></div><div class="stat-subtext" data-i18n="rc.hiredSub">Employee files created</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VACANCIES STRIP -->
+  <div class="tpl-grid" id="rc-vac-grid"></div>
+
+  <!-- FILTER -->
+  <div class="card emp-toolbar">
+    <div class="card-body emp-toolbar-row">
+      <div class="emp-toolbar-left">
+        <select class="form-control" id="rc-vacancy" style="width:auto"></select>
+        <span class="caption-muted" id="rc-count"></span>
+      </div>
+      <div class="emp-toolbar-right"></div>
+    </div>
+  </div>
+
+  <!-- KANBAN -->
+  <div class="rc-board" id="rc-board"></div>
+
+</div>
+</main>
+
+</body>
+</html>

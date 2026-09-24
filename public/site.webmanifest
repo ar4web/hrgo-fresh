@@ -1,0 +1,24 @@
+{
+  "name": "goHR — HR Command Center",
+  "short_name": "goHR",
+  "description": "HR command center for KSA workforce operations: employees, compliance, analytics.",
+  "icons": [
+    { "src": "images/android-chrome-192x192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "images/android-chrome-512x512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "images/android-chrome-512x512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "maskable" }
+  ],
+  "theme_color": "#1ABB9C",
+  "background_color": "#f5f7fb",
+  "display": "standalone",
+  "orientation": "any",
+  "scope": "./",
+  "start_url": "src/pages/index.html",
+  "id": "gohr",
+  "lang": "en",
+  "categories": ["productivity", "business"],
+  "shortcuts": [
+    { "name": "Dashboard", "url": "src/pages/dashboard.html" },
+    { "name": "Analytics", "url": "src/pages/analytics.html" },
+    { "name": "Employees", "url": "src/pages/employees.html" }
+  ]
+}

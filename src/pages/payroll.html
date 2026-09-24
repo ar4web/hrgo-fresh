@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="nav.payroll">Payroll | goHR</title>
+<link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
+<script type="module" src="/src/main.js"></script>
+</head>
+<body data-shell="admin" data-page="payroll" data-breadcrumb="Home > Payroll">
+
+<main class="main">
+<div class="page-wrapper" data-hr-payroll>
+
+  <div class="page-header">
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title" data-i18n="nav.payroll">Payroll</h1>
+        <div class="caption-muted page-meta" data-page-meta></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERIOD BAR — 1 inch height, one-line compact -->
+  <div class="card pr-period-bar">
+    <div class="pr-period-row">
+      <div class="pr-period-left">
+        <label class="pr-period-label" for="pr-month"><span data-i18n="pay.period">Period</span></label>
+        <select class="form-control" id="pr-month"></select>
+      </div>
+      <div class="pr-period-right">
+        <span class="caption-muted" id="pr-closed-at" hidden></span>
+        <span class="badge badge-teal" id="pr-status" hidden></span>
+        <span class="pr-wps-deadline"><span data-i18n="pay.wpsDeadline">WPS deadline</span>: <span id="pr-wps-deadline"></span></span>
+        <button class="btn btn-outline btn-sm" id="pr-close" type="button" data-i18n="pay.closeRun">Close run</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS — 5-up -->
+  <div class="row pr-stats">
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="pay.headcount">Employees paid</div><div class="stat-value-row"><span class="stat-value" id="pr-stat-head">0</span></div><div class="stat-subtext" data-i18n="pay.headSub">Active on payroll</div></div>
+        <div class="stat-spark" id="spark-head"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="2" x2="12" y2="22"/><path d="M16 6H9.5a3.5 3.5 0 100 7h5a3.5 3.5 0 010 7H7"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="pay.grossTotal">Gross total</div><div class="stat-value-row"><span class="stat-value" id="pr-stat-gross">0</span></div><div class="stat-subtext" data-i18n="pay.grossSub">Before deductions</div></div>
+        <div class="stat-spark" id="spark-gross"></div>
+      </div>
+      <div class="card-body-flush"><div class="progress-thin"><div class="bar" id="bar-gross" style="width:0%;background:var(--green)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14" transform="rotate(45 12 12)"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="pay.deductions">Deductions</div><div class="stat-value-row"><span class="stat-value" id="pr-stat-ded">0</span></div><div class="stat-subtext" data-i18n="pay.dedSub">GOSI + unpaid leave</div></div>
+        <div class="stat-spark" id="spark-ded"></div>
+      </div>
+      <div class="card-body-flush"><div class="progress-thin"><div class="bar" id="bar-ded" style="width:0%;background:var(--yellow)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="pay.netTotal">Net payable</div><div class="stat-value-row"><span class="stat-value" id="pr-stat-net">0</span></div><div class="stat-subtext" data-i18n="pay.netSub">Transferred via WPS</div></div>
+        <div class="stat-spark" id="spark-net"></div>
+      </div>
+      <div class="card-body-flush"><div class="progress-thin"><div class="bar" id="bar-net" style="width:0%;background:var(--teal)"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="stat">
+        <div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg></div>
+        <div class="stat-content"><div class="stat-label" data-i18n="pay.gosiEmployer">Employer GOSI</div><div class="stat-value-row"><span class="stat-value" id="pr-stat-er">0</span></div><div class="stat-subtext" data-i18n="pay.gosiErSub">Employer cost</div></div>
+        <div class="stat-spark" id="spark-er"></div>
+      </div>
+      <div class="card-body-flush"><div class="progress-thin"><div class="bar" id="bar-er" style="width:0%;background:var(--purple)"></div></div></div>
+    </div>
+  </div>
+
+  <!-- CHART — cost by department -->
+  <div class="card">
+    <div class="card-header"><div class="card-title" data-i18n="pay.costByDept">Payroll cost by department</div></div>
+    <div class="card-body"><div class="chart-box chart-sm" id="chart-pr-dept"></div></div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="card emp-table-card">
+    <div class="card-body p-0 emp-table-wrap">
+      <div class="table-responsive">
+        <table class="table emp-table" data-page-length="10">
+          <thead>
+            <tr>
+              <th data-i18n="ro.empId">Employee ID</th>
+              <th data-i18n="dash.employee">Employee</th>
+              <th data-i18n="file.department">Department</th>
+              <th data-i18n="pay.wage">Monthly wage</th>
+              <th data-i18n="pay.ot">Overtime (h)</th>
+              <th data-i18n="pay.unpaidDays">Unpaid days</th>
+              <th data-i18n="pay.unpaidDed">Unpaid leave</th>
+              <th data-i18n="pay.gosiEmp">GOSI (employee)</th>
+              <th data-i18n="pay.net">Net pay</th>
+              <th data-i18n="emp.bank">Bank</th>
+              <th class="emp-actions-col" data-i18n="common.actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="pr-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM ACTION RAIL — All actions on the right -->
+  <div class="emp-action-rail" role="toolbar" data-i18n-aria="nav.payroll" aria-label="Payroll actions">
+    <span class="emp-rail-right">
+      <button class="btn btn-primary" id="pr-sif" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span data-i18n="pay.sifDownload">Download SIF</span>
+      </button>
+      <button class="btn btn-outline" id="pr-export" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+        <span data-i18n="common.export">Export</span>
+      </button>
+    </span>
+  </div>
+
+</div>
+</main>
+
+</body>
+</html>
