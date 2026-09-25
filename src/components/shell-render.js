@@ -58,10 +58,10 @@ export const NAV = [
         i18n: 'hr.navgroup.settings',
         href: 'settings.html',
         children: [
-          { header: 'Company Setup', key: 'set-brand-kits', href: 'settings.html#brand-kits', text: 'Brand Kits' },
+          { header: 'Company Setup', headerKey: 'nav.set.companySetup', key: 'set-brand-kits', href: 'settings.html#brand-kits', text: 'Brand Kits' },
           { key: 'set-documents', href: 'settings.html#documents', text: 'Documents' },
           { key: 'set-assets', href: 'settings.html#assets', text: 'Assets' },
-          { header: 'Personalization', key: 'set-app-settings', href: 'settings.html#app-settings', text: 'App Settings' },
+          { header: 'Personalization', headerKey: 'nav.set.personalization', key: 'set-app-settings', href: 'settings.html#app-settings', text: 'App Settings' },
           { key: 'set-theme-center', href: 'settings.html#theme-center', text: 'Theme Center' },
           { key: 'set-troubleshoot', href: 'settings.html#troubleshoot', text: 'Troubleshoot' },
           { key: 'set-about', href: 'settings.html#about', text: 'About' }
@@ -71,8 +71,19 @@ export const NAV = [
   }
 ];
 
-// Sidebar holds the only surviving navigation: brand → Dashboard plus the
-// Analytics and Employees links. No footer, no Settings entry.
+// Sidebar: brand → section groups (Email in group 4) plus the Settings
+// section parent with its anchor tree. No footer, no dropdowns.
+// NAV_KEY_ALIAS maps tree child keys (data-navkey) to i18n strings for
+// applyShellI18n, which otherwise looks up `nav.<key>`.
+export const NAV_KEY_ALIAS = {
+  'set-brand-kits': 'nav.set.brandKits',
+  'set-documents': 'nav.set.documents',
+  'set-assets': 'nav.set.assets',
+  'set-app-settings': 'nav.set.appSettings',
+  'set-theme-center': 'nav.set.themeCenter',
+  'set-troubleshoot': 'nav.set.troubleshoot',
+  'set-about': 'nav.set.about'
+};
 
 export const ICONS = {
   stethoscope:
@@ -132,7 +143,7 @@ function renderNavItem(item, activeKey) {
     let lastHeader = null;
     const pages = `<div class="nav-pages">${item.children
       .map(c => {
-        const head = c.header && c.header !== lastHeader ? `<div class="nav-subhead">${c.header}</div>` : '';
+        const head = c.header && c.header !== lastHeader ? `<div class="nav-subhead"${c.headerKey ? ` data-headerkey="${c.headerKey}"` : ''}>${c.header}</div>` : '';
         lastHeader = c.header || lastHeader;
         const a = c.key === activeKey;
         return `${head}<a class="nav-page${a ? ' active' : ''}" href="${c.href}"${c.key ? ` data-navkey="${c.key}"` : ''}${a ? ' aria-current="page"' : ''}><span class="nav-text">${c.text}</span>${c.badge ? `<span class="badge ${c.badge.cls}">${c.badge.text}</span>` : ''}</a>`;

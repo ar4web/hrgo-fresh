@@ -36,6 +36,38 @@ describe('shell NAV', () => {
   });
 });
 
+describe('sidebar i18n wiring', () => {
+  it('maps every settings child key to a nav.* string', async () => {
+    const { NAV, NAV_KEY_ALIAS } = await import('../src/components/shell-render.js');
+    const settings = NAV.flatMap(g => g.items).find(i => i.key === 'settings');
+    for (const c of settings.children) {
+      assert.ok(NAV_KEY_ALIAS[c.key], `missing alias for ${c.key}`);
+      assert.match(NAV_KEY_ALIAS[c.key], /^nav\./);
+    }
+  });
+
+  it('gives every sub-head a headerKey rendered as data-headerkey', async () => {
+    const { NAV, renderShell } = await import('../src/components/shell-render.js');
+    const settings = NAV.flatMap(g => g.items).find(i => i.key === 'settings');
+    let last = null;
+    for (const c of settings.children) {
+      if (c.header && c.header !== last) {
+        assert.ok(c.headerKey, `missing headerKey for ${c.header}`);
+      }
+      last = c.header || last;
+    }
+    const { sidebar } = renderShell({ activeKey: 'settings' });
+    assert.ok(sidebar.includes('data-headerkey="nav.set.companySetup"'));
+    assert.ok(sidebar.includes('data-headerkey="nav.set.personalization"'));
+  });
+
+  it('pins the settings parent href contract', async () => {
+    const { renderShell } = await import('../src/components/shell-render.js');
+    const { sidebar } = renderShell({ activeKey: 'settings' });
+    assert.ok(sidebar.includes('nav-parent active" href="settings.html"'));
+  });
+});
+
 describe('settings hash map', () => {
   it('maps all 7 sidebar hashes to real panels', async () => {
     const { HASH_PANEL } = await import('../src/components/settings-hash.js');

@@ -3,7 +3,7 @@
 // Shell (sidebar/topbar) is translated by href/label lookup — no build-time coupling.
 // Persisted per browser (hr:lang); default comes from Settings (language).
 
-import { NAV } from './shell-render.js';
+import { NAV, NAV_KEY_ALIAS } from './shell-render.js';
 import { SEED_COMPANY } from './hr-seed.js';
 import { companyTheme } from './hr-statutory.js';
 
@@ -3116,7 +3116,7 @@ export function applyShellI18n() {
       }
       // Section parent: flat link, label via its i18n key.
       if (item.i18n && item.children[0]) {
-        const lbl = g.querySelector(`a.nav-parent[href="${item.children[0].href}"] .nav-text`);
+        const lbl = g.querySelector(`a.nav-parent[href="${item.href || item.children[0].href}"] .nav-text`);
         if (lbl) {
           lbl.textContent = t(item.i18n);
         }
@@ -3125,10 +3125,17 @@ export function applyShellI18n() {
   });
   // Inline pages of the active section: translate whenever a nav.* key exists.
   document.querySelectorAll('.sidebar-nav .nav-page[data-navkey]').forEach(a => {
-    const k = `nav.${a.getAttribute('data-navkey')}`;
+    const nk = a.getAttribute('data-navkey');
+    const k = (NAV_KEY_ALIAS && NAV_KEY_ALIAS[nk]) || `nav.${nk}`;
     if (t(k) === k) {return;}
     const s = a.querySelector('.nav-text');
     if (s) {s.textContent = t(k);}
+  });
+  // Settings tree sub-heads.
+  document.querySelectorAll('.sidebar-nav .nav-subhead[data-headerkey]').forEach(s => {
+    const k = s.getAttribute('data-headerkey');
+    if (t(k) === k) {return;}
+    s.textContent = t(k);
   });
   // Footer Settings toggle (the window itself is built translated at open).
   const settingsToggle = document.querySelector('.sidebar .settings-toggle .nav-text');
