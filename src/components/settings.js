@@ -15,6 +15,7 @@ import { renderPageMeta } from './hr-locale.js';
 import { ICONS } from './shell-render.js';
 import { showModal } from './modal.js';
 import { loadPrefs, applyPrefs, savePrefs } from './customize.js';
+import { HASH_PANEL } from './settings-hash.js';
 
 let booted = false;
 
@@ -517,6 +518,17 @@ export function initSettings() {
     firstPanel.hidden = false;
   }
   root.querySelector('.set-rail-item.active')?.scrollIntoView?.({ block: 'nearest' });
+  // Deep links from the sidebar Settings tree (settings.html#<hash>):
+  // activate the matching rail panel on load and on hash change.
+  const activateHashPanel = () => {
+    const sec = HASH_PANEL[(location.hash || '').replace('#', '')];
+    if (!sec) {
+      return;
+    }
+    root.querySelector(`.set-rail-item[data-set-sec="${sec}"]`)?.click();
+  };
+  activateHashPanel();
+  window.addEventListener('hashchange', activateHashPanel);
 
   document.getElementById('set-app-name')?.addEventListener('change', saveAppName);
   document.getElementById('set-app-logo')?.addEventListener('change', e => {

@@ -35,3 +35,19 @@ describe('shell NAV', () => {
     assert.ok(sidebar.includes('nav-parent active'));
   });
 });
+
+describe('settings hash map', () => {
+  it('maps all 7 sidebar hashes to real panels', async () => {
+    const { HASH_PANEL } = await import('../src/components/settings-hash.js');
+    assert.deepEqual(HASH_PANEL, {
+      'brand-kits': 'app', 'documents': 'modules', 'assets': 'files',
+      'app-settings': 'apps', 'theme-center': 'theme',
+      'troubleshoot': 'diag', 'about': 'company'
+    });
+  });
+
+  it('ignores unknown hashes', async () => {
+    const { HASH_PANEL } = await import('../src/components/settings-hash.js');
+    assert.equal(HASH_PANEL['nope'], undefined);
+  });
+});
