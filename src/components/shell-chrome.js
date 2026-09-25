@@ -195,7 +195,6 @@ function updateChromeStrings() {
   }
   setLabel('lang-toggle', 'common.language');
   setLabel('topbar-user', 'nav.profile');
-  setLabel('sidebar-settings', 'nav.settings');
   const langBtn = document.getElementById('lang-toggle');
   if (langBtn) {
     langBtn.setAttribute('title', t('common.language'));
@@ -222,10 +221,6 @@ export function initShellChrome() {
     e.stopPropagation();
     openPanel(e.currentTarget, buildUserPanel(), { width: 280 });
   });
-  document.getElementById('sidebar-settings')?.addEventListener('click', () => {
-    window.location.href = 'settings.html';
-  });
-
   updateBadges();
   updateChromeStrings();
   window.addEventListener(LANG_EVENT, updateChromeStrings);

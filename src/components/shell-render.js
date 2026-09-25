@@ -45,7 +45,28 @@ export const NAV = [
   {
     items: [
       { key: 'documents', href: 'documents.html', text: 'Documents', icon: 'fileText' },
-      { key: 'files', href: 'files.html', text: 'Files', icon: 'folder' }
+      { key: 'files', href: 'files.html', text: 'Files', icon: 'folder' },
+      { key: 'email', href: 'email.html', text: 'Email', icon: 'globe' }
+    ]
+  },
+  {
+    items: [
+      {
+        key: 'settings',
+        text: 'Settings',
+        icon: 'settings',
+        i18n: 'hr.navgroup.settings',
+        href: 'settings.html',
+        children: [
+          { header: 'Company Setup', key: 'set-brand-kits', href: 'settings.html#brand-kits', text: 'Brand Kits' },
+          { key: 'set-documents', href: 'settings.html#documents', text: 'Documents' },
+          { key: 'set-assets', href: 'settings.html#assets', text: 'Assets' },
+          { header: 'Personalization', key: 'set-app-settings', href: 'settings.html#app-settings', text: 'App Settings' },
+          { key: 'set-theme-center', href: 'settings.html#theme-center', text: 'Theme Center' },
+          { key: 'set-troubleshoot', href: 'settings.html#troubleshoot', text: 'Troubleshoot' },
+          { key: 'set-about', href: 'settings.html#about', text: 'About' }
+        ]
+      }
     ]
   }
 ];
@@ -85,6 +106,8 @@ export const ICONS = {
     '<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>',
   award:
     '<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="5.5"/><path d="M8.5 12.5L7 21l5-2.5L17 21l-1.5-8.5"/></svg>',
+  globe:
+    '<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>',
   settings:
     '<svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>'
 };
@@ -100,18 +123,23 @@ function sectionKeys(item) {
 function renderNavItem(item, activeKey) {
   if (item.children) {
     const first = item.children[0];
+    const parentHref = item.href || first.href;
     const active = item.key === activeKey || sectionKeys(item).includes(activeKey);
     // Expand-all: every section lists its pages inline by default. The
     // rail toggle still collapses the whole sidebar; active highlighting
-    // marks the current section + page.
+    // marks the current section + page. Children may carry `header` for a
+    // non-link sub-head row (Settings tree).
+    let lastHeader = null;
     const pages = `<div class="nav-pages">${item.children
       .map(c => {
+        const head = c.header && c.header !== lastHeader ? `<div class="nav-subhead">${c.header}</div>` : '';
+        lastHeader = c.header || lastHeader;
         const a = c.key === activeKey;
-        return `<a class="nav-page${a ? ' active' : ''}" href="${c.href}"${c.key ? ` data-navkey="${c.key}"` : ''}${a ? ' aria-current="page"' : ''}><span class="nav-text">${c.text}</span>${c.badge ? `<span class="badge ${c.badge.cls}">${c.badge.text}</span>` : ''}</a>`;
+        return `${head}<a class="nav-page${a ? ' active' : ''}" href="${c.href}"${c.key ? ` data-navkey="${c.key}"` : ''}${a ? ' aria-current="page"' : ''}><span class="nav-text">${c.text}</span>${c.badge ? `<span class="badge ${c.badge.cls}">${c.badge.text}</span>` : ''}</a>`;
       })
       .join('')}</div>`;
     return `
-    <a class="nav-link nav-parent${active ? ' active' : ''}" href="${first.href}"${active ? ' aria-current="page"' : ''}>
+    <a class="nav-link nav-parent${active ? ' active' : ''}" href="${parentHref}"${active ? ' aria-current="page"' : ''}>
       <span class="nav-ico">${ICONS[item.icon] || ''}</span>
       <span class="nav-text">${item.text}</span>
     </a>${pages}
@@ -130,7 +158,9 @@ function renderNavItem(item, activeKey) {
 // Detail pages carry their own data-page key but highlight their section
 // parent in the sidebar (they share the parent's screen, not its key).
 const DETAIL_PARENT = {
-  'employee-file': 'employees'
+  'employee-file': 'employees',
+  'users': 'settings',
+  'go-dr': 'settings'
 };
 
 const TOGGLE_ICONS = `
@@ -140,7 +170,6 @@ const TOGGLE_ICONS = `
 
 function renderSidebar(activeKey) {
   const key = DETAIL_PARENT[activeKey] || activeKey;
-  const settingsActive = key === 'settings' || key === 'users' || key === 'go-dr';
   const groups = NAV.map(
     group => `
     <div class="nav-group">
@@ -164,12 +193,6 @@ function renderSidebar(activeKey) {
         <button class="sidebar-toggle" type="button" aria-label="Collapse sidebar" aria-controls="sidebar" aria-expanded="false" aria-pressed="false">${TOGGLE_ICONS}</button>
       </div>
       <nav class="sidebar-nav" aria-label="HR sections">${groups}</nav>
-      <div class="sidebar-footer">
-        <button class="nav-link settings-toggle${settingsActive ? ' active' : ''}" id="sidebar-settings" type="button" aria-haspopup="menu" aria-expanded="false"${settingsActive ? ' aria-current="page"' : ''}>
-          <span class="nav-ico">${ICONS.settings}</span>
-          <span class="nav-text">Settings</span>
-        </button>
-      </div>
     </aside>
   `;
 }

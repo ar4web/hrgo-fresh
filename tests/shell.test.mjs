@@ -1,0 +1,37 @@
+// Shell renderer — regression guard for the sidebar NAV (Email tab + Settings tree).
+// shell-render.js is pure (no DOM), so it runs under the Node built-in runner.
+import { describe, it } from 'node:test';
+import assert from 'node:assert/strict';
+import { NAV, renderShell } from '../src/components/shell-render.js';
+
+const HASHES = ['brand-kits', 'documents', 'assets', 'app-settings', 'theme-center', 'troubleshoot', 'about'];
+
+describe('shell NAV', () => {
+  it('contains the Email tab pointing at email.html', () => {
+    const flat = NAV.flatMap(g => g.items);
+    const email = flat.find(i => i.key === 'email');
+    assert.equal(email.href, 'email.html');
+  });
+
+  it('renders the Email link with the globe icon', () => {
+    const { sidebar } = renderShell({ activeKey: 'email' });
+    assert.ok(sidebar.includes('href="email.html"'));
+    assert.ok(sidebar.includes('email.html'));
+  });
+
+  it('renders all 7 settings anchors', () => {
+    const { sidebar } = renderShell({ activeKey: 'settings' });
+    for (const h of HASHES) assert.ok(sidebar.includes(`settings.html#${h}`), `missing #${h}`);
+  });
+
+  it('renders Company Setup / Personalization sub-heads', () => {
+    const { sidebar } = renderShell({ activeKey: 'settings' });
+    assert.ok(sidebar.includes('Company Setup'));
+    assert.ok(sidebar.includes('Personalization'));
+  });
+
+  it('marks the settings parent active on settings pages', () => {
+    const { sidebar } = renderShell({ activeKey: 'settings' });
+    assert.ok(sidebar.includes('nav-parent active'));
+  });
+});
