@@ -110,6 +110,10 @@
   overflow-y: auto;
   overflow-x: hidden; /* never a horizontal scrollbar — labels truncate */
   padding: 0; /* zero container padding — edge rhythm lives on .nav-link */
+  // Flex column so the Settings group can be pinned to the bottom-left
+  // corner with margin-top: auto (see .nav-group-settings below).
+  display: flex;
+  flex-direction: column;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,0.12) transparent;
@@ -870,4 +874,11 @@ body:has(.emp-action-rail) .page-wrapper { padding-bottom: 76px; }
     min-height: 24px;
     padding: 0 var(--sb-edge);
   }
+}
+
+// Settings sits in the absolute bottom-left corner of the rail; its sub-tree
+// renders above it, always expanded (no toggle — see shell-render.js).
+.nav-group-settings {
+  margin-top: auto;
+  border-top: 1px dashed var(--sidebar-border);
 }

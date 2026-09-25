@@ -47,6 +47,7 @@ export const NAV = [
     ]
   },
   {
+    groupClass: 'nav-group-settings',
     items: [
       {
         key: 'settings',
@@ -193,8 +194,7 @@ function renderSidebar(activeKey) {
   const key = DETAIL_PARENT[activeKey] || activeKey;
   const groups = NAV.map(
     group => `
-    <div class="nav-group">
-      ${''}
+    <div class="nav-group${group.groupClass ? ` ${group.groupClass}` : ''}">
       ${group.items.map(item => renderNavItem(item, key)).join('')}
     </div>
   `
