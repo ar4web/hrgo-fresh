@@ -35,18 +35,15 @@ export const NAV = [
   {
     items: [
       { key: 'payroll', href: 'payroll.html', text: 'Payroll', icon: 'wallet' },
-      { key: 'invoices', href: 'invoices.html', text: 'Invoicing', icon: 'receipt' },
-      { key: 'expenses', href: 'expenses.html', text: 'Expenses', icon: 'creditCard' },
-      { key: 'profitability', href: 'profitability.html', text: 'Profitability', icon: 'trendingUp' },
       { key: 'eosb', href: 'eosb.html', text: 'End of Service', icon: 'award' },
       { key: 'renewals', href: 'renewals.html', text: 'Renewals', icon: 'refresh' }
     ]
   },
   {
     items: [
-      { key: 'documents', href: 'documents.html', text: 'Documents', icon: 'fileText' },
-      { key: 'files', href: 'files.html', text: 'Files', icon: 'folder' },
-      { key: 'email', href: 'email.html', text: 'Email', icon: 'globe' }
+      { key: 'accounts', href: 'accounts.html', text: 'Accounts', icon: 'receipt' },
+      { key: 'email', href: 'email.html', text: 'Email', icon: 'globe' },
+      { key: 'files', href: 'files.html', text: 'Files', icon: 'folder' }
     ]
   },
   {
@@ -71,8 +68,10 @@ export const NAV = [
   }
 ];
 
-// Sidebar: brand → section groups (Email in group 4) plus the Settings
-// section parent with its anchor tree. No footer, no dropdowns.
+// Sidebar: brand → section groups (Accounts/Email/Files in group 4) plus
+// the Settings section parent with its anchor tree. No footer, no dropdowns.
+// Invoicing/Expenses/Profitability/Documents are reachable via Accounts deep
+// links, the command palette and direct URLs — not from the rail.
 // NAV_KEY_ALIAS maps tree child keys (data-navkey) to i18n strings for
 // applyShellI18n, which otherwise looks up `nav.<key>`.
 export const NAV_KEY_ALIAS = {

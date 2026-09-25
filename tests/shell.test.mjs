@@ -68,6 +68,35 @@ describe('sidebar i18n wiring', () => {
   });
 });
 
+describe('sidebar cleanup nav', () => {
+  const keys = () => NAV.flatMap(g => g.items).map(i => i.key);
+
+  it('drops the four redundant links', () => {
+    for (const gone of ['invoices', 'expenses', 'profitability', 'documents']) {
+      assert.ok(!keys().includes(gone), `${gone} should be gone`);
+    }
+  });
+
+  it('adds accounts and keeps the File Manager', () => {
+    assert.ok(keys().includes('accounts'));
+    assert.ok(keys().includes('files'));
+  });
+
+  it('keeps 13 top-level links, 7 tree children, 2 sub-heads', () => {
+    const items = NAV.flatMap(g => g.items);
+    assert.equal(items.length, 13);
+    const settings = items.find(i => i.key === 'settings');
+    assert.equal(settings.children.length, 7);
+    assert.equal(settings.children.filter(c => c.header).length, 2);
+  });
+
+  it('points accounts at accounts.html and highlights it', () => {
+    const acc = NAV.flatMap(g => g.items).find(i => i.key === 'accounts');
+    assert.equal(acc.href, 'accounts.html');
+    assert.ok(renderShell({ activeKey: 'accounts' }).sidebar.includes('href="accounts.html"'));
+  });
+});
+
 describe('settings hash map', () => {
   it('maps all 7 sidebar hashes to real panels', async () => {
     const { HASH_PANEL } = await import('../src/components/settings-hash.js');
