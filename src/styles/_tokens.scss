@@ -13,6 +13,10 @@
   --control-h: 34px;
   --btn-h: 32px;
   --topbar-h: 56px;
+  // Top of the page-heading row. The sidebar search bar's top edge and the
+  // page wrapper's top padding both derive from this, so the rail's search
+  // field and the page h1 sit on one horizontal line and cannot drift.
+  --heading-row-h: calc(var(--topbar-h) + var(--space-3));
 
   // ── Sidebar ─────────────────────────────────────────────────────────────
   --sidebar-bg: #16181c;
