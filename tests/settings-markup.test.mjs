@@ -51,9 +51,38 @@ describe('settings rail group placement', () => {
     assert.ok(parent > lastPage, 'the settings parent must render after its sub-tree');
   });
 
-  it('keeps the full 9-row settings tree', () => {
-    const settings = NAV.flatMap((g) => g.items).find((i) => i.key === 'settings');
-    const rows = settings.children.length + settings.children.filter((c) => c.header).length;
-    assert.equal(rows, 9, 'Company Setup, Brand Kits, Documents, Assets, Personalization, App Settings, Theme Center, Troubleshoot, About');
+  it('renders the settings tree in the exact specified order', () => {
+    const { sidebar } = renderShell({ activeKey: 'settings' });
+    const block = sidebar.slice(sidebar.indexOf('nav-group-settings'));
+    // Sub-head labels are bare text nodes; link labels sit in .nav-text.
+    const labels = [...block.matchAll(/>([^<>]+)</g)]
+      .map((m) => m[1].trim())
+      .filter((s) => s && !s.startsWith('/') && s !== 'sidebar');
+    assert.deepEqual(labels, [
+      'Company Setup',
+      'Brand Kits',
+      'Documents',
+      'Assets',
+      'Personalization',
+      'App Settings',
+      'Theme Center',
+      'Troubleshoot',
+      'About',
+      'Settings'
+    ]);
+  });
+
+  it('keeps each settings row pointing at its own hash target', () => {
+    const { sidebar } = renderShell({ activeKey: 'settings' });
+    const hrefs = [...sidebar.matchAll(/class="nav-page[^"]*"[^>]*href="([^"]+)"/g)].map((m) => m[1]);
+    assert.deepEqual(hrefs, [
+      'settings.html#brand-kits',
+      'settings.html#documents',
+      'settings.html#assets',
+      'settings.html#app-settings',
+      'settings.html#theme-center',
+      'settings.html#troubleshoot',
+      'settings.html#about'
+    ]);
   });
 });
