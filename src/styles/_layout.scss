@@ -805,3 +805,35 @@ body:has(.emp-action-rail) .page-wrapper { padding-bottom: 76px; }
 
   // Icon swap is handled by hidden toggle in shell.js — no rotation needed.
 }
+
+// ────────────────────────
+//  SHELL WIREFRAME: tree + splitters (additive)
+// ────────────────────────
+// Shell chrome stays flush to edges; page content keeps the space-3
+// rhythm and 34px control heights from the tokens.
+.sidebar, .topbar { padding: 0; }
+.nav-group + .nav-group { border-top: 1px dashed var(--sidebar-border); }
+.nav-subhead {
+  padding: 10px var(--sb-edge) 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sidebar-text-muted);
+  min-height: var(--control-h);
+  display: flex;
+  align-items: center;
+}
+.nav-pages .nav-page { position: relative; }
+.nav-pages .nav-page::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(var(--sb-edge) - 10px);
+  top: 0;
+  bottom: 0;
+  border-inline-start: 1px dashed var(--sidebar-border);
+}
+.nav-pages .nav-page:last-child::before {
+  bottom: auto;
+  height: 50%;
+}
