@@ -519,13 +519,18 @@ export function initSettings() {
   }
   root.querySelector('.set-rail-item.active')?.scrollIntoView?.({ block: 'nearest' });
   // Deep links from the sidebar Settings tree (settings.html#<hash>):
-  // activate the matching rail panel on load and on hash change.
+  // activate the matching rail panel on load and on hash change. Several
+  // rail items share one section key (the six "modules" entries), so a
+  // unique data-set-target picks the intended row and data-set-sec is only
+  // the fallback for a hash with no dedicated target.
   const activateHashPanel = () => {
-    const sec = HASH_PANEL[(location.hash || '').replace('#', '')];
-    if (!sec) {
+    const hash = (location.hash || '').replace('#', '');
+    if (!hash || !HASH_PANEL[hash]) {
       return;
     }
-    root.querySelector(`.set-rail-item[data-set-sec="${sec}"]`)?.click();
+    const target = root.querySelector(`.set-rail-item[data-set-target="${hash}"]`)
+      || root.querySelector(`.set-rail-item[data-set-sec="${HASH_PANEL[hash]}"]`);
+    target?.click();
   };
   activateHashPanel();
   window.addEventListener('hashchange', activateHashPanel);
