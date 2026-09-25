@@ -97,6 +97,34 @@ describe('sidebar cleanup nav', () => {
   });
 });
 
+describe('topbar icon family', () => {
+  const { topbar } = renderShell({ activeKey: 'dashboard' });
+  const svgs = topbar.match(/<svg[\s\S]*?<\/svg>/g) || [];
+
+  it('renders every topbar svg at 20px with the sidebar stroke', () => {
+    assert.ok(svgs.length >= 6, `expected at least 6 svgs, got ${svgs.length}`);
+    for (const s of svgs) {
+      assert.ok(s.includes('width="20"'), 'svg must carry width="20"');
+      assert.ok(s.includes('height="20"'), 'svg must carry height="20"');
+      assert.ok(s.includes('stroke-width="1.5"'), 'svg must carry stroke-width="1.5"');
+    }
+  });
+
+  it('keeps the theme toggle glyph classes', () => {
+    assert.ok(topbar.includes('theme-icon-moon'));
+    assert.ok(topbar.includes('theme-icon-sun'));
+  });
+
+  it('uses the shared ICONS map entries', async () => {
+    const { ICONS } = await import('../src/components/shell-render.js');
+    for (const key of ['bell', 'moon', 'sun', 'language', 'menu', 'grid']) {
+      assert.ok(ICONS[key], `ICONS.${key} missing`);
+    }
+    assert.ok(topbar.includes(ICONS.bell));
+    assert.ok(topbar.includes(ICONS.grid));
+  });
+});
+
 describe('settings hash map', () => {
   it('maps all 7 sidebar hashes to real panels', async () => {
     const { HASH_PANEL } = await import('../src/components/settings-hash.js');

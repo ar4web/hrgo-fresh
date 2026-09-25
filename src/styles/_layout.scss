@@ -370,8 +370,8 @@ a.topbar-icon-btn { text-decoration: none; }
 // Topbar glyphs use the sidebar icon family so both rails read as one pack:
 // nav-icon size, same SVG stroke, round caps.
 .topbar-icon-btn svg {
-  width: var(--nav-icon-size, 20px);
-  height: var(--nav-icon-size, 20px);
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
   opacity: 0.9;
   stroke-linecap: round;
