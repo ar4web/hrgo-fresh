@@ -488,6 +488,22 @@ export function initSettings() {
   root.querySelector('[data-open-customize]')?.addEventListener('click', () => {
     import('./customize.js').then(m => m.openCustomizeSettings()).catch(() => {});
   });
+  // Workspace view: choosing a section collapses the in-page rail so the
+  // panel takes the full width right of the global sidebar. The restore
+  // control in the page header brings the rail back. Desktop only — under
+  // 900px the rail already stacks above the panel (see _hr.scss).
+  const COLLAPSE = 'set-rail-collapsed';
+  const layout = root.querySelector('.set-layout');
+  const restoreBtn = root.querySelector('#set-rail-restore');
+  const setCollapsed = (on) => {
+    if (layout) {
+      layout.classList.toggle(COLLAPSE, on);
+    }
+    if (restoreBtn) {
+      restoreBtn.hidden = !on;
+    }
+  };
+  restoreBtn?.addEventListener('click', () => setCollapsed(false));
   root.querySelectorAll('.set-rail-item').forEach(b => {
     b.addEventListener('click', () => {
       root.querySelectorAll('.set-rail-item').forEach(x => {
@@ -505,6 +521,9 @@ export function initSettings() {
       root.querySelectorAll('[data-set-panel]').forEach(p => {
         p.hidden = p.dataset.setPanel !== b.dataset.setSec;
       });
+      if (window.matchMedia('(min-width: 901px)').matches) {
+        setCollapsed(true);
+      }
     });
   });
   // Initialize: show the first panel and mark first rail item active

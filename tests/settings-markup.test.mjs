@@ -32,6 +32,36 @@ describe('settings.html element ids', () => {
   });
 });
 
+describe('settings panel workspace toggle', () => {
+  const js = readFileSync(new URL('../src/components/settings.js', import.meta.url), 'utf8');
+  const css = readFileSync(new URL('../src/styles/_hr.scss', import.meta.url), 'utf8');
+
+  it('renders a restore control in the page header, outside the rail', () => {
+    assert.ok(html.includes('id="set-rail-restore"'), 'missing restore control');
+    // It must live in the header (before .set-layout) so hiding the rail
+    // never hides the way back.
+    const restoreAt = html.indexOf('id="set-rail-restore"');
+    const railAt = html.indexOf('class="set-rail"');
+    assert.ok(restoreAt > -1 && restoreAt < railAt, 'restore control must precede the rail');
+  });
+
+  it('starts with the restore control hidden', () => {
+    assert.match(html, /id="set-rail-restore"[^>]*hidden/);
+  });
+
+  it('uses one collapse class name in both the script and the stylesheet', () => {
+    // No DOM in the test runner: a class added in JS but missing from the
+    // stylesheet would be a silent no-op, so pin the shared name.
+    const CLS = 'set-rail-collapsed';
+    assert.ok(js.includes(`'${CLS}'`), `settings.js must toggle ${CLS}`);
+    assert.ok(css.includes(`.${CLS}`), `_hr.scss must style .${CLS}`);
+  });
+
+  it('keeps the active-state highlight logic intact', () => {
+    assert.ok(js.includes("classList.toggle('active'"), 'rail active highlight must survive');
+  });
+});
+
 describe('settings rail group placement', () => {
   it('is the last nav group', () => {
     const last = NAV[NAV.length - 1];

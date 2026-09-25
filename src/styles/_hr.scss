@@ -3329,6 +3329,13 @@ details.zone .row {
 @media (max-width: 900px) {
   .set-layout { grid-template-columns: 1fr; }
 }
+// Workspace view: choosing a section collapses the in-page rail so the
+// panel spans the full width right of the global sidebar. Toggled by
+// settings.js; under 900px the rail already stacks, so it stays put.
+@media (min-width: 901px) {
+  .set-layout.set-rail-collapsed { grid-template-columns: minmax(0, 1fr); }
+  .set-layout.set-rail-collapsed > .set-rail { display: none; }
+}
 .set-rail {
   display: flex;
   flex-direction: column;
