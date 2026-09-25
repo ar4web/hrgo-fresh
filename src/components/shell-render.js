@@ -161,10 +161,10 @@ function renderNavItem(item, activeKey) {
       })
       .join('')}</div>`;
     return `
-    <a class="nav-link nav-parent${active ? ' active' : ''}" href="${parentHref}"${active ? ' aria-current="page"' : ''}>
+    ${pages}<a class="nav-link nav-parent${active ? ' active' : ''}" href="${parentHref}"${active ? ' aria-current="page"' : ''}>
       <span class="nav-ico">${ICONS[item.icon] || ''}</span>
       <span class="nav-text">${item.text}</span>
-    </a>${pages}
+    </a>
   `;
   }
   const a = item.key === activeKey;

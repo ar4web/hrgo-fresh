@@ -42,4 +42,18 @@ describe('settings rail group placement', () => {
     const { sidebar } = renderShell({ activeKey: 'settings' });
     assert.ok(sidebar.includes('nav-group-settings'), 'settings group needs a hook class to pin');
   });
+
+  it('puts the settings parent row last so its icon sits in the corner', () => {
+    const { sidebar } = renderShell({ activeKey: 'settings' });
+    const parent = sidebar.lastIndexOf('nav-parent');
+    const lastPage = sidebar.lastIndexOf('nav-page');
+    assert.ok(parent > 0 && lastPage > 0, 'expected both a parent row and tree rows');
+    assert.ok(parent > lastPage, 'the settings parent must render after its sub-tree');
+  });
+
+  it('keeps the full 9-row settings tree', () => {
+    const settings = NAV.flatMap((g) => g.items).find((i) => i.key === 'settings');
+    const rows = settings.children.length + settings.children.filter((c) => c.header).length;
+    assert.equal(rows, 9, 'Company Setup, Brand Kits, Documents, Assets, Personalization, App Settings, Theme Center, Troubleshoot, About');
+  });
 });
