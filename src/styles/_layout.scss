@@ -839,3 +839,28 @@ body:has(.emp-action-rail) .page-wrapper { padding-bottom: 76px; }
   bottom: auto;
   height: 50%;
 }
+
+// ────────────────────────
+//  SIDEBAR DENSITY: 30px nav rows
+// ────────────────────────
+// Owner-approved override of the 34px control token, which still governs
+// inputs/buttons inside the rail (.sidebar-search, .sidebar-toggle). Nav
+// rows only, so the whole tree — Settings, Troubleshoot and About — fits
+// one screen without a scrollbar on viewports >= 768px tall.
+.nav-link {
+  min-height: 30px;
+  padding: 0 var(--sb-edge);
+  line-height: 1.35;
+  margin-bottom: 0;
+}
+.nav-link.active::before { top: 6px; bottom: 6px; }
+.nav-page {
+  min-height: 30px;
+  padding: 0 var(--sb-edge);
+  line-height: 1.35;
+}
+.nav-page + .nav-page { margin-top: 0; }
+.nav-subhead {
+  min-height: 24px;
+  padding: 0 var(--sb-edge);
+}
