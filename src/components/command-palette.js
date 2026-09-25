@@ -41,6 +41,22 @@ function buildItems() {
       });
     }
   });
+  // Pages folded into the Accounts module — no longer rail entries, but
+  // still reachable here (and from the Accounts deep-link row).
+  for (const p of [
+    { href: 'documents.html', key: 'nav.documents' },
+    { href: 'invoices.html', key: 'nav.invoices' },
+    { href: 'expenses.html', key: 'nav.expenses' },
+    { href: 'profitability.html', key: 'nav.profitability' }
+  ]) {
+    out.push({
+      kind: 'page',
+      label: t(p.key),
+      section: t('nav.accounts'),
+      href: p.href,
+      keywords: `${t(p.key)} ${p.href.replace('.html', '')} accounts`.toLowerCase()
+    });
+  }
   // Settings-hosted pages (not in the sidebar NAV).
   out.push({
     kind: 'page',

@@ -120,8 +120,12 @@ describe('topbar icon family', () => {
     for (const key of ['bell', 'moon', 'sun', 'language', 'menu', 'grid']) {
       assert.ok(ICONS[key], `ICONS.${key} missing`);
     }
-    assert.ok(topbar.includes(ICONS.bell));
-    assert.ok(topbar.includes(ICONS.grid));
+    // Every topbar glyph must be byte-identical to a shared ICONS entry —
+    // this is what fails if someone re-inlines a hand-rolled SVG.
+    const family = Object.values(ICONS);
+    for (const s of svgs) {
+      assert.ok(family.includes(s), 'topbar svg is not a shared ICONS entry');
+    }
   });
 });
 
