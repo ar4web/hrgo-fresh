@@ -135,6 +135,7 @@ function buildUserPanel() {
   // to the login page.
   const s = getSession();
   const u = s && s.user;
+  const demo = s && s.demoMode;
   const ar = document.documentElement.getAttribute('dir') === 'rtl';
   const name = u ? ((ar && u.nameAr) ? u.nameAr : u.nameEn) : 'HR Admin';
   const initials = String(name).split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
@@ -146,9 +147,10 @@ function buildUserPanel() {
       <span class="user-panel-id">
         <strong>${esc(name)}</strong>
         <span>${esc(u ? (u.email || '') : 'admin@gohr.app')}</span>
-        <span class="user-panel-role">${esc(u ? u.role : t('profile.role'))}</span>
+        <span class="user-panel-role">${esc(u ? u.role : t('profile.role'))}${demo ? ' · ' + esc(t('common.demoMode')) : ''}</span>
       </span>
     </div>
+    ${demo ? `<div class="user-panel-demo-badge">${esc(t('act.demoModeActive'))}</div>` : ''}
     <button class="menu-item" type="button" data-pref>${esc(t('common.preferences'))}</button>
     <a class="menu-item" href="employees.html">${esc(t('common.employeeDirectory'))}</a>
     ${u && u.role === 'admin' ? `<a class="menu-item" href="users.html">${esc(t('nav.users'))}</a>` : ''}

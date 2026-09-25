@@ -25,7 +25,7 @@ import { initI18n, t } from './components/i18n.js';
 import { initCustomize } from './components/customize.js';
 import { initTheme } from './components/theme.js';
 import { initShellChrome } from './components/shell-chrome.js';
-import { initSession } from './components/session.js';
+import { initSession, isDemoMode } from './components/session.js';
 import { installGoDrMonitor } from './components/godr/monitor.js';
 
 mountShell();
@@ -36,6 +36,10 @@ initI18n();
 // it has no data-shell and boots its own flow via login.js).
 if (document.body.dataset.shell === 'admin') {
   initSession();
+  // Mark body with demo-mode class for CSS targeting
+  if (isDemoMode()) {
+    document.body.classList.add('demo-mode');
+  }
 }
 initCustomize();
 // Go Dr. — passive monitoring instrumentation on every page (JS errors,
@@ -209,6 +213,16 @@ document.addEventListener('submit', (e) => {
   if (!(form instanceof HTMLFormElement)) {return;}
   // Native :invalid forms still get the browser's validation UI before we
   // see the submit event, so reaching here means the form is already valid.
+  
+  // Block form submissions in demo mode
+  if (isDemoMode()) {
+    e.preventDefault();
+    import('./components/toast.js').then(({ showToast }) => 
+      showToast(t('act.demoDisabled') || 'This action is disabled in demo mode', { variant: 'warning' })
+    );
+    return;
+  }
+  
   e.preventDefault();
   const submitBtn = form.querySelector('button[type="submit"], input[type="submit"]');
   const label = (submitBtn?.textContent || submitBtn?.value || t('act.savedShort')).trim();

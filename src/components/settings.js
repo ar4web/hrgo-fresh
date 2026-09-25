@@ -506,6 +506,17 @@ export function initSettings() {
       });
     });
   });
+  // Initialize: show the first panel and mark first rail item active
+  const firstItem = root.querySelector('.set-rail-item');
+  const firstPanel = root.querySelector('[data-set-panel]');
+  if (firstItem) {
+    firstItem.classList.add('active');
+    firstItem.setAttribute('aria-selected', 'true');
+  }
+  if (firstPanel) {
+    firstPanel.hidden = false;
+  }
+  root.querySelector('.set-rail-item.active')?.scrollIntoView?.({ block: 'nearest' });
 
   document.getElementById('set-app-name')?.addEventListener('change', saveAppName);
   document.getElementById('set-app-logo')?.addEventListener('change', e => {

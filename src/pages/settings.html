@@ -23,19 +23,29 @@
 
   <div class="set-layout">
     <nav class="set-rail" role="tablist" aria-label="Settings sections">
+    <div class="set-rail-grp" data-grp="app">
+      <button class="set-rail-group" type="button" data-grp-toggle="app" aria-expanded="true">
+        <span class="set-rail-gicon" data-rail-icon="box"></span>
+        <span class="set-rail-glabel" data-i18n="set.groupApp">App Identity</span>
+        <svg class="set-rail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="set-rail-items">
+        <button class="set-rail-item" data-set-sec="app" type="button"><span data-i18n="set.appIdentity">App Identity</span></button>
+      </div>
+    </div>
     <div class="set-rail-grp" data-grp="org">
       <button class="set-rail-group" type="button" data-grp-toggle="org" aria-expanded="true">
         <span class="set-rail-gicon" data-rail-icon="users"></span>
         <span class="set-rail-glabel" data-i18n="set.groupOrg">Organization</span>
         <svg class="set-rail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="set-rail-body">
-        <button class="set-rail-item" data-tab="company" type="button"><span data-i18n="set.company">Company</span></button>
-        <button class="set-rail-item" data-tab="nitaqat" type="button"><span data-i18n="set.nitaqat">Nitaqat</span></button>
-        <button class="set-rail-item" data-tab="licence" type="button"><span data-i18n="set.licence">Licence</span></button>
-        <button class="set-rail-item" data-tab="security" type="button"><span data-i18n="set.security">Security</span></button>
-        <button class="set-rail-item" data-tab="appearance" type="button"><span data-i18n="set.appearance">Appearance</span></button>
-        <button class="set-rail-item" data-tab="language" type="button"><span data-i18n="set.language">Language</span></button>
+      <div class="set-rail-items">
+        <button class="set-rail-item" data-set-sec="company" type="button"><span data-i18n="set.company">Company</span></button>
+        <button class="set-rail-item" data-set-sec="nitaqat" type="button"><span data-i18n="set.nitaqat">Nitaqat</span></button>
+        <button class="set-rail-item" data-set-sec="licence" type="button"><span data-i18n="set.licence">Licence</span></button>
+        <button class="set-rail-item" data-set-sec="security" type="button"><span data-i18n="set.security">Security</span></button>
+        <button class="set-rail-item" data-set-sec="appearance" type="button"><span data-i18n="set.appearance">Appearance</span></button>
+        <button class="set-rail-item" data-set-sec="language" type="button"><span data-i18n="set.language">Language</span></button>
       </div>
     </div>
     <div class="set-rail-grp" data-grp="prefs">
@@ -44,15 +54,17 @@
         <span class="set-rail-glabel" data-i18n="set.groupPrefs">Preferences</span>
         <svg class="set-rail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="set-rail-body">
-        <button class="set-rail-item" data-tab="notifications" type="button"><span data-i18n="set.notifications">Notifications</span></button>
-        <button class="set-rail-item" data-tab="attendance" type="button"><span data-i18n="set.attendance">Attendance</span></button>
-        <button class="set-rail-item" data-tab="leave" type="button"><span data-i18n="set.leave">Leave</span></button>
-        <button class="set-rail-item" data-tab="payroll" type="button"><span data-i18n="set.payroll">Payroll</span></button>
-        <button class="set-rail-item" data-tab="invoicing" type="button"><span data-i18n="set.invoicing">Invoicing</span></button>
-        <button class="set-rail-item" data-tab="expenses" type="button"><span data-i18n="set.expenses">Expenses</span></button>
-        <button class="set-rail-item" data-tab="files" type="button"><span data-i18n="set.files">Files</span></button>
-        <button class="set-rail-item" data-tab="apps" type="button"><span data-i18n="set.apps">Apps</span></button>
+      <div class="set-rail-items">
+        <button class="set-rail-item" data-set-sec="notifications" type="button"><span data-i18n="set.notifications">Notifications</span></button>
+        <button class="set-rail-item" data-set-sec="attendance" type="button"><span data-i18n="set.attendance">Attendance</span></button>
+        <button class="set-rail-item" data-set-sec="leave" type="button"><span data-i18n="set.leave">Leave</span></button>
+        <button class="set-rail-item" data-set-sec="payroll" type="button"><span data-i18n="set.payroll">Payroll</span></button>
+        <button class="set-rail-item" data-set-sec="invoicing" type="button"><span data-i18n="set.invoicing">Invoicing</span></button>
+        <button class="set-rail-item" data-set-sec="expenses" type="button"><span data-i18n="set.expenses">Expenses</span></button>
+        <button class="set-rail-item" data-set-sec="files" type="button"><span data-i18n="set.files">Files</span></button>
+        <button class="set-rail-item" data-set-sec="apps" type="button"><span data-i18n="set.apps">Apps</span></button>
+        <button class="set-rail-item" data-set-sec="export" type="button"><span data-i18n="set.exportImport">Export / Import</span></button>
+        <button class="set-rail-item" data-set-sec="theme" type="button"><span data-i18n="set.themeStudio">Theme Studio</span></button>
       </div>
     </div>
     <div class="set-rail-grp" data-grp="modules">
@@ -61,13 +73,13 @@
         <span class="set-rail-glabel" data-i18n="set.groupModules">Modules</span>
         <svg class="set-rail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="set-rail-body">
-        <button class="set-rail-item" data-tab="recruit" type="button"><span data-i18n="set.recruit">Recruitment</span></button>
-        <button class="set-rail-item" data-tab="documents" type="button"><span data-i18n="set.docs">Documents</span></button>
-        <button class="set-rail-item" data-tab="eosb" type="button"><span data-i18n="set.eosb">End of Service</span></button>
-        <button class="set-rail-item" data-tab="renewals" type="button"><span data-i18n="set.renewals">Renewals</span></button>
-        <button class="set-rail-item" data-tab="profitability" type="button"><span data-i18n="set.profitability">Profitability</span></button>
-        <button class="set-rail-item" data-tab="analytics" type="button"><span data-i18n="set.analytics">Analytics</span></button>
+      <div class="set-rail-items">
+        <button class="set-rail-item" data-set-sec="modules" type="button"><span data-i18n="set.recruit">Recruitment</span></button>
+        <button class="set-rail-item" data-set-sec="modules" type="button"><span data-i18n="set.docs">Documents</span></button>
+        <button class="set-rail-item" data-set-sec="modules" type="button"><span data-i18n="set.eosb">End of Service</span></button>
+        <button class="set-rail-item" data-set-sec="modules" type="button"><span data-i18n="set.renewals">Renewals</span></button>
+        <button class="set-rail-item" data-set-sec="modules" type="button"><span data-i18n="set.profitability">Profitability</span></button>
+        <button class="set-rail-item" data-set-sec="modules" type="button"><span data-i18n="set.analytics">Analytics</span></button>
       </div>
     </div>
     <div class="set-rail-grp" data-grp="diag">
@@ -76,21 +88,42 @@
         <span class="set-rail-glabel" data-i18n="set.groupDiag">Diagnostics</span>
         <svg class="set-rail-chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
       </button>
-      <div class="set-rail-body">
-        <button class="set-rail-item" data-tab="godr" type="button"><span data-i18n="godr.title">Go Dr.</span></button>
+      <div class="set-rail-items">
+        <button class="set-rail-item" data-set-sec="godr" type="button"><span data-i18n="godr.title">Go Dr.</span></button>
       </div>
     </div>
     </nav>
     <div class="set-main">
-    <div class="set-tabpanel" data-tab="company" data-i18n="set.tabCompany" aria-hidden="false">
+    <div class="set-tabpanel" data-set-panel="app" data-i18n="set.tabApp" hidden>
+      <div class="card">
+        <div class="card-header"><div class="card-title" data-i18n="set.appIdentity">App Identity</div></div>
+        <div class="card-body">
+          <div class="cz-logo-row">
+            <img class="cz-logo-preview" id="set-app-logo-preview" alt="">
+            <div class="cz-logo-actions">
+              <button class="btn btn-outline btn-sm" type="button" onclick="document.getElementById('set-app-logo').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 15V3m0 12L8 11m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg> <span data-i18n="cz.uploadLogo">Upload logo</span></button>
+              <button class="btn btn-outline btn-sm" type="button" id="set-app-logo-reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg> <span data-i18n="cz.removeLogo">Remove logo</span></button>
+              <input type="file" id="set-app-logo" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden>
+            </div>
+            <p class="cz-field-hint" data-i18n="cz.logoHint">PNG, JPG, SVG or WebP · ≤ 200 KB</p>
+          </div>
+          <label class="cz-field"><span data-i18n="set.appName">Application name</span><input type="text" class="form-control" id="set-app-name" maxlength="60"></label>
+        </div>
+      </div>
+    </div>
+    <div class="set-tabpanel" data-set-panel="company" data-i18n="set.tabCompany" hidden>
       <div class="card">
         <div class="card-header"><div class="card-title" data-i18n="st.title">Company</div></div>
         <div class="card-body">
+          <label class="cz-field"><span data-i18n="set.selectCompany">Select company</span><select class="form-control" id="set-company"></select></label>
+          <div class="cz-actions">
+            <button class="btn btn-outline" id="set-company-add" type="button" data-i18n="set.addCompany">Add company</button>
+          </div>
           <div class="cz-logo-row">
             <img class="cz-logo-preview" id="set-co-logo-preview" alt="">
             <div class="cz-logo-actions">
               <button class="btn btn-outline btn-sm" type="button" onclick="document.getElementById('set-co-logo').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 15V3m0 12L8 11m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg> <span data-i18n="cz.uploadLogo">Upload logo</span></button>
-              <button class="btn btn-outline btn-sm" type="button" onclick="updateCompany((c) => { c.logo = ''; }); paintLogoPreview(); refreshBrandIcon(co);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg> <span data-i18n="cz.removeLogo">Remove logo</span></button>
+              <button class="btn btn-outline btn-sm" type="button" id="set-co-logo-reset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 6L6 18M6 6l12 12"/></svg> <span data-i18n="cz.removeLogo">Remove logo</span></button>
               <input type="file" id="set-co-logo" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden>
             </div>
             <p class="cz-field-hint" data-i18n="cz.logoHint">PNG, JPG, SVG or WebP · ≤ 200 KB</p>
@@ -99,12 +132,9 @@
               <label class="cz-field"><span data-i18n="st.coNameAr">Name (AR)</span><input type="text" class="form-control" id="set-name-ar" maxlength="60"></label>
               <label class="cz-field"><span data-i18n="st.coCrNo">CR No.</span><input type="text" class="form-control" id="set-cr" maxlength="30"></label>
               <label class="cz-field"><span data-i18n="st.coTaxNo">VAT No.</span><input type="text" class="form-control" id="set-vat" maxlength="20"></label>
-              <label class="cz-field"><span data-i18n="st.coAddrEn">Address (EN)</span><input type="text" class="form-control" id="set-addr-en" maxlength="120"></label>
-              <label class="cz-field"><span data-i18n="st.coAddrAr">Address (AR)</span><input type="text" class="form-control" id="set-addr-ar" maxlength="120"></label>
-              <label class="cz-field"><span data-i18n="st.coCity">City</span><input type="text" class="form-control" id="set-city" maxlength="40"></label>
+              <label class="cz-field"><span data-i18n="st.coAddress">Address</span><input type="text" class="form-control" id="set-address" maxlength="120"></label>
               <label class="cz-field"><span data-i18n="st.coPhone">Phone</span><input type="text" class="form-control" id="set-phone" maxlength="20"></label>
               <label class="cz-field"><span data-i18n="st.coEmail">Email</span><input type="email" class="form-control" id="set-email" maxlength="80"></label>
-              <label class="cz-field"><span data-i18n="st.coWebsite">Website</span><input type="text" class="form-control" id="set-website" maxlength="80"></label>
             </div>
             <div class="cz-grid-2">
               <label class="cz-field"><span data-i18n="st.salutation">Salutation</span><select class="form-control" id="set-salutation"></select></label>
@@ -113,47 +143,33 @@
               <label class="cz-field"><span data-i18n="st.timezone">Timezone</span><input type="text" class="form-control" id="set-tz" maxlength="40"></label>
             </div>
             <div class="cz-actions">
-              <button class="btn btn-primary" id="set-co-save" type="button" data-i18n="cz.save">Save company</button>
+              <button class="btn btn-primary" id="set-general-save" type="button" data-i18n="cz.save">Save company</button>
             </div>
+            <div id="set-general-err" class="caption-muted" style="color:var(--color-error);display:none"></div>
           </div>
         </div>
-        <div class="set-tabpanel" data-tab="nitaqat" data-i18n="set.tabNitaqat" hidden>
+        <div class="set-tabpanel" data-set-panel="nitaqat" data-i18n="set.tabNitaqat" hidden>
           <div class="card">
             <div class="card-header"><div class="card-title" data-i18n="set.nitaqatTitle">Nitaqat</div></div>
             <div class="card-body">
-              <label class="cz-field"><span data-i18n="set.activity">Activity</span><input type="text" class="form-control" id="set-activity" maxlength="80" placeholder="e.g. Construction — Riyadh"></label>
-              <label class="cz-field"><span data-i18n="set.sizeClass">Size class</span><input type="text" class="form-control" id="set-size" maxlength="40" placeholder="e.g. Medium (50–499)"></label>
-              <label class="cz-field"><span data-i18n="set.targetPct">Target %</span><input type="number" class="form-control" id="set-target" min="0" max="100" step="0.1"></label>
-              <label class="cz-field"><span data-i18n="set.notes">Notes</span><textarea class="form-control" id="set-notes" rows="3" maxlength="200"></textarea></label>
-              <button class="btn btn-primary" id="set-nt-save" type="button" data-i18n="cz.save">Save</button>
+              <label class="cz-field"><span data-i18n="set.activity">Activity</span><input type="text" class="form-control" id="set-nx-activity" maxlength="80" placeholder="e.g. Construction — Riyadh"></label>
+              <label class="cz-field"><span data-i18n="set.sizeClass">Size class</span><input type="text" class="form-control" id="set-nx-size" maxlength="40" placeholder="e.g. Medium (50–499)"></label>
+              <label class="cz-field"><span data-i18n="set.targetPct">Target %</span><input type="number" class="form-control" id="set-nx-target" min="0" max="100" step="0.1"></label>
+              <div id="set-nx-err" class="caption-muted" style="color:var(--color-error);display:none"></div>
+              <button class="btn btn-primary" id="set-nx-save" type="button" data-i18n="cz.save">Save</button>
             </div>
           </div>
         </div>
-        <div class="set-tabpanel" data-tab="licence" data-i18n="set.tabLicence" hidden>
+<div class="set-tabpanel" data-set-panel="licence" data-i18n="set.tabLicence" hidden>
           <div class="card">
             <div class="card-header"><div class="card-title" data-i18n="set.licenceTitle">Licence</div></div>
             <div class="card-body">
-              <label class="cz-field"><span data-i18n="set.scope">Scope</span><select class="form-control" id="set-scope"><option value="service" data-i18n="set.service">Service</option><option value="labour" data-i18n="set.labour">Labour</option><option value="both" data-i18n="set.both">Both</option></select></label>
-              <label class="cz-field"><span data-i18n="set.licenceNo">Licence number</span><input type="text" class="form-control" id="set-licence" maxlength="40"></label>
-              <label class="cz-field"><span data-i18n="set.notes">Notes</span><textarea class="form-control" id="set-licence-notes" rows="3"></textarea></label>
-              <label class="cz-field"><span data-i18n="set.strictAjeer">Strict Ajeer guards</span><input type="checkbox" class="form-control" id="set-strict-ajeer"></label>
+              <label class="cz-field"><span data-i18n="set.strictAjeer">Strict Ajeer guards</span><input type="checkbox" class="form-control" id="set-licence-ajeer"></label>
               <button class="btn btn-primary" id="set-lc-save" type="button" data-i18n="cz.save">Save</button>
             </div>
           </div>
         </div>
-        <div class="set-tabpanel" data-tab="licence" data-i18n="set.tabLicence" hidden>
-          <div class="card">
-            <div class="card-header"><div class="card-title" data-i18n="set.licenceTitle">Licence</div></div>
-            <div class="card-body">
-              <label class="cz-field"><span data-i18n="set.scope">Scope</span><select class="form-control" id="set-scope"><option value="service" data-i18n="set.service">Service</option><option value="labour" data-i18n="set.labour">Labour</option><option value="both" data-i18n="set.both">Both</option></select></label>
-              <label class="cz-field"><span data-i18n="set.licenceNo">Licence number</span><input type="text" class="form-control" id="set-licence" maxlength="40"></label>
-              <label class="cz-field"><span data-i18n="set.notes">Notes</span><textarea class="form-control" id="set-licence-notes" rows="3"></textarea></label>
-              <label class="cz-field"><span data-i18n="set.strictAjeer">Strict Ajeer guards</span><input type="checkbox" class="form-control" id="set-strict-ajeer"></label>
-              <button class="btn btn-primary" id="set-lc-save" type="button" data-i18n="cz.save">Save</button>
-            </div>
-          </div>
-        </div>
-        <div class="set-tabpanel" data-tab="security" data-i18n="set.tabSecurity" hidden>
+    <div class="set-tabpanel" data-set-panel="security" data-i18n="set.tabSecurity" hidden>
           <div class="card">
             <div class="card-header"><div class="card-title" data-i18n="sec.title">Security</div></div>
             <div class="card-body" id="sec-admin">
@@ -190,7 +206,7 @@
             </div>
           </div>
         </div>
-        <div class="set-tabpanel" data-tab="appearance" data-i18n="set.tabAppearance" hidden>
+        <div class="set-tabpanel" data-set-panel="appearance" data-i18n="set.tabAppearance" hidden>
           <div class="card">
             <div class="card-header"><div class="card-title" data-i18n="cz.appearance">Appearance</div></div>
             <div class="card-body">
@@ -217,17 +233,162 @@
             </div>
           </div>
         </div>
-        <div class="set-tabpanel" data-tab="language" data-i18n="set.tabLanguage" hidden>
+        <div class="set-tabpanel" data-set-panel="language" data-i18n="set.tabLanguage" hidden>
           <div class="card">
             <div class="card-header"><div class="card-title" data-i18n="set.langTitle">Language</div></div>
             <div class="card-body">
-              <label class="cz-field"><span data-i18n="set.langDefault">Default language</span><select class="form-control" id="set-lang"></select></label>
+              <label class="cz-field"><span data-i18n="set.langDefault">Default language</span><select class="form-control" id="set-language"></select></label>
               <label class="cz-field"><span data-i18n="set.langFallback">Fallback language</span><select class="form-control" id="set-lang-fb"></select></label>
               <button class="btn btn-primary" id="set-lang-save" type="button" data-i18n="cz.save">Save</button>
             </div>
           </div>
         </div>
-        <div class="set-tabpanel" data-tab="modules" data-i18n="set.tabModules" hidden>
+        <div class="set-tabpanel" data-set-panel="notifications" data-i18n="set.tabNotifications" hidden>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="set.notificationsTitle">Notifications</div></div>
+            <div class="card-body">
+              <div class="cz-field">
+                <label class="cz-field-label" data-i18n="set.notifHuroob">Huroob alerts</label>
+                <input type="checkbox" class="form-control" id="set-nt-huroob">
+              </div>
+              <div class="cz-field">
+                <label class="cz-field-label" data-i18n="set.notifDocs">Document expiry</label>
+                <input type="checkbox" class="form-control" id="set-nt-docs">
+              </div>
+              <div class="cz-field">
+                <label class="cz-field-label" data-i18n="set.notifQiwa">Qiwa drafts</label>
+                <input type="checkbox" class="form-control" id="set-nt-qiwa">
+              </div>
+              <label class="cz-field"><span data-i18n="set.docWindow">Remind me before expiry</span><select class="form-control" id="set-nt-window">
+                <option value="7" data-i18n="set.win7">7 days</option>
+                <option value="15" data-i18n="set.win15">15 days</option>
+                <option value="30" data-i18n="set.win30">30 days</option>
+                <option value="45" data-i18n="set.win45">45 days</option>
+                <option value="60" data-i18n="set.win60">60 days</option>
+              </select></label>
+              <button class="btn btn-primary" id="set-nt-save" type="button" data-i18n="cz.save">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="set-tabpanel" data-set-panel="attendance" data-i18n="set.tabAttendance" hidden>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="set.attendanceTitle">Attendance</div></div>
+            <div class="card-body">
+              <label class="cz-field"><span data-i18n="set.graceMin">Late grace (minutes after 08:00)</span><input type="number" class="form-control" id="set-at-grace" min="0" max="120"></label>
+              <div id="set-at-err" class="caption-muted" style="color:var(--color-error);display:none"></div>
+              <button class="btn btn-primary" id="set-at-save" type="button" data-i18n="cz.save">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="set-tabpanel" data-set-panel="leave" data-i18n="set.tabLeave" hidden>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="set.leaveTitle">Leave</div></div>
+            <div class="card-body">
+              <label class="cz-field"><span data-i18n="set.annualBase">Annual days (first 5 years)</span><input type="number" class="form-control" id="set-lv-base" min="1"></label>
+              <label class="cz-field"><span data-i18n="set.annualAfter5">Annual days (after 5 years)</span><input type="number" class="form-control" id="set-lv-after5" min="1"></label>
+              <div id="set-lv-err" class="caption-muted" style="color:var(--color-error);display:none"></div>
+              <button class="btn btn-primary" id="set-lv-save" type="button" data-i18n="cz.save">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="set-tabpanel" data-set-panel="payroll" data-i18n="set.tabPayroll" hidden>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="set.payrollTitle">Payroll</div></div>
+            <div class="card-body">
+              <label class="cz-field"><span data-i18n="set.otMultiplier">Overtime multiplier (× hourly rate)</span><input type="number" class="form-control" id="set-pr-ot" min="1" max="3" step="0.1"></label>
+              <div id="set-pr-err" class="caption-muted" style="color:var(--color-error);display:none"></div>
+              <button class="btn btn-primary" id="set-pr-save" type="button" data-i18n="cz.save">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="set-tabpanel" data-set-panel="invoicing" data-i18n="set.tabInvoicing" hidden>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="set.invoicingTitle">Invoicing</div></div>
+            <div class="card-body">
+              <label class="cz-field"><span data-i18n="set.vatRate">VAT rate (%)</span><input type="number" class="form-control" id="set-iv-vat" min="0" max="100"></label>
+              <label class="cz-field"><span data-i18n="set.dueDays">Payment terms (days after billing date)</span><input type="number" class="form-control" id="set-iv-due" min="0" max="120"></label>
+              <div id="set-iv-err" class="caption-muted" style="color:var(--color-error);display:none"></div>
+              <button class="btn btn-primary" id="set-iv-save" type="button" data-i18n="cz.save">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="set-tabpanel" data-set-panel="expenses" data-i18n="set.tabExpenses" hidden>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="set.expensesTitle">Expenses</div></div>
+            <div class="card-body">
+              <label class="cz-field"><span data-i18n="set.monthlyBudget">Monthly budget (SAR)</span><input type="number" class="form-control" id="set-xp-budget" min="0"></label>
+              <div id="set-xp-err" class="caption-muted" style="color:var(--color-error);display:none"></div>
+              <button class="btn btn-primary" id="set-xp-save" type="button" data-i18n="cz.save">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="set-tabpanel" data-set-panel="files" data-i18n="set.tabFiles" hidden>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="set.filesTitle">Files</div></div>
+            <div class="card-body">
+              <label class="cz-field"><span data-i18n="set.maxUpload">Max upload size (MB)</span><input type="number" class="form-control" id="set-fm-max" min="0.5" max="10" step="0.1"></label>
+              <div id="set-fm-err" class="caption-muted" style="color:var(--color-error);display:none"></div>
+              <button class="btn btn-primary" id="set-fm-save" type="button" data-i18n="cz.save">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="set-tabpanel" data-set-panel="apps" data-i18n="set.tabApps" hidden>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="set.appsTitle">Apps</div></div>
+            <div class="card-body">
+              <label class="cz-field"><span data-i18n="set.meetingDur">Default meeting length</span><select class="form-control" id="set-ap-dur">
+                <option value="15" data-i18n="set.minutes">15 minutes</option>
+                <option value="30" data-i18n="set.minutes">30 minutes</option>
+                <option value="45" data-i18n="set.minutes">45 minutes</option>
+                <option value="60" data-i18n="set.minutes">60 minutes</option>
+              </select></label>
+              <label class="cz-field"><span data-i18n="set.signature">Mail signature</span><textarea class="form-control" id="set-ap-sig" rows="3"></textarea></label>
+              <button class="btn btn-primary" id="set-ap-save" type="button" data-i18n="cz.save">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="set-tabpanel" data-set-panel="export" data-i18n="set.tabExport" hidden>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="set.exportImport">Export / Import</div></div>
+            <div class="card-body">
+              <div class="cz-actions">
+                <button class="btn btn-primary" id="set-export" type="button" data-i18n="set.exportAll">Export all settings</button>
+                <label class="btn btn-outline" style="margin-left:8px"><span data-i18n="set.importAll">Import settings</span><input type="file" id="set-import" accept=".json" hidden></label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="set-tabpanel" data-set-panel="theme" data-i18n="set.tabTheme" hidden>
+          <div class="card">
+            <div class="card-header"><div class="card-title" data-i18n="set.themeStudio">Theme Studio</div></div>
+            <div class="card-body">
+              <div class="cz-card-body">
+                <div class="cz-row"><label class="cz-label" data-i18n="set.signPreview">Signature preview</label><div id="set-sign-preview" class="cz-sign-preview"></div></div>
+                <div class="cz-row"><label class="cz-label" data-i18n="set.docMock">Document mock</label><div id="set-docmock" class="cz-docmock"></div></div>
+                <div class="cz-row"><label class="cz-label" data-i18n="st.primaryColor">Accent color</label><input type="color" class="form-control" id="set-theme-accent" style="width:60px;height:32px;padding:2px"></div>
+                <div class="cz-row"><label class="cz-label" data-i18n="set.docFont">Document font</label><select class="form-control" id="set-theme-docfont"></select></div>
+                <div class="cz-row"><label class="cz-label" data-i18n="set.signStyle">Signature style</label><select class="form-control" id="set-theme-signstyle"></select></div>
+                <div class="cz-row"><label class="cz-label" data-i18n="set.signLang">Signature language</label><select class="form-control" id="set-theme-signlang"></select></div>
+                <div class="cz-row"><label class="cz-label" data-i18n="set.swatches">Swatches</label><div class="cz-swatches" id="set-theme-swatches"></div></div>
+                <div class="cz-actions">
+                  <button class="btn btn-outline" id="set-sign-copy" type="button" data-i18n="set.copySig">Copy signature</button>
+                  <button class="btn btn-outline" id="set-sign-download" type="button" data-i18n="set.downloadSig">Download signature</button>
+                </div>
+                <div class="cz-card-body">
+                  <div class="cz-row"><div class="cell-strong" data-i18n="set.tryIt">Try it</div></div>
+                  <div class="cz-actions">
+                    <button class="btn btn-outline" id="set-kit-toast-ok" type="button" data-i18n="set.toastSuccess">Success toast</button>
+                    <button class="btn btn-outline" id="set-kit-toast-warn" type="button" data-i18n="set.toastWarning">Warning toast</button>
+                    <button class="btn btn-outline" id="set-kit-toast-err" type="button" data-i18n="set.toastError">Error toast</button>
+                    <button class="btn btn-outline" id="set-kit-toast-info" type="button" data-i18n="set.toastInfo">Info toast</button>
+                    <button class="btn btn-outline" id="set-kit-dialog" type="button" data-i18n="set.dialogDemo">Demo dialog</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="set-tabpanel" data-set-panel="modules" data-i18n="set.tabModules" hidden>
           <div class="card">
             <div class="card-header"><div class="card-title" data-i18n="set.modTitle">Modules</div></div>
             <div class="card-body">
@@ -258,7 +419,7 @@
             </div>
           </div>
         </div>
-        <div class="set-tabpanel" data-tab="diag" data-i18n="set.tabDiag" hidden>
+        <div class="set-tabpanel" data-set-panel="diag" data-i18n="set.tabDiag" hidden>
           <div class="card">
             <div class="card-header"><div class="card-title" data-i18n="godr.title">Go Dr.</div></div>
             <div class="card-body">

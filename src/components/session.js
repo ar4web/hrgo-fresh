@@ -7,12 +7,17 @@ const STORE = 'hr:auth';
 export function getSession() {
   try {return JSON.parse(localStorage.getItem(STORE) || 'null');} catch (_e) {return null;}
 }
+export function isDemoMode() {
+  const s = getSession();
+  return !!(s && s.demoMode);
+}
 export function setSession(data) {
   localStorage.setItem(STORE, JSON.stringify({
     accessToken: data.accessToken,
     refreshToken: data.refreshToken,
     expAt: Date.now() + (data.expiresIn || 900) * 1000,
-    user: data.user
+    user: data.user,
+    demoMode: data.demoMode || false
   }));
 }
 export function clearSession() {

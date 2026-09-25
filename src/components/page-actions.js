@@ -16,6 +16,7 @@
 import { showToast } from './toast.js';
 import { showModal } from './modal.js';
 import { t } from './i18n.js';
+import { isDemoMode } from './session.js';
 
 // Map known i18n keys directly so translated buttons keep their actions
 // even though matching below is label-text based.
@@ -23,6 +24,8 @@ const KEY_ACTIONS = {
   'common.print': 'print',
   'common.export': 'export',
   'common.refresh': 'refresh',
+  'common.save': 'save',
+  'common.delete': 'delete',
   'an.exportCsv': 'export'
 };
 
@@ -33,7 +36,9 @@ const RX = {
   share:    /^(share|مشاركة)$/i,
   compose:  /^(compose|new chat|new message|new email|رسالة جديدة|بريد جديد)$/i,
   newDeal:  /^(new deal|new project|new event|new task|\+ ?new|صفقة جديدة|مشروع جديد|حدث جديد|مهمة جديدة|\+ ?جديد)$/i,
-  add:      /^(\+ ?invite|\+ ?invite user|\+ ?invite member|invite|add (member|user|customer|contact)|دعوة|دعوة عضو|إضافة (عضو|مستخدم|عميل|جهة اتصال))$/i
+  add:      /^(\+ ?invite|\+ ?invite user|\+ ?invite member|invite|add (member|user|customer|contact)|دعوة|دعوة عضو|إضافة (عضو|مستخدم|عميل|جهة اتصال))$/i,
+  save:     /^(save|حفظ)$/i,
+  delete:   /^(delete|حذف)$/i
 };
 
 function matchAction(label) {
@@ -211,6 +216,23 @@ const handlers = {
   add:      () => inviteModal()
 };
 
+// Actions that are considered destructive (create/modify/delete data)
+const DESTRUCTIVE_ACTIONS = new Set(['export', 'compose', 'newDeal', 'add', 'save', 'delete']);
+
+/** Disable all destructive action buttons when in demo mode. */
+function disableDestructiveButtons() {
+  if (!isDemoMode()) {return;}
+  document.querySelectorAll('.btn').forEach(btn => {
+    const action = actionFor(btn);
+    if (action && DESTRUCTIVE_ACTIONS.has(action)) {
+      btn.disabled = true;
+      btn.classList.add('btn-disabled');
+      btn.setAttribute('aria-disabled', 'true');
+      btn.title = t('act.demoDisabled') || 'Disabled in demo mode';
+    }
+  });
+}
+
 /**
  * Wire up shared page-action behavior. Idempotent — safe to call multiple
  * times; subsequent calls are no-ops.
@@ -218,6 +240,9 @@ const handlers = {
 export function initPageActions() {
   if (initPageActions._wired) {return;}
   initPageActions._wired = true;
+
+  // Disable destructive buttons in demo mode
+  disableDestructiveButtons();
 
   // Skip controls that already have their own click pipeline.
   const SKIP_SELECTOR = [
@@ -243,6 +268,13 @@ export function initPageActions() {
 
     const action = actionFor(btn);
     if (!action) {return;}
+
+    // Block destructive actions in demo mode
+    if (isDemoMode() && DESTRUCTIVE_ACTIONS.has(action)) {
+      e.preventDefault();
+      showToast(t('act.demoDisabled') || 'This action is disabled in demo mode', { variant: 'warning' });
+      return;
+    }
 
     e.preventDefault();
     handlers[action]?.(btn);

@@ -556,6 +556,16 @@ a.menu-item {
 .user-panel-id strong { font-size: 13.5px; color: var(--text); }
 .user-panel-id span { font-size: 11.5px; color: var(--text-muted); }
 .user-panel-role { margin-top: 2px; }
+.user-panel-demo-badge {
+  margin-top: 8px;
+  padding: 4px 8px;
+  background: var(--yellow-lt);
+  color: var(--warn-ink);
+  font-size: 10.5px;
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
 // Settings rows show their current value at the far end.
 .panel-row .settings-state {
   align-self: center;
@@ -949,6 +959,68 @@ body.modal-open { overflow: hidden; }
   background: var(--primary-lt);
   color: var(--primary);
   border-color: var(--primary);
+}
+
+// Demo mode disabled buttons
+.btn:disabled,
+.btn.btn-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.btn:disabled:hover,
+.btn.btn-disabled:hover {
+  background: inherit;
+  border-color: inherit;
+  color: inherit;
+  box-shadow: none;
+  transform: none;
+}
+
+// Demo mode: disable all destructive action buttons
+body.demo-mode {
+  // Delete buttons (card option buttons with delete data attributes)
+  [data-dc-del],
+  [data-dc-del-doc],
+  [data-fm-del],
+  [data-fm-fdel],
+  [data-xp-del],
+  [data-ml-del],
+  [data-um-del],
+  [data-dc-del],
+  [data-emp-del] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  // Also disable any button with aria-label containing "Delete" or "حذف"
+  button[aria-label*="Delete"],
+  button[aria-label*="حذف"],
+  a.btn[aria-label*="Delete"],
+  a.btn[aria-label*="حذف"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  // Disable form submit buttons (Save)
+  button[type="submit"],
+  input[type="submit"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+  // Disable export buttons
+  button[data-i18n="common.export"],
+  button[data-i18n="an.exportCsv"],
+  a.btn[data-i18n="common.export"],
+  a.btn[data-i18n="an.exportCsv"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }
 
 // ────────────────────────

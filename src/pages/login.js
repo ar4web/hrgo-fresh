@@ -39,7 +39,7 @@ const post = async (path, body) => {
       'VND-001': { id: 'u-vendor', loginId: 'VND-001', nameEn: 'Vendor Partner', nameAr: 'مورّد', role: 'vendor', email: 'vendor@gohr.test', phone: '+966500000004', status: 'active', permissions: ['profile.read','payslip.read.self','documents.read.self'] }
     };
     const user = demoUsers[loginId] || demoUsers['EMP-001'];
-    const sessionData = { accessToken: 'dev-token', refreshToken: 'dev-refresh', expiresIn: 900, user };
+    const sessionData = { accessToken: 'dev-token', refreshToken: 'dev-refresh', expiresIn: 900, user, demoMode: getDemoMode() };
     setSession(sessionData);
     return { status: 200, ok: true, data: sessionData };
   }
@@ -92,12 +92,22 @@ const demoSessions = {
   employee: { id: 'u-employee', loginId: 'EMP-001', nameEn: 'Employee User', nameAr: 'موظف', role: 'employee', email: 'employee@gohr.test', phone: '+966500000003', status: 'active', permissions: ['attendance.read.self','attendance.write.self','profile.read','payslip.read.self'] },
   vendor: { id: 'u-vendor', loginId: 'VND-001', nameEn: 'Vendor Partner', nameAr: 'مورّد', role: 'vendor', email: 'vendor@gohr.test', phone: '+966500000004', status: 'active', permissions: ['profile.read','payslip.read.self','documents.read.self'] }
 };
+
+function getDemoMode() {
+  return $('demo-mode-toggle')?.checked === true;
+}
+
+function createSessionData(user) {
+  const demoMode = getDemoMode();
+  return { accessToken: 'dev-token', refreshToken: 'dev-refresh', expiresIn: 900, user, demoMode };
+}
+
 document.querySelectorAll('[data-demo-role]').forEach(b => {
   b.addEventListener('click', async () => {
     setMsg('', true);
     const role = b.dataset.demoRole;
     const user = demoSessions[role] || demoSessions.employee;
-    const sessionData = { accessToken: 'dev-token', refreshToken: 'dev-refresh', expiresIn: 900, user };
+    const sessionData = createSessionData(user);
     setSession(sessionData);
     window.location.replace(destFor(user));
   });
@@ -154,6 +164,9 @@ $('signup-form')?.addEventListener('submit', async (e) => {
       password: $('su-pw')?.value || ''
     });
     if (!r.ok) {return setMsg(errText(r.data, 'auth.errSend'), false);}
+    if (r.data && r.data.user) {
+      r.data.demoMode = getDemoMode();
+    }
     setSession(r.data);
     window.location.replace(destFor(r.data.user));
   } finally {
