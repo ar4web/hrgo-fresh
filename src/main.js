@@ -111,7 +111,8 @@ const PAGES = {
   'settings': () => import('./components/settings.js').then((m) => m.initSettings()),
   'apps': () => import('./components/apps.js').then((m) => m.initApps()),
   'users': () => import('./components/users.js').then((m) => m.initUsers()),
-  'go-dr': () => import('./components/godr/page.js').then((m) => m.initGoDr())
+  'go-dr': () => import('./components/godr/page.js').then((m) => m.initGoDr()),
+  'email': () => import('./components/email.js').then((m) => m.initEmail())
 };
 const normalizePage = (key) => (key || '').replace(/^hr_/, '').replace(/_/g, '-');
 const pageKey = normalizePage(document.body?.dataset.page);

@@ -2316,3 +2316,14 @@ export const LEAVES = (() => {
 
   return out;
 })();
+
+// ── Mailbox seed (email.html) ────────────────────────────────────────────
+// Bilingual internal messages; the reader marks them read in-session only.
+export const SEED_MAILBOX = [
+  { id: 'm1', from: 'HR Department', fromAr: 'إدارة الموارد البشرية', subject: 'Welcome to goHR', subjectAr: 'مرحباً بك في goHR', body: 'Your employee file is ready for review.', bodyAr: 'ملف الموظف جاهز للمراجعة.', date: '2026-09-20', read: false },
+  { id: 'm2', from: 'Payroll', fromAr: 'الرواتب', subject: 'September payroll is posted', subjectAr: 'تم اعتماد رواتب سبتمبر', body: 'Payslips are available on the Payroll page.', bodyAr: 'قسائم الرواتب متاحة في صفحة الرواتب.', date: '2026-09-18', read: false },
+  { id: 'm3', from: 'System', fromAr: 'النظام', subject: 'Iqama renewals due', subjectAr: 'إقامات مستحقة للتجديد', body: 'Three permits expire within 30 days. See Renewals.', bodyAr: 'ثلاثة تصاريح تنتهي خلال ٣٠ يوماً. راجع التجديدات.', date: '2026-09-15', read: true },
+  { id: 'm4', from: 'Line Manager', fromAr: 'المدير المباشر', subject: 'Leave request approved', subjectAr: 'تمت الموافقة على الإجازة', body: 'Your annual leave request was approved.', bodyAr: 'تمت الموافقة على طلب إجازتك السنوية.', date: '2026-09-12', read: true },
+  { id: 'm5', from: 'GOSI Liaison', fromAr: 'مسؤول التأمينات', subject: 'Contribution rates updated', subjectAr: 'تحديث نسب الاشتراكات', body: 'Pension versions are current through the 2026 schedule.', bodyAr: 'نسخ المعاشات محدثة وفق جدول ٢٠٢٦.', date: '2026-09-08', read: true },
+  { id: 'm6', from: 'IT Support', fromAr: 'الدعم التقني', subject: 'New login detected', subjectAr: 'رصد تسجيل دخول جديد', body: 'Contact support if this was not you.', bodyAr: 'تواصل مع الدعم إذا لم تكن أنت.', date: '2026-09-01', read: true }
+];
