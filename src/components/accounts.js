@@ -7,7 +7,7 @@
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
 import { INVOICES, EXPENSES, CLIENTS, SECONDMENTS, EMPLOYEES } from './hr-seed.js';
 import { arAging, expenseRollup, clientMargin } from './accounts-helpers.js';
-import { fmtSAR, renderPageMeta } from './hr-locale.js';
+import { fmtSAR } from './hr-locale.js';
 import { escapeHtml as esc } from './markup.js';
 
 let booted = false;
@@ -87,8 +87,7 @@ function paint(root) {
   const cl = root.querySelector('#acc-clients');
   if (cl) {cl.innerHTML = clientTable(margin);}
 
-  renderPageMeta([`${t('acc.outstanding')} ${fmtSAR(ar.total)}`, `${t('acc.margin')} ${fmtSAR(net)}`]);
-}
+  }
 
 export function initAccounts() {
   if (booted) {

@@ -3,7 +3,7 @@
 // manual logging, import and export.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, initialsOf, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, initialsOf, setText } from './hr-locale.js';
 import { getSeed, saveImportedRows } from './hr-api.js';
 import { exportData } from './import-export.js';
 import { openImportModal } from './import-modal.js';
@@ -174,14 +174,7 @@ function renderStats() {
   if (bar) {
     bar.style.width = `${c.rate}%`;
   }
-  renderPageMeta([
-    fmtDate(c.day),
-    `${fmtInt(c.present)} ${t('status.present')}`,
-    `${fmtInt(c.late)} ${t('status.late')}`,
-    `${fmtInt(c.absent)} ${t('status.absent')}`,
-    `${fmtInt(c.leave)} ${t('status.on-leave')}`
-  ]);
-}
+  }
 
 // ── Render: charts ──
 

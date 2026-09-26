@@ -5,7 +5,7 @@
 // and stamps the candidate as hired — closing the loop into Employees.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, fmtSAR, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, fmtSAR, setText } from './hr-locale.js';
 import { getSeed, saveImportedRows } from './hr-api.js';
 import { showModal } from './modal.js';
 import { showToast } from './toast.js';
@@ -71,13 +71,7 @@ function renderStats() {
   setText('rc-stat-active', fmtInt(active));
   setText('rc-stat-offers', fmtInt(offers));
   setText('rc-stat-hired', fmtInt(hired));
-  renderPageMeta([
-    `${fmtInt(open)} ${t('rc.vacancies')}`,
-    `${fmtInt(active)} ${t('rc.active')}`,
-    `${fmtInt(offers)} ${t('rc.offers')}`,
-    `${fmtInt(hired)} ${t('rc.hired')}`
-  ]);
-  const count = document.getElementById('rc-count');
+    const count = document.getElementById('rc-count');
   if (count) {
     count.textContent = t('inv.count').replace('{n}', fmtInt(rows.length)).replace('{month}', vacFilter ? vacTitle(vacFilter) : t('rc.allVacancies'));
   }

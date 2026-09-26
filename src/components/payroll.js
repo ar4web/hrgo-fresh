@@ -3,13 +3,13 @@
 // log, printable bilingual payslips, CSV run export and a WPS SIF download.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, fmtSAR, initialsOf, maskIban, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, fmtSAR, initialsOf, maskIban, setText } from './hr-locale.js';
 import { getSeed } from './hr-api.js';
 import { exportData } from './import-export.js';
 import { showModal } from './modal.js';
 import { showToast } from './toast.js';
 import { DEPARTMENTS } from './hr-seed.js';
-import { calcPayLine, gosiPensionRate, sifBuild, wpsDeadline, daysBetween, otRate } from './hr-statutory.js';
+import { calcPayLine, gosiPensionRate, sifBuild, wpsDeadline, daysBetween, otRate, legalSeller } from './hr-statutory.js';
 import { renderEchart } from './chart-helper.js';
 import { escapeHtml as esc, AVATAR_BG } from './markup.js';
 
@@ -305,12 +305,7 @@ function renderAll() {
   renderChart(lines);
   renderRows(lines);
   renderPeriodBar(lines);
-  renderPageMeta([
-    monthLabel(period),
-    `${fmtInt(lines.length)} ${t('pay.headcount')}`,
-    `${fmtSAR(round2(lines.reduce((a, l) => a + l.net, 0)))} ${t('pay.netTotal')}`
-  ]);
-  return lines;
+    return lines;
 }
 
 // ── Payslip (printable modal) ──

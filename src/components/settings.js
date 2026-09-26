@@ -11,11 +11,13 @@ import { getSettings, saveSettings, blankCompany, companyTheme, setCompanyTheme,
 import { showToast } from './toast.js';
 import { download } from './import-export.js';
 import { escapeHtml as esc } from './markup.js';
-import { renderPageMeta } from './hr-locale.js';
+
 import { ICONS } from './shell-render.js';
 import { showModal } from './modal.js';
 import { loadPrefs, applyPrefs, savePrefs } from './customize.js';
 import { HASH_PANEL } from './settings-hash.js';
+import { getSession } from './session.js';
+import { wireSecurity } from './security-panel.js';
 
 let booted = false;
 
@@ -129,11 +131,7 @@ function loadGeneral() {
 function renderSettingsMeta() {
   const co = getSettings().company || {};
   const name = currentLang() === 'ar' ? (co.nameAr || co.nameEn) : (co.nameEn || co.nameAr);
-  renderPageMeta([
-    name || '',
-    co.cr ? `${t('doc.crNo')}: ${co.cr}` : ''
-  ]);
-}
+  }
 
 function saveGeneral() {
   const err = document.getElementById('set-general-err');
@@ -767,7 +765,12 @@ ${logo}<span style="font-size:14px;font-weight:bold;color:${accent}">${esc(nmA)}
         }
         saveSettings(parsed);
         applyBranding();
-        loadAll();
+  loadAll();
+
+  // Security panel: password policy + geofence are admin-only, change-my-password
+  // is available to everyone. Same gate users.js uses.
+  const s = getSession();
+  wireSecurity({ canWrite: !!s && !!s.user && s.user.role === 'admin' });
         showToast(t('set.imported'), { variant: 'success' });
       } catch (_err) {
         showToast(t('set.importBad'), { variant: 'error' });

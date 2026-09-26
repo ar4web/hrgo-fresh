@@ -3,7 +3,7 @@
 // approve/reject actions, import and export.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, initialsOf, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, initialsOf, setText } from './hr-locale.js';
 import { getSeed, saveImportedRows } from './hr-api.js';
 import { exportData } from './import-export.js';
 import { openImportModal } from './import-modal.js';
@@ -147,12 +147,7 @@ function renderStats() {
   setText('lv-stat-balance', fmtInt(balance));
   setText('lv-stat-sick', fmtInt(sickDays));
   setText('lv-stat-returns', fmtInt(returning.length));
-  renderPageMeta([
-    `${fmtInt(outNow.length)} ${t('lv.onLeaveToday')}`,
-    `${fmtInt(pending.length)} ${t('lv.pendingReqs')}`,
-    `${fmtInt(balance)} ${t('lv.remainingBalance')}`
-  ]);
-}
+  }
 
 // ── Render: charts ──
 

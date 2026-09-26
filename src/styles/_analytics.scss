@@ -21,7 +21,7 @@
   align-items: center;
 }
 .an-controls .form-control {
-  height: var(--btn-h);
+  height: var(--control-h);
   min-width: 150px;
   font-size: calc(12.5px * var(--font-factor));
 }
@@ -82,7 +82,7 @@
   color: var(--kpi-tone, var(--primary));
   flex-shrink: 0;
 }
-.kpi-icon svg { width: 18px; height: 18px; }
+.kpi-icon svg { width: 16px; height: 16px; }
 .kpi-tone-primary { --kpi-tone: var(--primary); --kpi-tint: var(--primary-lt); }
 .kpi-tone-green   { --kpi-tone: var(--green);   --kpi-tint: var(--green-lt); }
 .kpi-tone-yellow  { --kpi-tone: var(--yellow);  --kpi-tint: var(--yellow-lt); }

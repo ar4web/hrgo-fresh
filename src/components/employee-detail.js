@@ -164,13 +164,11 @@ function scoreLabel(score) {
 function renderHeader(e, info) {
   const aHead = document.getElementById('a4-head');
   const avatarEl = document.getElementById('a4-avatar');
-  const meta = document.getElementById('emp-file-meta');
   const warning = document.getElementById('emp-file-warning');
   const starsEl = document.getElementById('emp-stars');
   const scoreLabelEl = document.getElementById('emp-score-label');
   if (!e) {
     if (aHead) {aHead.innerHTML = `<div class="hr-empty">${t('file.recordNotFound')}</div>`;}
-    if (meta) {meta.textContent = t('file.recordUnavailable');}
     if (starsEl) {starsEl.innerHTML = '';}
     if (scoreLabelEl) {scoreLabelEl.textContent = '—';}
     return;
@@ -181,7 +179,6 @@ function renderHeader(e, info) {
   }
   const displayName = currentLang() === 'ar' ? e.nameAr || e.nameEn : e.nameEn;
   document.title = `${displayName} · ${e.code} | goHR`;
-  if (meta) {meta.textContent = `${e.code} · ${profName(e.prof)} · ${deptName(e.dept)}`;}
   if (warning) {
     warning.hidden = !info.missing;
     warning.textContent = info.missing
@@ -198,7 +195,7 @@ function renderHeader(e, info) {
   aHead.innerHTML = `
     <div class="emp-file-head-row">
       <div class="emp-file-head-main">
-        <h2 class="emp-file-name">${esc(displayName)}</h2>
+        <h1 class="emp-file-name" id="emp-file-name">${esc(displayName)}</h1>
         <div class="emp-file-sub">${esc(e.code)} · ${esc(profName(e.prof))} · ${esc(deptName(e.dept))} · ${esc(fmtDate(e.join))}</div>
         <div class="emp-file-badges">
           <span class="status status-${statusTone}">${esc(t(`status.${e.st}`))}</span>
@@ -268,7 +265,7 @@ function renderBody(e) {
 
   // A4 dense dossier — all areas visible, not tabs.
   const overview =
-    `<div class="a4-card"><h3>${t('file.personal')}</h3>` +
+    `<div class="a4-card"><h2>${t('file.personal')}</h3>` +
     `<div class="hr-kv"><span>${t('emp.code')}</span><strong>${esc(e.code)}</strong></div>` +
     kvd(t('file.nationality'), e.nat) +
     kvd(e.saudi ? t('file.nationalId') : t('file.iqama'), e.saudi ? e.nid || '—' : e.iqama || '—') +
@@ -280,7 +277,7 @@ function renderBody(e) {
     kvd('Qiwa', t(`status.${e.q}`)) +
     '</div>';
   const job =
-    `<div class="a4-card"><h3>${t('file.jobPay')}</h3>` +
+    `<div class="a4-card"><h2>${t('file.jobPay')}</h3>` +
     kvd(t('file.department'), deptName(e.dept)) +
     kvd(t('file.jobTitle'), currentLang() === 'ar' ? e.titleAr || e.titleEn : e.titleEn) +
     kvd(t('file.profession'), profName(e.prof)) +
@@ -292,7 +289,7 @@ function renderBody(e) {
     kvd(t('file.eosbEst'), fmtSAR(eosb.net)) +
     '</div>';
   const deployment =
-    `<div class="a4-card"><h3>${t('file.deployment')}</h3>` +
+    `<div class="a4-card"><h2>${t('file.deployment')}</h3>` +
     kvd(t('file.workStatus'), t(`status.${e.st}`)) +
     kvd(t('file.client'), clientName || t('status.bench')) +
     kvd(t('file.site'), siteName || '—') +
@@ -300,7 +297,7 @@ function renderBody(e) {
     kvd(t('file.city'), site?.city || e.city || '—') +
     '</div>';
   const leaveCard =
-    `<div class="a4-card"><h3>${t('file.timeLeave')}</h3>` +
+    `<div class="a4-card"><h2>${t('file.timeLeave')}</h3>` +
     kvd(t('file.tenure'), tenure === '—' ? '—' : t('file.years').replace('{n}', tenure)) +
     (leave ? kvd(t('file.annualEnt'), `${leave.entitlement} ${t('common.days')}`) : '') +
     (leave ? kvd(t('file.annualUsed'), `${leave.used} ${t('common.days')}`) : '') +
@@ -308,7 +305,7 @@ function renderBody(e) {
     kvd(t('file.lastExit'), e.exitDate ? fmtDate(e.exitDate) : '—') +
     '</div>';
   const gosi =
-    `<div class="a4-card"><h3>${t('file.gosi')}</h3>` +
+    `<div class="a4-card"><h2>${t('file.gosi')}</h3>` +
     kvd(t('file.gosiNo'), e.gosi || (e.saudi ? '—' : t('file.expat2'))) +
     kv(t('file.system'), g.system === 'expat' ? t('file.expat2') : g.system === 'old' ? t('file.old9') : t('file.newPct').replace('{pct}', Math.round(g.pensionRate * 100))) +
     kvd(t('file.contributory'), fmtSAR(g.base)) +
@@ -316,8 +313,8 @@ function renderBody(e) {
     kvd(t('file.employer'), fmtSAR(g.employer)) +
     '</div>';
   const residency = e.saudi
-    ? `<div class="a4-card"><h3>${t('file.residency')}</h3><div class="hr-kv"><span>${t('file.nationalId')}</span><strong>${esc(e.nid || '—')}</strong></div>${kvd(t('file.iban'), e.iban ? maskIban(e.iban) : '—')}${kvd(t('emp.bank'), e.bank || '—')}</div>`
-    : `<div class="a4-card"><h3>${t('file.residency')}</h3>` +
+    ? `<div class="a4-card"><h2>${t('file.residency')}</h3><div class="hr-kv"><span>${t('file.nationalId')}</span><strong>${esc(e.nid || '—')}</strong></div>${kvd(t('file.iban'), e.iban ? maskIban(e.iban) : '—')}${kvd(t('emp.bank'), e.bank || '—')}</div>`
+    : `<div class="a4-card"><h2>${t('file.residency')}</h3>` +
       kvd(t('file.iqamaNo'), e.iqama || '—') +
       kv(t('file.expiry'), expBadge(e.iqamaExp)) +
       kvd(t('file.iqamaProfession'), profName(e.prof)) +
@@ -325,20 +322,20 @@ function renderBody(e) {
       kvd(t('emp.bank'), e.bank || '—') +
       '</div>';
   const docs =
-    `<div class="a4-card"><h3>${t('file.documents')}</h3>` +
+    `<div class="a4-card"><h2>${t('file.documents')}</h3>` +
     kvd(t('file.contract'), t('file.pdfValid')) +
     kvd(e.saudi ? t('file.nidCopy') : t('file.iqamaCopy'), t('file.pdfValid')) +
     kvd('Qiwa', t(`status.${e.q}`)) +
     kvd(t('file.insurance'), e.ins || '—') +
     '</div>';
   const skills = e.skills?.length
-    ? `<div class="a4-card"><h3>${t('file.skills')}</h3><div class="a4-skill-list">` +
+    ? `<div class="a4-card"><h2>${t('file.skills')}</h3><div class="a4-skill-list">` +
       e.skills.map(s => `<span class="status status-blue">${esc(skillName(s))}</span>`).join('') +
       '</div></div>'
     : '';
   grid.innerHTML = overview + job + deployment + leaveCard + gosi + residency + docs + skills;
   if (extra) {
-    extra.innerHTML = `<div class="a4-card a4-notes"><h3>${t('file.notes')}</h3><div>${
+    extra.innerHTML = `<div class="a4-card a4-notes"><h2>${t('file.notes')}</h3><div>${
       t('file.dossierFoot')
         .replace('{code}', esc(e.code))
         .replace('{date}', fmtDate(new Date().toISOString().slice(0, 10)))
@@ -355,14 +352,14 @@ function renderAll() {
 
 function openEditModal(e) {
   showModal({
-    title: `${t('common.edit')} · ${e.code}`,
+    title: `${t('common.edit')} · ${esc(e.code)}`,
     body: `
       <div class="form-group"><label class="form-label">${t('emp.phone')}</label>
-        <input class="form-control" id="ed-phone" value="${e.phone || ''}" dir="ltr"></div>
+        <input class="form-control" id="ed-phone" value="${esc(e.phone || '')}" dir="ltr"></div>
       <div class="form-group"><label class="form-label">IBAN</label>
-        <input class="form-control" id="ed-iban" value="${e.iban || ''}" dir="ltr"></div>
+        <input class="form-control" id="ed-iban" value="${esc(e.iban || '')}" dir="ltr"></div>
       <div class="form-group" style="margin-bottom:0"><label class="form-label">${t('emp.bank')}</label>
-        <input class="form-control" id="ed-bank" value="${e.bank || ''}"></div>`,
+        <input class="form-control" id="ed-bank" value="${esc(e.bank || '')}"></div>`,
     actions: [
       { label: t('common.cancel'), variant: 'ghost' },
       {

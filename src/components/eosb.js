@@ -3,7 +3,7 @@
 // accrual table, liability chart and printable bilingual statements.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, fmtSAR, initialsOf, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, fmtSAR, initialsOf, setText } from './hr-locale.js';
 import { getSeed } from './hr-api.js';
 import { showModal } from './modal.js';
 import { DEPARTMENTS, SEED_EOSB } from './hr-seed.js';
@@ -74,12 +74,7 @@ function renderStats() {
   setText('eo-stat-vet', fmtInt(veterans));
   setText('eo-stat-long', longest ? longest.name.split(' ')[0] : '—');
   setText('eo-stat-long-sub', longest ? `${round1(longest.years)} ${t('eosb.yearsH')}` : '—');
-  renderPageMeta([
-    `${fmtSAR(Math.round(liability * 100) / 100)} ${t('eosb.liability')}`,
-    `${fmtInt(veterans)} ${t('eosb.veterans')}`,
-    `${round1(avgYears)} ${t('eosb.avgYears')}`
-  ]);
-}
+  }
 
 // ── Render: chart ──
 

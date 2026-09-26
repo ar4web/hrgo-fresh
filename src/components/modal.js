@@ -2,6 +2,7 @@
 // the close button all dismiss. Focus is moved into the dialog on open and
 // restored on close. Tab is trapped inside while open.
 import { t } from './i18n.js';
+import { escapeHtml } from './markup.js';
 
 let openBackdrop = null;
 let previousFocus = null;
@@ -62,7 +63,7 @@ export function showModal({ title, body = '', actions = [], size = 'md', onClose
   const header = document.createElement('div');
   header.className = 'modal-header';
   header.innerHTML = `
-    <h2 class="modal-title">${title || ''}</h2>
+    <h2 class="modal-title">${escapeHtml(title || '')}</h2>
     <button type="button" class="modal-close" aria-label="${t('common.close')}">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8"/></svg>
     </button>

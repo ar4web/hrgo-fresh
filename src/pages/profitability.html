@@ -16,7 +16,6 @@
     <div class="page-header-row">
       <div>
         <h1 class="page-title" data-i18n="nav.profitability">Profitability</h1>
-        <div class="caption-muted page-meta" data-page-meta></div>
       </div>
     </div>
   </div>
@@ -52,6 +51,19 @@
         <div class="stat-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></div>
         <div class="stat-content"><div class="stat-label" data-i18n="pf.internal">Internal staff cost</div><div class="stat-value-row"><span class="stat-value" id="pf-stat-internal">0</span></div><div class="stat-subtext" data-i18n="pf.internalSub">Not billed to clients</div></div>
       </div>
+    </div>
+  </div>
+
+  <!-- CHARTS — renderCharts() targets these. The hosts did not exist, so both
+       charts were permanently blank. -->
+  <div class="row col-2 stack-gap">
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="pf.chartRevCost">Revenue vs cost</div></div>
+      <div class="card-body"><div class="chart-box chart-lg" id="chart-pf-month"></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title" data-i18n="pf.chartMargin">Margin by client</div></div>
+      <div class="card-body"><div class="chart-box chart-lg" id="chart-pf-client"></div></div>
     </div>
   </div>
 

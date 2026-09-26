@@ -25,27 +25,33 @@ const LEGACY_JSON = process.env.AUTH_DB_LEGACY || fileURLToPath(new URL('./data/
 let _store = null;
 
 // ── store ──────────────────────────────────────────────────────────────────
+// The permission matrix every role check resolves against. Kept as its own
+// constant so a store missing the `roles` key can be repaired from exactly the
+// same source the seed uses — a partial snapshot used to leave `roles`
+// undefined, which turned every requirePerm() into a 500.
+const DEFAULT_ROLES = {
+  admin: {
+    labelEn: 'Administrator', permissions: ['*']
+  },
+  manager: {
+    labelEn: 'Manager',
+    permissions: ['attendance.read', 'attendance.write', 'attendance.read.self', 'employees.read', 'payroll.read', 'documents.read', 'users.read']
+  },
+  employee: {
+    labelEn: 'Employee',
+    permissions: ['attendance.read.self', 'attendance.write.self', 'profile.read', 'payslip.read.self']
+  },
+  vendor: {
+    labelEn: 'Vendor',
+    permissions: ['profile.read', 'payslip.read.self', 'documents.read.self']
+  }
+};
+
 export function seedDb() {
   return {
     secret: randomBytes(48).toString('hex'), // HS256 signing secret
     geofence: { allowedCountries: ['SA'], failMode: 'open' }, // failMode: open|closed when geo cannot be resolved
-    roles: {
-      admin: {
-        labelEn: 'Administrator', permissions: ['*']
-      },
-      manager: {
-        labelEn: 'Manager',
-        permissions: ['attendance.read', 'attendance.write', 'attendance.read.self', 'employees.read', 'payroll.read', 'documents.read', 'users.read']
-      },
-      employee: {
-        labelEn: 'Employee',
-        permissions: ['attendance.read.self', 'attendance.write.self', 'profile.read', 'payslip.read.self']
-      },
-      vendor: {
-        labelEn: 'Vendor',
-        permissions: ['profile.read', 'payslip.read.self', 'documents.read.self']
-      }
-    },
+    roles: structuredClone(DEFAULT_ROLES),
     users: SEED_USERS_V2.map(({ password, ...u }) => ({ ...u, ...passwordHash(password) })),
     refresh: [], // {hash, userId, exp, revoked}
     otps: [],    // {hash, kind:'phone'|'iqama', key, exp, attempts, devCode}
@@ -102,7 +108,15 @@ export function ensureMigrations(d) {
   }
   if (!d.geofence) {d.geofence = { allowedCountries: ['SA'], failMode: 'open' }; dirty = true;}
   if (!['open', 'closed'].includes(d.geofence.failMode)) {d.geofence.failMode = 'open'; dirty = true;}
-  if (d.roles && !d.roles.vendor) {
+  // Without a signing secret every signJwt() throws and login is dead. A store
+  // that lost it cannot have verifiable access tokens anyway, so minting a new
+  // one only forces a re-issue; outstanding refresh rows are unaffected because
+  // those are sha256 digests, not HMACs.
+  if (!d.secret || typeof d.secret !== 'string') {d.secret = randomBytes(48).toString('hex'); dirty = true;}
+  if (!d.roles || typeof d.roles !== 'object') {
+    d.roles = structuredClone(DEFAULT_ROLES);
+    dirty = true;
+  } else if (!d.roles.vendor) {
     d.roles.vendor = { labelEn: 'Vendor', permissions: ['profile.read', 'payslip.read.self', 'documents.read.self'] };
     dirty = true;
   }
@@ -154,14 +168,37 @@ export function db() {
 }
 export function saveDb() {
   if (!_db) {return;}
-  if (_store) {
-    _store.saveSnapshot(_db);
-    return;
+  const write = () => {
+    if (_store) { _store.saveSnapshot(_db); return; }
+    mkdirSync(dirname(DB_PATH), { recursive: true });
+    const tmp = `${DB_PATH}.tmp`;
+    writeFileSync(tmp, JSON.stringify(_db, null, 1));
+    renameSync(tmp, DB_PATH);
+  };
+  write();
+}
+
+/**
+ * The only safe way to change the store. The snapshot is the source of truth
+ * and every later save flushes it, so a mutation whose persist fails would
+ * otherwise stay applied and surface on the next unrelated write — that is how
+ * one bad OTP request took the whole API down. Snapshot first, mutate, persist,
+ * and restore the snapshot if the persist throws, so a caller that saw an error
+ * can trust that nothing changed.
+ * @param {(d: any) => any} fn receives the live snapshot; its return value is passed through
+ */
+export function mutate(fn) {
+  if (!_db) {_db = db();}
+  const before = JSON.stringify(_db);
+  let result;
+  try {
+    result = fn(_db);
+    saveDb();
+  } catch (e) {
+    try { _db = JSON.parse(before); } catch (_e) { /* keep the live snapshot */ }
+    throw e;
   }
-  mkdirSync(dirname(DB_PATH), { recursive: true });
-  const tmp = `${DB_PATH}.tmp`;
-  writeFileSync(tmp, JSON.stringify(_db, null, 1));
-  renameSync(tmp, DB_PATH);
+  return result;
 }
 
 /** Connection status for the admin UI: driver, file, tables, row counts. */
@@ -228,9 +265,17 @@ export const resolveLogin = (identifier) => {
 };
 export function createUser(fields) {
   const d = db();
+  const loginId = String(fields.loginId).trim();
+  // Refuse a duplicate BEFORE touching the array. The users.login_id unique
+  // index would otherwise throw out of saveDb(), and because the record was
+  // already pushed, every later save would fail too — the same poison the OTP
+  // table used to have. The client already handles this error code.
+  if (!loginId) {return { error: 'login_id_required' };}
+  const clash = d.users.find(u => String(u.loginId || '').toLowerCase() === loginId.toLowerCase());
+  if (clash) {return { error: 'login_id_taken' };}
   const user = {
     id: `u-${randomBytes(5).toString('hex')}`,
-    loginId: String(fields.loginId).trim(),
+    loginId,
     nameEn: String(fields.nameEn || fields.loginId).trim(),
     nameAr: String(fields.nameAr || '').trim(),
     role: ROLES.includes(fields.role) ? fields.role : 'employee',
@@ -254,17 +299,28 @@ export function updateUser(id, patch, actorId) {
   for (const k of ['nameEn', 'nameAr', 'phone', 'iqama', 'email']) {
     if (patch[k] !== undefined) {safe[k] = String(patch[k]).trim();}
   }
-  if (patch.role && ROLES.includes(patch.role)) {safe.role = patch.role;}
+  if (patch.role !== undefined && patch.role !== null && patch.role !== '') {
+    if (!ROLES.includes(patch.role)) {return { error: 'invalid_role' };}
+    safe.role = patch.role;
+  }
   if (patch.status === 'active' || patch.status === 'disabled') {
     if (u.id === actorId && patch.status === 'disabled') {return { error: 'cannot_disable_self' };}
     safe.status = patch.status;
   }
+  let rotated = false;
   if (patch.password) {
     if (String(patch.password).length < getPolicy().passwordMinLength) {return { error: 'password_too_short' };}
     Object.assign(safe, passwordHash(patch.password));
+    // An admin-initiated reset is a remediation action, so it must end the
+    // target's sessions exactly as a self-service change does. Without this the
+    // victim keeps a working access token and refresh token, and any session
+    // stolen before the reset outlives it.
+    safe.pwChangedAt = Math.floor(Date.now() / 1000);
+    rotated = true;
   }
   Object.assign(u, safe);
   saveDb();
+  if (rotated) {revokeAllFor(u.id);}
   return u;
 }
 export function deleteUser(id, actorId) {
@@ -272,9 +328,10 @@ export function deleteUser(id, actorId) {
   const i = d.users.findIndex(x => x.id === id);
   if (i < 0) {return { error: 'not_found' };}
   if (d.users[i].id === actorId) {return { error: 'cannot_delete_self' };}
-  d.users.splice(i, 1);
-  saveDb();
-  return { ok: true };
+  return mutate(() => {
+    d.users.splice(i, 1);
+    return { ok: true };
+  });
 }
 
 // ── security policy + password lifecycle ──────────────────────────────────
@@ -285,10 +342,10 @@ export function getPolicy() {
   };
 }
 export function setPolicy(patch) {
-  const d = db();
-  d.policy = { ...(d.policy || {}), ...(patch || {}) };
-  saveDb();
-  return d.policy;
+  return mutate((d) => {
+    d.policy = { ...(d.policy || {}), ...(patch || {}) };
+    return d.policy;
+  });
 }
 export function changePassword(userId, currentPw, newPw) {
   const u = db().users.find(x => x.id === userId);
@@ -308,7 +365,7 @@ export function changePassword(userId, currentPw, newPw) {
 export async function requestReset(loginId) {
   const u = resolveLogin(loginId);
   if (!u || !u.phone) {return { sent: true, expiresInSeconds: OTP_TTL };}
-  const out = await requestOtp('reset', String(u.loginId).toLowerCase());
+  const out = await requestOtp('reset', String(u.loginId).toLowerCase(), u.phone);
   logEvent({ event: 'password_forgot', userId: u.id, ok: true, reason: 'otp_sent' });
   return out;
 }
@@ -351,25 +408,65 @@ export function verifyJwt(token, secret) {
 }
 
 // ── rate limiting (in-memory sliding window; per process) ─────────────────
+// Keys embed user-supplied values (login id, phone, iqama), so without a ceiling
+// a flood of distinct values grows this map permanently — a memory-exhaustion
+// DoS. Buckets are swept on access and the total is capped; both are no-ops for
+// normal traffic.
 const _buckets = new Map();
+export const RATE_LIMIT_MAX_BUCKETS = 10_000;
+// Each bucket remembers its own window, otherwise a sweep cannot tell an idle
+// bucket from a live lockout and either keeps expired keys forever or drops a
+// lockout that is protecting an account.
+const bucketFor = (key, windowMs) => {
+  const b = _buckets.get(key);
+  if (b && b.win === windowMs) {return b;}
+  const fresh = { arr: b ? b.arr.filter(ts => Date.now() - ts < windowMs) : [], win: windowMs };
+  _buckets.set(key, fresh);
+  return fresh;
+};
+
+/** Drop buckets whose newest entry has fallen out of its own window. */
+export function sweepRateLimits() {
+  const now = Date.now();
+  for (const [key, b] of _buckets) {
+    const live = b.arr.filter(ts => now - ts < b.win);
+    if (live.length) { b.arr = live; } else { _buckets.delete(key); }
+  }
+  return _buckets.size;
+}
+export const rateLimiterSize = () => _buckets.size;
+
+/** Evict the least-recently-touched bucket when over the cap. */
+function enforceBucketCap() {
+  if (_buckets.size <= RATE_LIMIT_MAX_BUCKETS) {return;}
+  const entries = [..._buckets.entries()];
+  entries.sort((a, b) => (a[1].arr[a[1].arr.length - 1] || 0) - (b[1].arr[b[1].arr.length - 1] || 0));
+  for (const [key] of entries) {
+    if (_buckets.size <= RATE_LIMIT_MAX_BUCKETS) {break;}
+    _buckets.delete(key);
+  }
+}
+
 export function rateLimit(key, max, windowMs) {
   const now = Date.now();
-  const arr = (_buckets.get(key) || []).filter(ts => now - ts < windowMs);
+  const b = bucketFor(key, windowMs);
+  const arr = b.arr.filter(ts => now - ts < windowMs);
+  b.arr = arr;
   if (arr.length >= max) {
     const retryAfter = Math.ceil((arr[0] + windowMs - now) / 1000);
-    _buckets.set(key, arr);
     return { ok: false, retryAfter };
   }
   arr.push(now);
-  _buckets.set(key, arr);
+  enforceBucketCap();
   return { ok: true };
 }
 
 /** Read-only limiter check — reports lockout without recording an attempt. */
 export function rateLimitPeek(key, max, windowMs) {
   const now = Date.now();
-  const arr = (_buckets.get(key) || []).filter(ts => now - ts < windowMs);
-  _buckets.set(key, arr);
+  const b = bucketFor(key, windowMs);
+  const arr = b.arr.filter(ts => now - ts < windowMs);
+  b.arr = arr;
   if (arr.length >= max) {
     return { ok: false, retryAfter: Math.ceil((arr[0] + windowMs - now) / 1000) };
   }
@@ -383,11 +480,26 @@ export function rateLimitReset(key) {
 
 // ── tokens ─────────────────────────────────────────────────────────────────
 const sha256 = (s) => createHash('sha256').update(s).digest('hex');
-export function issueTokens(user, ip) {
+// A rotation chain shares one family id. When a spent token is replayed we
+// cannot tell a second tab from an attacker by token alone, so the family is
+// the unit we revoke once the bounded grace window is spent.
+const GRACE_SECONDS = 30;
+const GRACE_MAX = 2;
+
+export function issueTokens(user, ip, family) {
   const d = db();
   const access = signJwt({ sub: user.id, role: user.role, typ: 'access', jti: randomBytes(8).toString('hex') }, d.secret, ACCESS_TTL);
   const refresh = randomBytes(48).toString('hex');
-  d.refresh.push({ hash: sha256(refresh), userId: user.id, exp: Math.floor(Date.now() / 1000) + REFRESH_TTL, revoked: false, created: Math.floor(Date.now() / 1000), ip: String(ip || '').slice(0, 45) });
+  d.refresh.push({
+    hash: sha256(refresh),
+    userId: user.id,
+    exp: Math.floor(Date.now() / 1000) + REFRESH_TTL,
+    revoked: false,
+    created: Math.floor(Date.now() / 1000),
+    ip: String(ip || '').slice(0, 45),
+    family: family || randomBytes(8).toString('hex'),
+    reuseCount: 0
+  });
   if (d.refresh.length > 400) {d.refresh.splice(0, d.refresh.length - 400);}
   saveDb();
   return { accessToken: access, refreshToken: refresh, tokenType: 'Bearer', expiresIn: ACCESS_TTL, user: publicUser(user) };
@@ -416,33 +528,66 @@ export function rotateRefresh(rawToken, ip) {
   const now = Math.floor(Date.now() / 1000);
   const row = d.refresh.find(r => r.hash === h && !r.revoked);
   if (!row) {
-    // Rotation grace: a token rotated seconds ago may still be in flight
-    // from another tab or a parallel request (they share localStorage).
-    // Re-issue a sibling session instead of failing them — otherwise one
-    // tab logs out every other tab. Bounded: 30s window, 3 re-issues.
+    // The presented token is already spent. That is either a parallel tab that
+    // raced this one, or a captured token being replayed — the token itself
+    // cannot tell us which, so treat every replay as a security event and let
+    // the bound decide. (This branch used to look for `prevHash === h` where
+    // prevHash had been set to the row's OWN hash, so it matched the very token
+    // the client had just rotated and handed out a fresh session.)
     const parent = d.refresh.find(r =>
-      r.prevHash === h && !r.graceDone
-      && now - (r.rotatedAt || 0) < 30
-      && (r.graceCount || 0) < 3
-      && r.exp > now);
-    if (parent) {
-      const pUser = d.users.find(u => u.id === parent.userId);
-      if (pUser && pUser.status !== 'disabled') {
-        parent.graceCount = (parent.graceCount || 0) + 1;
-        parent.graceDone = true;
-        saveDb();
-        return issueTokens(pUser, ip || '');
-      }
+      r.prevHash === h && !r.revoked && now - (r.rotatedAt || 0) < GRACE_SECONDS && r.exp > now);
+    if (!parent) {return null;}
+    const family = parent.family;
+    parent.reuseCount = (parent.reuseCount || 0) + 1;
+    logEvent({
+      event: 'refresh_token_reuse',
+      userId: parent.userId,
+      ip: ip || '',
+      ok: false,
+      reason: `replay #${parent.reuseCount} of a rotated token`
+    });
+    if (parent.reuseCount > GRACE_MAX) {
+      // Proven abuse: kill every session descended from this login, not just
+      // the one chain the attacker holds.
+      const family = parent.family;
+      revokeFamily(parent.userId, family);
+      return null;
+    }
+    const pUser = d.users.find(u => u.id === parent.userId);
+    if (pUser && pUser.status !== 'disabled') {
+      saveDb();
+      return issueTokens(pUser, ip || '', family);
     }
     return null;
   }
   if (row.exp < now) {return null;}
-  row.prevHash = h; // enable the grace window for parallel siblings
+  const family = row.family || randomBytes(8).toString('hex');
   row.rotatedAt = now;
   row.revoked = true; // rotation: the presented token is single-use
   const user = d.users.find(u => u.id === row.userId);
   if (!user) {return null;}
-  return issueTokens(user, ip || '');
+  // The successor records the hash it replaced and the time of the rotation,
+  // which is what lets a genuinely parallel request be recognised inside the
+  // bounded window above.
+  const issued = issueTokens(user, ip || '', family);
+  const successor = d.refresh[d.refresh.length - 1];
+  if (successor) {successor.prevHash = h; successor.rotatedAt = now;}
+  saveDb();
+  return issued;
+}
+/** Revoke every live refresh row in one rotation chain. */
+function revokeFamily(userId, family) {
+  const d = db();
+  let n = 0;
+  d.refresh.forEach(r => {
+    if (r.userId === userId && r.family === family && !r.revoked) {
+      r.revoked = true;
+      n += 1;
+    }
+  });
+  logEvent({ event: 'session_family_revoked', userId, ip: '', ok: false, reason: `refresh_token_reuse:${n}` });
+  saveDb();
+  return n;
 }
 export function revokeRefresh(rawToken) {
   const d = db();
@@ -462,7 +607,9 @@ export function publicUser(u) {
   return { id: u.id, loginId: u.loginId || '', nameEn: u.nameEn, nameAr: u.nameAr, role: u.role, permissions: permissionsOf(u.role), email: u.email || '', phone: u.phone || '', status: u.status || 'active' };
 }
 export function permissionsOf(role) {
-  return (db().roles[role] || {}).permissions || [];
+  // Fails closed: an unknown or missing role grants nothing rather than
+  // throwing, so one bad record cannot 500 every permission check.
+  return ((db().roles || {})[role] || {}).permissions || [];
 }
 export function roleCan(role, perm) {
   const list = permissionsOf(role);
@@ -500,17 +647,44 @@ export function requirePerm(req, perm) {
 }
 
 // ── OTP ────────────────────────────────────────────────────────────────────
-export async function requestOtp(kind, key) {
+// A challenge is keyed by (kind, key). Re-requesting replaces any live
+// challenge for the same identity — appending a second row left two entries
+// with the same primary key, which failed the very next save and, because
+// every save rewrites the whole store, took the rest of the API down with it.
+//
+// `key` is the challenge's identity (an Iqama, a login id, a phone) and is NOT
+// necessarily dialable. `dest` is where the code is actually sent, so the two
+// can differ: a password reset is keyed on the login id but delivered to the
+// phone on file. Sending to `key` meant texting codes to "2000000002", which a
+// real provider rejects outright — silently breaking Iqama login and the only
+// account-recovery path while the route still reported success.
+const DIALABLE = /^\+?[1-9]\d{6,14}$/;
+
+export async function requestOtp(kind, key, dest) {
   const d = db();
+  const target = String(dest === undefined || dest === null ? '' : dest).trim();
+  if (!DIALABLE.test(target)) {
+    // No usable destination: refuse rather than record a code nobody can
+    // receive. The route turns this into a non-2xx so the UI stops claiming
+    // success.
+    logEvent({ event: 'otp_request', ip: '', ok: false, reason: `no_dialable_destination:${kind}` });
+    return { sent: false, reason: 'no_dialable_destination', destination: '' };
+  }
   const code = String(100000 + (parseInt(randomBytes(4).toString('hex'), 16) % 900000)); // 6-digit, crypto-secure
-  d.otps.push({ hash: sha256(`${kind}:${key}:${code}`), kind, key, exp: Math.floor(Date.now() / 1000) + OTP_TTL, attempts: 0, devCode: code });
+  const rec = { hash: sha256(`${kind}:${key}:${code}`), kind, key, exp: Math.floor(Date.now() / 1000) + OTP_TTL, attempts: 0, devCode: code };
+  const existing = d.otps.findIndex(o => o.kind === kind && o.key === key);
+  if (existing >= 0) {
+    d.otps[existing] = rec;
+  } else {
+    d.otps.push(rec);
+  }
   if (d.otps.length > 60) {d.otps.splice(0, d.otps.length - 60);}
   saveDb();
   // SMS provider is pluggable (SMS_PROVIDER=console|twilio|webhook). The code
   // is echoed in dev responses only, never in production.
-  const sms = await sendSms(key, `goHR verification code: ${code} (valid ${OTP_TTL}s)`);
+  const sms = await sendSms(target, `goHR verification code: ${code} (valid ${OTP_TTL}s)`);
   logEvent({ event: 'sms_sent', ip: '', ok: !!sms.ok, reason: `${sms.provider}${sms.reason ? ':' + sms.reason : ''}` });
-  return { sent: sms.ok !== false, expiresInSeconds: OTP_TTL, maxAttempts: OTP_MAX_ATTEMPTS, devCode: IS_PROD ? undefined : code };
+  return { sent: sms.ok !== false, expiresInSeconds: OTP_TTL, maxAttempts: OTP_MAX_ATTEMPTS, destination: target, devCode: IS_PROD ? undefined : code };
 }
 export function consumeOtp(kind, key, code) {
   const d = db();
@@ -556,8 +730,21 @@ export function findUser({ phone, iqama, loginId }) {
 }
 export function upsertGoogleUser(profile) {
   const d = db();
-  let u = d.users.find(x => (profile.sub && x.googleSub === profile.sub) || (profile.email && x.email && x.email.toLowerCase() === String(profile.email).toLowerCase()));
+  const email = String(profile.email || '').toLowerCase();
+  // Linking an existing LOCAL account by email is only safe when Google has
+  // verified that address. A Google account can be registered with any
+  // unverified address, so without this check anyone could register a Google
+  // account using a colleague's address — including the seeded
+  // admin@gohr.com — and be issued that account's session.
+  const bySub = profile.sub ? d.users.find(x => x.googleSub && x.googleSub === profile.sub) : null;
+  const byVerifiedEmail = (profile.email_verified === true && email)
+    ? d.users.find(x => x.email && String(x.email).toLowerCase() === email)
+    : null;
+  let u = bySub || byVerifiedEmail;
   if (!u) {
+    // A different Google identity claiming an address that already belongs to a
+    // local account must not silently take it over. Fall through to a new
+    // employee record instead, leaving the local account untouched.
     u = { id: `u-g-${randomBytes(4).toString('hex')}`, nameEn: profile.name || profile.email || 'Google user', nameAr: '', role: 'employee', iqama: '', phone: '', email: profile.email || '', googleSub: profile.sub || '' };
     d.users.push(u);
     saveDb();
@@ -576,7 +763,13 @@ export function resolveIp(req) {
   return ip.replace(/^::ffff:/, '').replace(/^::1$/, '127.0.0.1');
 }
 export function isPrivateIp(ip) {
-  return !ip || ip === '127.0.0.1' || ip === '0.0.0.0' || ip.startsWith('10.') || ip.startsWith('192.168.') || ip.startsWith('169.254.') || /^172\.(1[6-9]|2\d|3[01])\./.test(ip) || ip === 'local';
+  if (!ip || ip === 'local') {return true;}
+  // IPv6 loopback and IPv4-mapped IPv6, which is what node reports for a
+  // local client on a dual-stack listener. Without these a local login is
+  // sent to the external geo lookup and waits on the network.
+  if (ip === '::1' || ip === '::ffff:127.0.0.1' || ip.startsWith('::ffff:127.')) {return true;}
+  if (ip === 'fe80::1' || ip.startsWith('fe80:') || ip.startsWith('fc') || ip.startsWith('fd')) {return true;}
+  return ip === '127.0.0.1' || ip === '0.0.0.0' || ip.startsWith('10.') || ip.startsWith('192.168.') || ip.startsWith('169.254.') || /^172\.(1[6-9]|2\d|3[01])\./.test(ip);
 }
 const geoCache = new Map();
 export async function lookupCountry(ip) {

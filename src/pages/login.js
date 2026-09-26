@@ -30,19 +30,6 @@ const showForm = (which) => {
 })();
 
 const post = async (path, body) => {
-  if (path === '/auth/login') {
-    const loginId = body.loginId;
-    const demoUsers = {
-      'ADM-001': { id: 'u-admin', loginId: 'ADM-001', nameEn: 'Admin User', nameAr: 'مدير النظام', role: 'admin', email: 'admin@gohr.com', phone: '+966500000001', status: 'active', permissions: ['*'] },
-      'MGR-001': { id: 'u-manager', loginId: 'MGR-001', nameEn: 'Manager User', nameAr: 'مدير الفريق', role: 'manager', email: 'manager@gohr.test', phone: '+966500000002', status: 'active', permissions: ['attendance.read','attendance.write','attendance.read.self','employees.read','payroll.read','documents.read','users.read'] },
-      'EMP-001': { id: 'u-employee', loginId: 'EMP-001', nameEn: 'Employee User', nameAr: 'موظف', role: 'employee', email: 'employee@gohr.test', phone: '+966500000003', status: 'active', permissions: ['attendance.read.self','attendance.write.self','profile.read','payslip.read.self'] },
-      'VND-001': { id: 'u-vendor', loginId: 'VND-001', nameEn: 'Vendor Partner', nameAr: 'مورّد', role: 'vendor', email: 'vendor@gohr.test', phone: '+966500000004', status: 'active', permissions: ['profile.read','payslip.read.self','documents.read.self'] }
-    };
-    const user = demoUsers[loginId] || demoUsers['EMP-001'];
-    const sessionData = { accessToken: 'dev-token', refreshToken: 'dev-refresh', expiresIn: 900, user, demoMode: getDemoMode() };
-    setSession(sessionData);
-    return { status: 200, ok: true, data: sessionData };
-  }
   const res = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
   const data = await res.json().catch(() => ({}));
   return { status: res.status, ok: res.ok, data };
@@ -85,33 +72,38 @@ $('login-form').addEventListener('submit', async (e) => {
   }
 });
 
-// ── demo accounts — instant role login (local dev) ──
-const demoSessions = {
-  admin: { id: 'u-admin', loginId: 'ADM-001', nameEn: 'Admin User', nameAr: 'مدير النظام', role: 'admin', email: 'admin@gohr.com', phone: '+966500000001', status: 'active', permissions: ['*'] },
-  manager: { id: 'u-manager', loginId: 'MGR-001', nameEn: 'Manager User', nameAr: 'مدير الفريق', role: 'manager', email: 'manager@gohr.test', phone: '+966500000002', status: 'active', permissions: ['attendance.read','attendance.write','attendance.read.self','employees.read','payroll.read','documents.read','users.read'] },
-  employee: { id: 'u-employee', loginId: 'EMP-001', nameEn: 'Employee User', nameAr: 'موظف', role: 'employee', email: 'employee@gohr.test', phone: '+966500000003', status: 'active', permissions: ['attendance.read.self','attendance.write.self','profile.read','payslip.read.self'] },
-  vendor: { id: 'u-vendor', loginId: 'VND-001', nameEn: 'Vendor Partner', nameAr: 'مورّد', role: 'vendor', email: 'vendor@gohr.test', phone: '+966500000004', status: 'active', permissions: ['profile.read','payslip.read.self','documents.read.self'] }
-};
-
+// ── demo accounts — dev only; the token is minted by the server, never
+// fabricated here, so the role the page gets is the role the API enforces.
 function getDemoMode() {
   return $('demo-mode-toggle')?.checked === true;
 }
 
-function createSessionData(user) {
-  const demoMode = getDemoMode();
-  return { accessToken: 'dev-token', refreshToken: 'dev-refresh', expiresIn: 900, user, demoMode };
-}
-
-document.querySelectorAll('[data-demo-role]').forEach(b => {
-  b.addEventListener('click', async () => {
-    setMsg('', true);
-    const role = b.dataset.demoRole;
-    const user = demoSessions[role] || demoSessions.employee;
-    const sessionData = createSessionData(user);
-    setSession(sessionData);
-    window.location.replace(destFor(user));
+if (import.meta.env.PROD) {
+  $('auth-demo')?.remove();
+} else {
+  document.querySelectorAll('[data-demo-role]').forEach(b => {
+    b.addEventListener('click', async () => {
+      setMsg('', true);
+      const role = b.dataset.demoRole;
+      b.disabled = true;
+      try {
+        const res = await fetch(`/auth/test?role=${encodeURIComponent(role)}`);
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.accessToken) {
+          setMsg(t('auth.errSend'), false);
+          return;
+        }
+        data.demoMode = getDemoMode();
+        setSession(data);
+        window.location.replace(destFor(data.user));
+      } catch (_e) {
+        setMsg(t('auth.errSend'), false);
+      } finally {
+        b.disabled = false;
+      }
+    });
   });
-});
+}
 
 // ── Google (fastest) ──
 $('google-start').addEventListener('click', async () => {

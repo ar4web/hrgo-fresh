@@ -5,7 +5,7 @@
 // revenue-vs-cost / margin charts over the invoice history.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtSAR, setText, renderPageMeta } from './hr-locale.js';
+import { fmtSAR, setText } from './hr-locale.js';
 import { getSeed } from './hr-api.js';
 import { CLIENTS, EMPLOYEES, SECONDMENTS } from './hr-seed.js';
 import { calcGosi } from './hr-statutory.js';
@@ -87,12 +87,7 @@ function renderStats() {
   setText('pf-stat-margin', fmtSAR(margin));
   setText('pf-stat-rate', revenue > 0 ? `${round1((margin / revenue) * 100)}%` : '—');
   setText('pf-stat-internal', fmtSAR(internal));
-  renderPageMeta([
-    `${fmtSAR(revenue)} ${t('pf.revenue')}`,
-    `${fmtSAR(cost)} ${t('pf.cost')}`,
-    `${fmtSAR(margin)} ${t('pf.margin')}`
-  ]);
-  const note = document.getElementById('pf-note');
+    const note = document.getElementById('pf-note');
   if (note) {
     note.textContent = month ? '' : t('pf.gosiNote');
   }

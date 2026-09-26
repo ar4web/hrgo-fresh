@@ -3,10 +3,16 @@
 
 import { getSeed } from './hr-api.js';
 import { t, currentLang, LANG_EVENT } from './i18n.js';
-import { renderPageMeta } from './hr-locale.js';
+
 import { PROFESSIONS } from './hr-seed.js';
+import { escapeHtml as esc, AVATAR_BG } from './markup.js';
 
 let booted = false;
+
+/** Local calendar date as YYYY-MM-DD. `toISOString()` must NOT be used for this:
+ * it converts to UTC, so in Saudi Arabia (UTC+3) a local midnight becomes
+ * 21:00 the previous day and every date reads a day early. */
+const localIso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 function profName(code) {
   const p = PROFESSIONS.find(x => x.code === code);
@@ -68,16 +74,10 @@ function renderCards() {
   bar('bar-huroob', huroobPct);
   bar('bar-bench', benchPct);
 
-  renderPageMeta(t('dash.meta')
-    .replace('{total}', total)
-    .replace('{active}', active)
-    .replace('{deployed}', distinctDeployed)
-    .replace('{leave}', onLeave));
-
-  // Workforce Trend stat — accurate 6M hired vs exited
+    // Workforce Trend stat — accurate 6M hired vs exited
   const trendStat = document.getElementById('trend-stat');
   if (trendStat) {
-    const now = new Date('2026-09-13');
+    const now = new Date();
     const months6 = [];
     for (let i=5;i>=0;i--) { const d=new Date(now); d.setMonth(d.getMonth()-i); months6.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`); }
     const hired6 = months6.reduce((s,k)=> s + emps.filter(e=>(e.join||'').slice(0,7)===k).length, 0);
@@ -111,7 +111,7 @@ function renderTodo() {
     const done = task.done;
     const prio = task.priority === 'high' ? 'var(--red)' : task.priority === 'medium' ? 'var(--yellow)' : 'var(--green)';
     const title = currentLang() === 'ar' ? (task.titleAr || task.titleEn) : task.titleEn;
-    return `<div class="todo-row${done?' done':''}"><div class="todo-cb${done?' done':''}">${done?'<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6l2.5 3 5-6"/></svg>':''}</div><span class="todo-text">${title}</span><span class="todo-prio" style="background:${prio}"></span><span class="todo-date">${task.due? task.due.slice(5):''}</span></div>`;
+    return `<div class="todo-row${done?' done':''}"><div class="todo-cb${done?' done':''}">${done?'<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 6l2.5 3 5-6"/></svg>':''}</div><span class="todo-text">${esc(title)}</span><span class="todo-prio" style="background:${prio}"></span><span class="todo-date">${task.due? esc(task.due.slice(5)):''}</span></div>`;
   }).join('');
   list.innerHTML = rows || `<div class="caption-muted" style="padding:12px">${t('dash.noTasks')}</div>`;
   if (counter) {
@@ -126,11 +126,16 @@ function renderNeedsAttention() {
   if (!el) {return;}
   const emps = getSeed('employees') || [];
   const huroob = emps.filter(e=>e.st==='huroob');
-  const expiring = emps.filter(e=> e.iqamaExp && e.iqamaExp < '2026-11-01' && e.st==='active').slice(0,3);
+  // "Expiring soon" must be relative to today, not a hard-coded date — the old
+  // literal made this list silently stale from the day it was written.
+  const soonCutoff = new Date();
+  soonCutoff.setDate(soonCutoff.getDate() + 60);
+  const cutoffIso = localIso(soonCutoff);
+  const expiring = emps.filter(e => e.iqamaExp && e.iqamaExp <= cutoffIso && e.st === 'active').slice(0, 3);
   const probation = emps.filter(e=>e.st==='probation').slice(0,2);
   const items = [];
-  if (huroob.length) {items.push(`<li class="activity-item"><div class="activity-avatar" style="background:#f43f5e">!</div><div><div class="activity-body"><strong>${t('status.huroob')} (${huroob.length})</strong> — ${t('dash.huroobAlert').replace('{n}', huroob.length).replace('{name}', empName(huroob[0]))}</div><div class="activity-time">${t('dash.today')}</div></div></li>`);}
-  if (expiring.length) {items.push(`<li class="activity-item"><div class="activity-avatar" style="background:#f59e0b">◷</div><div><div class="activity-body">${t('dash.iqamaAlert').replace('{n}', expiring.length).replace('{name}', empName(expiring[0]))}</div><div class="activity-time">${t('dash.thisWeek')}</div></div></li>`);}
+  if (huroob.length) {items.push(`<li class="activity-item"><div class="activity-avatar" style="background:var(--red)">!</div><div><div class="activity-body"><strong>${t('status.huroob')} (${huroob.length})</strong> — ${esc(t('dash.huroobAlert').replace('{n}', huroob.length).replace('{name}', empName(huroob[0])))}</div><div class="activity-time">${t('dash.today')}</div></div></li>`);}
+  if (expiring.length) {items.push(`<li class="activity-item"><div class="activity-avatar" style="background:var(--yellow)">◷</div><div><div class="activity-body">${esc(t('dash.iqamaAlert').replace('{n}', expiring.length).replace('{name}', empName(expiring[0])))}</div><div class="activity-time">${t('dash.thisWeek')}</div></div></li>`);}
   if (probation.length) {items.push(`<li class="activity-item"><div class="activity-avatar" style="background:var(--blue)">P</div><div><div class="activity-body">${t('dash.probationAlert').replace('{n}', probation.length)}</div><div class="activity-time">${t('dash.thisWeek')}</div></div></li>`);}
   if (!items.length) {items.push(`<li class="activity-item"><div class="activity-avatar" style="background:var(--green)">✓</div><div><div class="activity-body"><strong>${t('dash.allClear')}</strong> — ${t('dash.allClearBody')}</div><div class="activity-time">${t('dash.justNow')}</div></div></li>`);}
   el.innerHTML = `<ul class="activity-list">${items.join('')}</ul>`;
@@ -143,17 +148,22 @@ function renderRecentEmployees() {
   const stMap = { active:'green', probation:'blue', 'on-leave':'yellow', huroob:'red', exited:'grey' };
   tbody.innerHTML = emps.map(e => {
     const name = empName(e);
-    return `<tr><td class="cell-mono">${e.code}</td><td><div class="cell-customer"><div class="cell-avatar" style="background:var(--${e.av||'primary'})">${e.nameEn.slice(0,2).toUpperCase()}</div><span class="cell-strong">${name}</span></div></td><td>${profName(e.prof) || e.titleEn || '-'}</td><td><span class="status status-${stMap[e.st]||'grey'}">${t(`status.${e.st}`) || e.st}</span></td><td>${e.join||e.entry||'-'}</td></tr>`;
+    // `av` picks a palette entry; anything unknown falls back rather than
+    // being interpolated into the style attribute.
+    const bg = AVATAR_BG[e.av] || AVATAR_BG.primary;
+    const initials = String(name || e.code || '?').split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    const stKey = stMap[e.st] ? e.st : '';
+    return `<tr><td class="cell-mono">${esc(e.code)}</td><td><div class="cell-customer"><div class="cell-avatar" style="background:${bg}">${esc(initials)}</div><span class="cell-strong">${esc(name)}</span></div></td><td>${esc(profName(e.prof) || e.titleEn || '-')}</td><td><span class="status status-${stMap[e.st] || 'grey'}">${esc(stKey ? t(`status.${stKey}`) : (e.st || '-'))}</span></td><td>${esc(e.join || e.entry || '-')}</td></tr>`;
   }).join('') || `<tr><td colspan="5" class="caption-muted" style="padding:16px;text-align:center">${t('dash.loading')}</td></tr>`;
 }
 
 function renderExpiry() {
   const emps = (getSeed('employees')||[]).filter(e=> e.iqamaExp && e.st!=='exited');
-  const now = new Date('2026-09-13');
+  const now = new Date();
   const d7 = new Date(now); d7.setDate(d7.getDate()+7);
   const d30 = new Date(now); d30.setDate(d30.getDate()+30);
   const d90 = new Date(now); d90.setDate(d90.getDate()+90);
-  const fmt = d=> d.toISOString().slice(0,10);
+  const fmt = localIso;
   const c7 = emps.filter(e=> e.iqamaExp <= fmt(d7)).length;
   const c30 = emps.filter(e=> e.iqamaExp > fmt(d7) && e.iqamaExp <= fmt(d30)).length;
   const c90 = emps.filter(e=> e.iqamaExp > fmt(d30) && e.iqamaExp <= fmt(d90)).length;
@@ -193,7 +203,7 @@ function renderNationality() {
   const flag = { Saudi:'🇸🇦', India:'🇮🇳', Pakistan:'🇵🇰', Philippines:'🇵🇭', Bangladesh:'🇧🇩', Egypt:'🇪🇬' };
   el.innerHTML = sorted.map(([nat,c])=> {
     const pct = Math.round((c/total)*100);
-    return `<div class="visitor-row"><span class="visitor-flag">${flag[nat]||'🏳️'}</span><span class="visitor-name">${nat}</span><span class="visitor-pct">${pct}%</span><div class="visitor-bar"><div class="fill" style="width:${pct}%;background:var(--primary)"></div></div></div>`;
+    return `<div class="visitor-row"><span class="visitor-flag">${flag[nat]||'🏳️'}</span><span class="visitor-name">${esc(nat)}</span><span class="visitor-pct">${pct}%</span><div class="visitor-bar"><div class="fill" style="width:${pct}%;background:var(--primary)"></div></div></div>`;
   }).join('') || `<div class="caption-muted" style="padding:12px">${t('dash.noData')}</div>`;
 }
 

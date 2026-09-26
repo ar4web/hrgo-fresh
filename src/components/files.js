@@ -5,7 +5,7 @@
 // meter. Expiry chips reuse the statutory expiryBand engine.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, setText } from './hr-locale.js';
 import { getSeed, saveImportedRows } from './hr-api.js';
 import { showModal } from './modal.js';
 import { showToast } from './toast.js';
@@ -151,12 +151,7 @@ function renderStats(rows) {
   setText('fm-stat-expiring', fmtInt(expiring));
   setText('fm-stat-emps', fmtInt(emps));
   setText('fm-stat-storage', `${pct}%`);
-  renderPageMeta([
-    `${fmtInt(rows.length)} ${t('fm.total')}`,
-    `${fmtInt(expiring)} ${t('fm.expiring')}`,
-    `${fmtInt(emps)} ${t('fm.employees')}`
-  ]);
-}
+  }
 
 // ── Table ──
 
@@ -533,7 +528,7 @@ function renderCrumbs() {
   if (!nav) {return;}
   const chain = pathOf(cwd);
   const crumb = (label, id, isLast) =>
-    `<button class="fm-crumb${isLast ? ' current' : ''}" type="button" data-fm-cwd="${id || ''}">${esc(label)}</button>`;
+    `<button class="fm-crumb${isLast ? ' current' : ''}" type="button" data-fm-cwd="${esc(id || '')}">${esc(label)}</button>`;
   nav.innerHTML = crumb(t('fm.root'), null, !chain.length)
     + chain.map((f, i) => `<span class="fm-crumb-sep">/</span>` + crumb(f.name, f.id, i === chain.length - 1)).join('');
 }

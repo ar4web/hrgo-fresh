@@ -17,7 +17,6 @@
     <div class="page-rail-left">
       <div class="page-rail-pretitle" data-i18n="hr.ui.pretitle">HR &amp; Operations</div>
       <h1 class="page-rail-title" data-i18n="hr.nav.employees">Employees</h1>
-      <div class="caption-muted page-meta" data-page-meta></div>
     </div>
     <div class="page-rail-right" role="toolbar" data-i18n-aria="ro.empRailToolsAria" aria-label="Employee tools">
       <!-- Sort -->
@@ -40,15 +39,15 @@
         </button>
       </div>
       <!-- Export -->
-      <button class="btn btn-outline page-rail-btn" id="emp-export" type="button" data-i18n="common.export" aria-label="Export">
+      <button class="btn btn-outline page-rail-btn" id="emp-export" data-emp-action="export" type="button" data-i18n="common.export" aria-label="Export">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
       </button>
       <!-- Import -->
-      <button class="btn btn-outline page-rail-btn" id="emp-import" type="button" data-i18n="common.import" aria-label="Import">
+      <button class="btn btn-outline page-rail-btn" id="emp-import" data-emp-action="import" type="button" data-i18n="common.import" aria-label="Import">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V3m0 12L8 11m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
       </button>
       <!-- Add -->
-      <button class="btn btn-primary page-rail-btn" id="emp-add" type="button" data-i18n="ro.addEmployee" aria-label="Add employee">
+      <button class="btn btn-primary page-rail-btn" id="emp-add" data-emp-action="add" type="button" data-i18n="ro.addEmployee" aria-label="Add employee">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
       </button>
     </div>
@@ -166,15 +165,15 @@
   <!-- BOTTOM ACTION RAIL — All actions on the right -->
   <div class="emp-action-rail" role="toolbar" data-i18n-aria="ro.empActionsAria" aria-label="Employee actions">
     <span class="emp-rail-right">
-      <button class="btn btn-primary" id="emp-add" type="button" data-i18n="ro.addEmployee">
+      <button class="btn btn-primary" data-emp-action="add" type="button" data-i18n="ro.addEmployee">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>
         <span data-i18n="ro.addEmployee">Add employee</span>
       </button>
-      <button class="btn btn-outline" id="emp-import" type="button" data-i18n="common.import">
+      <button class="btn btn-outline" data-emp-action="import" type="button" data-i18n="common.import">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 15V3m0 12L8 11m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
         <span data-i18n="common.import">Import</span>
       </button>
-      <button class="btn btn-outline" id="emp-export" type="button" data-i18n="common.export">
+      <button class="btn btn-outline" data-emp-action="export" type="button" data-i18n="common.export">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
         <span data-i18n="common.export">Export</span>
       </button>

@@ -16,18 +16,6 @@ export function setText(id, v) {
   }
 }
 
-// Uniform page-header meta line ("27 total · 22 active · …") — one copy.
-// Pass pre-joined segments; blank segments are dropped, remainder joined
-// with an interpunct. Null-safe: no-op when the page has no meta slot.
-export function renderPageMeta(parts) {
-  const el = document.querySelector('[data-page-meta]') || document.getElementById('dash-meta');
-  if (!el) {return;}
-  el.textContent = (Array.isArray(parts) ? parts : [parts])
-    .map(s => String(s ?? '').trim())
-    .filter(Boolean)
-    .join(' · ');
-}
-
 // Null-safe HTML setter — for the few pages that render markup (contracts, reviews, reports).
 export function fmtSAR(amount, opts = {}) {
   const lang = opts.lang || currentLang();

@@ -92,8 +92,9 @@ if (document.querySelector('[data-page="dashboard"]')) {
 }
 
 // Page registry: data-page key -> lazy importer. Only the kept areas boot
-// here: dashboard via guard above, analytics via global charts/tables,
-// employees plus their supporting views.
+// here: the dashboard via the guard above, plus employees and their supporting
+// views. `analytics` has no entry — its page markup is not wired to a module,
+// so opening analytics.html renders its static shell and nothing populates it.
 const PAGES = {
   'employees': () => import('./components/employees.js').then((m) => m.initEmployees()),
   'employee-file': () => import('./components/employee-detail.js').then((m) => m.initEmployeeDetail()),

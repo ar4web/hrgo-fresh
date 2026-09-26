@@ -679,7 +679,8 @@ input[type="range"].slider:focus-visible {
   transition: background 120ms, color 120ms;
 }
 .topbar-icon-btn:hover { background: var(--bg-surface-secondary); color: var(--text); }
-.topbar-icon-btn svg { width: 18px; height: 18px; }
+// svg sizing intentionally lives in _layout.scss (20px nav size) — a second
+// rule here would override it purely on @use order.
 .topbar-icon-btn .theme-icon-sun { display: none; }
 [data-theme="dark"] .topbar-icon-btn .theme-icon-moon { display: none; }
 [data-theme="dark"] .topbar-icon-btn .theme-icon-sun { display: block; }

@@ -3,7 +3,7 @@
 
 import { openMenu } from './menus.js';
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, initialsOf, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, initialsOf, setText } from './hr-locale.js';
 import { daysUntil, nitaqatEstimate, yearsBetween } from './hr-statutory.js';
 import { getSeed } from './hr-api.js';
 import { exportData } from './import-export.js';
@@ -260,13 +260,7 @@ function renderStats(list) {
     cnt.textContent = `${fmtInt(visible(getSeed('employees')).length)} / ${fmtInt(list.length)}`;
   }
   renderTicker(list);
-  renderPageMeta([
-    `${fmtInt(list.length)} ${t('ro.total')}`,
-    `${fmtInt(list.filter(e => e.st === 'active').length)} ${t('status.active')}`,
-    `${fmtInt(deployed)} ${t('status.deployed')}`,
-    `${fmtInt(list.filter(e => e.st === 'on-leave').length)} ${t('status.on-leave')}`
-  ]);
-}
+  }
 
 // Merged alert ticker: clean text strings only — no counts, days, or tallies.
 function renderTicker(list) {
@@ -580,8 +574,8 @@ function renderRows() {
       <td><span class="status status-${vac.key === 'eligible' ? 'green' : 'blue'}">${esc(vac.label)}</span></td>
       <td style="font-size:12.5px"><span class="status status-${ins.key === 'active' ? 'green' : ins.key === 'expired' ? 'red' : 'yellow'}">${esc(ins.label)}</span><div style="font-size:11px;color:var(--text-muted)">${esc(insCompany(e))}</div></td>
       <td class="emp-actions-cell">
-        <button class="card-opt-btn" data-emp-edit="${esc(e.code)}" aria-label="${t('ro.editRow').replace('{code}', e.code)}" data-tooltip="${t('common.edit')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 3a2.8 2.8 0 014 4L7.5 20.5 2 22l1.5-5.5z"/></svg></button>
-        <button class="card-opt-btn" data-emp-view="${esc(e.code)}" aria-label="${t('ro.viewRow').replace('{code}', e.code)}" data-tooltip="${t('common.view')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        <button class="card-opt-btn" data-emp-edit="${esc(e.code)}" aria-label="${esc(t('ro.editRow').replace('{code}', e.code))}" data-tooltip="${esc(t('common.edit'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 3a2.8 2.8 0 014 4L7.5 20.5 2 22l1.5-5.5z"/></svg></button>
+        <button class="card-opt-btn" data-emp-view="${esc(e.code)}" aria-label="${esc(t('ro.viewRow').replace('{code}', e.code))}" data-tooltip="${esc(t('common.view'))}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </td>
     </tr>`;
       })
@@ -739,20 +733,20 @@ export function initEmployees() {
     selectAll.checked = checked > 0 && checked === boxes.length;
     selectAll.indeterminate = checked > 0 && checked < boxes.length;
   });
-  // Header actions: add / export / import (single icon family, right-aligned)
-  document.getElementById('emp-add')?.addEventListener('click', (e) => {
-    e.stopPropagation();
-    openAddModal();
-  });
-  document.getElementById('emp-export')?.addEventListener('click', (e) => {
+  // Actions: add / export / import. The page renders two rails (a compact
+  // header strip and a labelled footer rail) carrying the same three actions,
+  // so both are driven off [data-emp-action] — ids stay unique to the header
+  // rail and the footer rail does not duplicate them.
+  root.addEventListener('click', e => {
+    const btn = e.target.closest('[data-emp-action]');
+    if (!btn) {return;}
     e.preventDefault();
     e.stopPropagation();
-    exportData('csv', 'employees', EXPORT_COLS, visible(getSeed('employees')));
-  });
-  document.getElementById('emp-import')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    openEmployeeImport();
+    if (btn.dataset.empAction === 'add') {openAddModal(); return;}
+    if (btn.dataset.empAction === 'import') {openEmployeeImport(); return;}
+    if (btn.dataset.empAction === 'export') {
+      exportData('csv', 'employees', EXPORT_COLS, visible(getSeed('employees')));
+    }
   });
   document.getElementById('emp-rows')?.addEventListener('click', e => {
     const view = e.target.closest('[data-emp-view]');

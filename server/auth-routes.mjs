@@ -1,6 +1,7 @@
 // goHR auth API — route table. Mounted by server/index.mjs (standalone) and
 // proxied by vite (/auth, /api → API_URL, default http://localhost:8080).
 
+import { randomBytes } from 'node:crypto';
 import {
   db, saveDb, logEvent, issueTokens, rotateRefresh, revokeRefresh, revokeAllFor, listSessions,
   requireAuth, requirePerm, rateLimit, rateLimitPeek, rateLimitReset, verifyPassword, userByLoginId, resolveLogin, createUser, updateUser, deleteUser, ROLES,
@@ -20,7 +21,15 @@ const json = (res, code, obj, req = _req) => {
   const body = JSON.stringify(obj);
   const origin = req?.headers?.origin || (req ? `${req.headers['x-forwarded-proto'] || 'http'}://${req.headers.host}` : '');
   const headers = {
-    'content-type': 'application/json; charset=utf-8'
+    'content-type': 'application/json; charset=utf-8',
+    // These responses carry Iqama numbers, phone numbers, emails, national IDs
+    // and session material. Without nosniff/no-store a single XSS on the app
+    // turns into a full data exfiltration path.
+    'x-content-type-options': 'nosniff',
+    'x-frame-options': 'DENY',
+    'referrer-policy': 'no-referrer',
+    'cache-control': 'no-store',
+    'content-security-policy': "default-src 'none'; frame-ancestors 'none'"
   };
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
     headers['access-control-allow-origin'] = origin;
@@ -80,18 +89,29 @@ export async function handleAuth(req, res) {
     if (req.method === 'POST' && path === '/auth/login') {
       const ip0 = resolveIp(req);
       const body = await readBody(req);
-      const rlKey = `login:${ip0}:${String(body.loginId || '').toLowerCase()}`;
+      // The lockout key MUST be normalised exactly the way resolveLogin
+      // normalises the identifier. It used to lowercase only, so "adm-001",
+      // "ADM-001 " and "Adm-001" resolved to one account but counted in three
+      // separate buckets — the attempt cap never tripped and password guessing
+      // was unlimited. A second, IP-only bucket stops the same attempt budget
+      // from being spread across many accounts.
+      const ident = String(body.loginId || '').trim().toLowerCase();
+      const rlKey = `login:${ip0}:${ident}`;
+      const rlIpKey = `login-ip:${ip0}`;
       // lockout counts FAILED attempts only — successful sign-ins must never
       // trip it; a success clears the bucket for this key.
       const rl = rateLimitPeek(rlKey, 5, 10 * 60 * 1000);
-      if (!rl.ok) {
+      const rlIp = rateLimitPeek(rlIpKey, 20, 10 * 60 * 1000);
+      if (!rl.ok || !rlIp.ok) {
+        const retryAfter = rl.ok ? rlIp.retryAfter : rl.retryAfter;
         logEvent({ event: 'login', loginId: body.loginId, ip: ip0, ok: false, reason: 'rate_limited' });
-        res.setHeader('retry-after', String(rl.retryAfter));
-        return respond( 429, { error: 'too_many_requests', retryAfterSeconds: rl.retryAfter });
+        res.setHeader('retry-after', String(retryAfter));
+        return respond( 429, { error: 'too_many_requests', retryAfterSeconds: retryAfter });
       }
       const user = resolveLogin(body.loginId);
       if (!user || !verifyPassword(user, body.password)) {
         rateLimit(rlKey, 5, 10 * 60 * 1000);
+        rateLimit(rlIpKey, 20, 10 * 60 * 1000);
         logEvent({ event: 'login', loginId: body.loginId, ip: ip0, ok: false, reason: user ? 'bad_password' : 'unknown_login_id' });
         return respond( 401, { error: 'invalid_credentials' });
       }
@@ -126,7 +146,8 @@ export async function handleAuth(req, res) {
           logEvent({ event: 'otp_request', iqama, ip: resolveIp(req), ok: false, reason: 'unknown_iqama' });
           return respond( 404, { error: 'user_not_found' });
         }
-        const otp = await requestOtp('iqama', user.iqama);
+        const otp = await requestOtp('iqama', user.iqama, user.phone);
+        if (!otp.sent) {return respond( 503, { error: otp.reason || 'sms_unavailable' });}
         logEvent({ event: 'otp_request', userId: user.id, ip: resolveIp(req), ok: true, reason: 'iqama' });
         return respond( 200, { ...otp, kind: 'iqama', iqama: user.iqama, phoneMasked: maskPhone(user.phone) });
       }
@@ -136,7 +157,8 @@ export async function handleAuth(req, res) {
           logEvent({ event: 'otp_request', phone, ip: resolveIp(req), ok: false, reason: 'unknown_phone' });
           return respond( 404, { error: 'user_not_found' });
         }
-        const otp = await requestOtp('phone', user.phone);
+        const otp = await requestOtp('phone', user.phone, user.phone);
+        if (!otp.sent) {return respond( 503, { error: otp.reason || 'sms_unavailable' });}
         logEvent({ event: 'otp_request', userId: user.id, ip: resolveIp(req), ok: true, reason: 'phone' });
         return respond( 200, { ...otp, kind: 'phone', phoneMasked: maskPhone(user.phone) });
       }
@@ -186,7 +208,8 @@ export async function handleAuth(req, res) {
         logEvent({ event: 'iqama_login', iqama: body.iqama, ip: ip0, ok: false, reason: 'unknown_iqama' });
         return respond(404, { error: 'user_not_found' });
       }
-      const otp = await requestOtp('iqama', user.iqama);
+      const otp = await requestOtp('iqama', user.iqama, user.phone);
+      if (!otp.sent) {return respond(503, { error: otp.reason || 'sms_unavailable' });}
       logEvent({ event: 'iqama_login', userId: user.id, ip: ip0, ok: true, reason: 'otp_challenge_sent' });
       return respond(200, { ok: true, iqama: user.iqama, phoneMasked: maskPhone(user.phone), ...otp });
     }
@@ -214,7 +237,8 @@ export async function handleAuth(req, res) {
       return res.end();
     }
     if (path === '/auth/google/mock') {
-      if (IS_PROD) {return respond( 404, { error: 'not_found' });}
+      if (IS_PROD || process.env.NODE_ENV !== undefined) {return respond( 404, { error: 'not_found' });}
+      if (req.method !== 'GET') {return respond( 405, { error: 'method_not_allowed' });}
       const state = String(url.searchParams.get('state') || '');
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
       return res.end(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Google sign-in (dev mock)</title></head>
@@ -225,7 +249,8 @@ ${['admin', 'manager', 'employee'].map(r => `<a href="/auth/google/mock/finish?s
 </div></body></html>`);
     }
     if (path === '/auth/google/mock/finish') {
-      if (IS_PROD) {return respond( 404, { error: 'not_found' });}
+      if (IS_PROD || process.env.NODE_ENV !== undefined) {return respond( 404, { error: 'not_found' });}
+      if (req.method !== 'GET') {return respond( 405, { error: 'method_not_allowed' });}
       const state = url.searchParams.get('state') || '';
       const role = (url.searchParams.get('role') || 'employee').toLowerCase();
       if (!db().googlePending[state]) {return respond( 401, { error: 'invalid_state' });}
@@ -300,9 +325,21 @@ ${['admin', 'manager', 'employee'].map(r => `<a href="/auth/google/mock/finish?s
     }
 
     // ── dev-only test login (bypasses geofence; disabled in production) ──
+    // Armed whenever NODE_ENV is not literally 'production' — which includes a
+    // bare `node server/index.mjs`. Require it to be *unset* instead, so the
+    // route exists only on a developer machine that asked for it explicitly,
+    // and pin it to GET so it cannot be reached with an unexpected verb.
     if (path === '/auth/test') {
-      if (IS_PROD || process.env.AUTH_DISABLE_TEST === '1') {
-        return respond( 403, { error: 'test_endpoint_disabled_in_production' });
+      if (process.env.NODE_ENV !== undefined || process.env.AUTH_DISABLE_TEST === '1') {
+        return respond( 403, { error: 'test_endpoint_disabled' });
+      }
+      if (req.method !== 'GET') {
+        return respond( 405, { error: 'method_not_allowed' });
+      }
+      const ip = resolveIp(req);
+      const rl = rateLimit(`test:${ip}`, 20, 10 * 60 * 1000);
+      if (!rl.ok) {
+        return respond( 429, { error: 'too_many_requests', retryAfterSeconds: rl.retryAfter });
       }
       const role = (url.searchParams.get('role') || 'employee').toLowerCase();
       if (!['admin', 'manager', 'employee', 'vendor'].includes(role)) {return respond( 400, { error: 'unknown_role' });}
@@ -524,7 +561,13 @@ ${['admin', 'manager', 'employee'].map(r => `<a href="/auth/google/mock/finish?s
 
     return respond( 404, { error: 'not_found', path });
   } catch (e) {
-    return respond( 500, { error: 'internal_error', detail: String(e && e.message || e).slice(0, 200) });
+    // Never return the raw message: it reaches the client with table names,
+    // column names, constraint names and file paths (verified leaking
+    // "UNIQUE constraint failed: otps.key"). Log it server-side against a
+    // correlation id and hand the client only that id.
+    const incident = randomBytes(6).toString('hex');
+    console.error(`[auth] ${incident} ${req.method} ${path}`, e);
+    return respond( 500, { error: 'internal_error', incident });
   } finally {
     _req = null;
   }

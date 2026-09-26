@@ -1,4 +1,3 @@
-
 // goHR — document generator (documents.html). Bilingual letters, contracts,
 // agreements and notices over a {{placeholder}} engine: built-in template
 // library (contracts, certificates, NOC, warnings, secondment, NDA…), a
@@ -7,7 +6,7 @@
 // (EN / AR / both), and an issued-documents archive that reprints snapshots.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, setText } from './hr-locale.js';
 import { getSeed, saveImportedRows } from './hr-api.js';
 import { showModal } from './modal.js';
 import { showToast } from './toast.js';
@@ -136,7 +135,7 @@ function buildCtx(lang, emp, client, doc) {
     vat: SELLER().taxNo || '—',
     addressEn: SELLER().addressEn || '—',
     addressAr: SELLER().addressAr || '—',
-    phone: SELLER.phone || '—'
+    phone: SELLER().phone || '—'
   };
   const e = emp
     ? {
@@ -292,11 +291,7 @@ function renderGrid() {
   if (badge) {
     badge.textContent = fmtInt(templates().length);
   }
-  renderPageMeta([
-    `${fmtInt(templates().length)} ${t('doc.tabTemplates')}`,
-    `${fmtInt(issued().length)} ${t('doc.tabIssued')}`
-  ]);
-}
+  }
 
 // ── Compose + preview ──
 
@@ -740,7 +735,6 @@ async function mountDataTable() {
 }
 
 // ── Boot ──
-
 
 // ── Letterhead (import / replace / remove) ──
 

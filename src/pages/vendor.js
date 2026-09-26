@@ -4,9 +4,12 @@ import { t, currentLang, setLang, applyI18n } from '../components/i18n.js';
 import { ensureSession, getSession, signOut } from '../components/session.js';
 import { showToast } from '../components/toast.js';
 
-ensureSession();
-const s = getSession();
-const u = s && s.user;
+const s = ensureSession();
+if (!s) {
+  window.location.replace('login.html');
+  throw new Error('no session');
+}
+const u = s.user;
 const ar = () => document.documentElement.getAttribute('dir') === 'rtl';
 const name = u ? ((ar() && u.nameAr) ? u.nameAr : u.nameEn) : '';
 

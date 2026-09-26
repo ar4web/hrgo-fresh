@@ -36,10 +36,48 @@ CREATE TABLE IF NOT EXISTS sessions (
   data TEXT
 );
 CREATE INDEX IF NOT EXISTS sessions_user ON sessions(user_id);
-CREATE TABLE IF NOT EXISTS otps (key TEXT PRIMARY KEY, exp INTEGER, data TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS otps (kind TEXT NOT NULL DEFAULT '', key TEXT NOT NULL DEFAULT '', exp INTEGER, data TEXT NOT NULL, PRIMARY KEY(kind, key));
 CREATE TABLE IF NOT EXISTS audit_log (seq INTEGER PRIMARY KEY AUTOINCREMENT, ts INTEGER, data TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS audit_ts ON audit_log(ts);
 `;
+
+// A challenge is identified by (kind, key) — 'phone'/+9665…, 'iqama'/2xxxxxxxxx,
+// 'reset'/adm-001. Keying on `key` alone made a second request for the same
+// identity collide on the primary key, and because every save rewrites the
+// whole table inside one transaction, that single collision failed every
+// later write too. Existing single-column databases are rebuilt on boot.
+function migrateOtps(conn) {
+  const cols = conn.prepare('PRAGMA table_info(otps)').all();
+  if (!cols.length) {return false;}
+  // `kind` only exists once the composite key is in place, so its presence is
+  // the signal — counting columns would misread the table and re-run forever.
+  if (cols.some(c => c.name === 'kind')) {return false;}
+  conn.exec('BEGIN');
+  try {
+    conn.exec('ALTER TABLE otps RENAME TO otps_legacy');
+    conn.exec(`CREATE TABLE otps (kind TEXT NOT NULL DEFAULT '', key TEXT NOT NULL DEFAULT '', exp INTEGER, data TEXT NOT NULL, PRIMARY KEY(kind, key))`);
+    // Keep only the newest row per (kind, key) so the rebuild cannot itself
+    // hit a uniqueness conflict on a store that already holds duplicates.
+    const rows = conn.prepare('SELECT exp, data FROM otps_legacy ORDER BY rowid').all();
+    const insOtp = conn.prepare('INSERT INTO otps(kind,key,exp,data) VALUES(?,?,?,?) ON CONFLICT(kind,key) DO UPDATE SET exp=excluded.exp, data=excluded.data');
+    for (const r of rows) {
+      let kind = '';
+      let key = '';
+      try {
+        const parsed = JSON.parse(r.data);
+        kind = String(parsed.kind || '');
+        key = String(parsed.key || '');
+      } catch (_e) { /* unparseable row — drop it, it cannot be verified anyway */ }
+      insOtp.run(kind, key, r.exp || 0, r.data);
+    }
+    conn.exec('DROP TABLE otps_legacy');
+    conn.exec('COMMIT');
+  } catch (e) {
+    try {conn.exec('ROLLBACK');} catch (_e) { /* not in a transaction */ }
+    throw e;
+  }
+  return true;
+}
 
 function openSqlite(file) {
   mkdirSync(dirname(file), { recursive: true });
@@ -47,6 +85,7 @@ function openSqlite(file) {
   conn.exec('PRAGMA journal_mode = WAL');
   conn.exec('PRAGMA synchronous = NORMAL');
   conn.exec(SCHEMA);
+  migrateOtps(conn);
   return conn;
 }
 
@@ -70,9 +109,9 @@ function saveSqlite(conn, d) {
       insSess.run(r.hash, r.userId || null, r.exp || 0, r.revoked ? 1 : 0, JSON.stringify(r));
     }
     conn.exec('DELETE FROM otps');
-    const insOtp = conn.prepare('INSERT INTO otps(key,exp,data) VALUES(?,?,?)');
+    const insOtp = conn.prepare('INSERT INTO otps(kind,key,exp,data) VALUES(?,?,?,?) ON CONFLICT(kind,key) DO UPDATE SET exp=excluded.exp, data=excluded.data');
     for (const o of d.otps || []) {
-      insOtp.run(o.key || '', o.exp || 0, JSON.stringify(o));
+      insOtp.run(String(o.kind || ''), String(o.key || ''), o.exp || 0, JSON.stringify(o));
     }
     conn.exec('DELETE FROM audit_log');
     const insLog = conn.prepare('INSERT INTO audit_log(ts,data) VALUES(?,?)');

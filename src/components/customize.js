@@ -36,7 +36,7 @@ const DEFAULTS = Object.freeze({
   iconScale: 1,            // 0.8 – 1.3
   radius: 8,               // px 0 – 16
   spacingFactor: 1,        // 0.8 – 1.4
-  controlH: 38,            // px 28 – 44 (buttons are 2px shorter)
+  controlH: 34,            // px 28 – 44 (matches --control-h in _tokens.scss)
   topbarH: 56,             // px 48 – 72
   sidebarW: 290,           // px 220 – 320
   tableAlign: 'start'      // start | center | end
@@ -160,6 +160,9 @@ export function loadPrefs() {
       // One-time migrations: users who never customized the width follow the
       // current default (280px breathable sidebar).
       if (merged.sidebarW === 252 || merged.sidebarW === 220) {merged.sidebarW = DEFAULTS.sidebarW;}
+      // Same for the control height: 38px was the old default, not a deliberate
+      // pick, and it contradicted --control-h (34px) in _tokens.scss.
+      if (merged.controlH === 38) {merged.controlH = DEFAULTS.controlH;}
       return merged;
     }
   } catch (_e) { /* corrupt store — fall through */ }

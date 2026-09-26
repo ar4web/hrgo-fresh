@@ -5,7 +5,7 @@
 // Amounts are totals incl. VAT; `vat` carries the tax portion.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, fmtSAR, L, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, fmtSAR, L, setText } from './hr-locale.js';
 import { getSeed, saveImportedRows } from './hr-api.js';
 import { exportCSV } from './import-export.js';
 import { openImportModal } from './import-modal.js';
@@ -90,12 +90,7 @@ function renderStats() {
   setText('xp-stat-pending', fmtSAR(total(all.filter(r => r.status === 'pending'))));
   setText('xp-stat-approved', fmtSAR(total(all.filter(r => r.status === 'approved'))));
   setText('xp-stat-year', fmtSAR(total(all.filter(r => r.status === 'paid' && String(r.at).startsWith(year)))));
-  renderPageMeta([
-    `${fmtSAR(spent)} ${t('xp.thisMonth')}`,
-    `${fmtSAR(total(all.filter(r => r.status === 'pending')))} ${t('xp.pending')}`,
-    `${fmtSAR(total(all.filter(r => r.status === 'approved')))} ${t('xp.approved')}`
-  ]);
-}
+  }
 
 // ── Charts ──
 

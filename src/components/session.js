@@ -98,35 +98,12 @@ export async function signOut() {
   window.location.replace('login.html');
 }
 
-/** Bypass auth: always return a demo session for local dev. */
-export function ensureDemoSession() {
-  const s = getSession();
-  if (s && s.user) {return s;}
-  const demoUser = {
-    id: 'u-admin',
-    loginId: 'ADM-001',
-    nameEn: 'Admin User',
-    nameAr: 'مدير النظام',
-    role: 'admin',
-    email: 'admin@gohr.com',
-    phone: '+966500000001',
-    status: 'active',
-    permissions: ['*']
-  };
-  setSession({
-    accessToken: 'dev-token',
-    refreshToken: 'dev-refresh',
-    expiresIn: 900,
-    user: demoUser
-  });
-  return getSession();
-}
-
-/** Ensure a session exists (dev/demo pages that paint identity without a
- * full login flow). Delegates to the demo seed so the page always has a
- * user to render; real sign-in overwrites this via setSession. */
+/** The signed-in session, or null. Never fabricates one — the auth API is
+ *  the only thing allowed to mint a session. Pages that need a user call
+ *  this and redirect when it comes back empty. */
 export function ensureSession() {
-  return ensureDemoSession();
+  const s = getSession();
+  return (s && s.accessToken && s.user) ? s : null;
 }
 
 /** Where each account type lands after sign-in. The login ID decides the
@@ -166,8 +143,24 @@ function paintIdentity() {
   }
 }
 
-/** Entry hook for admin-shell pages (called from main.js). Auto-login for dev. */
+/** Entry hook for admin-shell pages (called from main.js). No session means
+ *  no page: redirect before anything paints. An existing session is then
+ *  validated against the API, because a token the server rejects (expired,
+ *  revoked, password changed) must not leave the page acting signed in. */
 export async function initSession() {
-  ensureDemoSession();
+  const s = ensureSession();
+  if (!s) {
+    window.location.replace('login.html');
+    return;
+  }
   paintIdentity();
+  try {
+    const res = await fetch('/auth/me', {
+      headers: { authorization: `Bearer ${s.accessToken}` }
+    });
+    if (res.status === 401) {
+      clearSession();
+      window.location.replace('login.html');
+    }
+  } catch (_e) { /* offline — keep local state, let API calls decide */ }
 }

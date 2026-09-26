@@ -143,7 +143,9 @@
 
   // ── Studio: icon sizes scale together ───────────────────────────────────
   --icon-size: calc(18px * var(--icon-scale));
-  --nav-icon-size: calc(18px * var(--icon-scale));
+  // Nav must be 20px (see the 20px fallbacks in _layout.scss). Defining this as
+  // 18px silently overrode them, because a defined token always beats a fallback.
+  --nav-icon-size: calc(20px * var(--icon-scale));
   --btn-icon-size: calc(14px * var(--icon-scale));
 
   /* Status colors */

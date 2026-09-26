@@ -16,7 +16,6 @@
     <div class="page-header-row">
       <div>
         <h1 class="page-title" data-i18n="nav.leave">Leave</h1>
-        <div class="caption-muted page-meta" data-page-meta></div>
       </div>
     </div>
   </div>
@@ -81,6 +80,9 @@
       </div>
       <div class="emp-toolbar-right" role="toolbar" data-i18n-aria="ro.filters" aria-label="Leave filters">
         <button class="btn btn-primary btn-sm" id="lv-filter-btn" type="button" aria-expanded="false" aria-controls="lv-filter-pop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M7 12h10M10 18h4"/></svg> <span data-i18n="ro.filter">Filter</span> <span class="badge badge-teal" id="lv-filter-count" hidden></span></button>
+        <button class="btn btn-ghost btn-sm" id="lv-export" type="button" data-i18n-aria="common.export" aria-label="Export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg></button>
+        <button class="btn btn-outline btn-sm" id="lv-import" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 8l5-5 5 5M12 3v12"/></svg> <span data-i18n="common.import">Import</span></button>
+        <button class="btn btn-primary btn-sm" id="lv-request" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg> <span data-i18n="lv.requestLeave">Request leave</span></button>
       </div>
     </div>
     <div class="emp-filter-pop" id="lv-filter-pop" hidden>
@@ -91,14 +93,10 @@
           <span data-i18n="ro.clearFilters">Clear filters</span>
         </button>
       </div>
-      <label class="emp-filter-field"><span data-i18n="file.nationality">Nationality</span><select class="form-control" id="lv-nat"><option value="" data-i18n="common.all">All</option></select></label>
       <label class="emp-filter-field"><span data-i18n="file.department">Department</span><select class="form-control" id="lv-dept"><option value="" data-i18n="common.all">All</option></select></label>
-      <label class="emp-filter-field"><span data-i18n="file.site">Site</span><select class="form-control" id="lv-site"><option value="" data-i18n="common.all">All</option></select></label>
-      <label class="emp-filter-field"><span data-i18n="file.profession">Profession</span><select class="form-control" id="lv-prof"><option value="" data-i18n="common.all">All</option></select></label>
-      <label class="emp-filter-field"><span data-i18n="ro.experience">Experience</span><select class="form-control" id="lv-exp"><option value="" data-i18n="common.all">All</option></select></label>
-      <label class="emp-filter-field"><span data-i18n="file.sponsor">Sponsor</span><select class="form-control" id="lv-sponsor"><option value="" data-i18n="common.all">All</option></select></label>
-      <label class="emp-filter-field"><span data-i18n="ro.age">Age</span><select class="form-control" id="lv-age"><option value="" data-i18n="common.all">All</option></select></label>
-      <label class="emp-filter-field"><span data-i18n="common.status">Status</span><select class="form-control" id="lv-status"><option value="" data-i18n="common.all">All</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="lv.leaveType">Leave type</span><select class="form-control" id="lv-type"><option value="" data-i18n="common.all">All</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="common.status">Status</span><select class="form-control" id="lv-st"><option value="" data-i18n="common.all">All</option><option value="pending" data-i18n="status.pending">Pending</option><option value="approved" data-i18n="status.approved">Approved</option><option value="rejected" data-i18n="status.rejected">Rejected</option><option value="cancelled" data-i18n="status.cancelled">Cancelled</option></select></label>
+      <label class="emp-filter-field"><span data-i18n="ro.sort">Sort</span><select class="form-control" id="lv-sort"><option value="" data-i18n="lv.sortNewest">Newest first</option><option value="code" data-i18n="emp.code">Code</option><option value="name" data-i18n="ro.sortName">Name A–Z</option><option value="days" data-i18n="lv.days">Days</option></select></label>
     </div>
   </div>
 

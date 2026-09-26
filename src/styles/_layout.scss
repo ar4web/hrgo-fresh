@@ -666,14 +666,6 @@ body:has(.emp-action-rail) .page-wrapper { padding-bottom: 76px; }
 // order 3 keeps it BELOW the h1 (title is order 1); without this the meta
 // line painted first and pushed the h1 down, which broke the heading-row
 // alignment the sidebar search bar depends on.
-.page-meta {
-  order: 3;
-  margin-top: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 // ────────────────────────
 //  GRID
 // ────────────────────────

@@ -7,7 +7,7 @@
 // with running balance, and an insights tab.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, fmtSAR, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, fmtSAR, setText } from './hr-locale.js';
 import { getSeed, saveImportedRows } from './hr-api.js';
 import { exportData } from './import-export.js';
 import { showModal } from './modal.js';
@@ -44,6 +44,19 @@ try {
   template = localStorage.getItem('hr:inv:template') || 'zatca';
 } catch (_e) {
   /* private mode */
+}
+
+/** Set the invoice template and keep every picker chip in sync — the page-level
+ *  picker and the one inside the document modal share the same selection. */
+function setTemplate(id) {
+  if (!TEMPLATES.some(x => x.id === id)) {return;}
+  template = id;
+  try {
+    localStorage.setItem('hr:inv:template', template);
+  } catch (_e) {
+    /* private mode */
+  }
+  document.querySelectorAll('[data-inv-tpl]').forEach(b => b.classList.toggle('active', b.dataset.invTpl === template));
 }
 
 // ── Data ──
@@ -210,13 +223,7 @@ function renderStats() {
   setText('iv-stat-out', fmtSAR(Math.round(out * 100) / 100));
   setText('iv-stat-overdue', fmtSAR(Math.round(overdue * 100) / 100));
   setText('iv-stat-clients', fmtInt(clients));
-  renderPageMeta([
-    month,
-    `${fmtSAR(Math.round(billed * 100) / 100)} ${t('inv.billed')}`,
-    `${fmtSAR(Math.round(out * 100) / 100)} ${t('inv.outstanding')}`,
-    `${fmtSAR(Math.round(overdue * 100) / 100)} ${t('inv.overdue')}`
-  ]);
-  const tc = document.getElementById('iv-tabcount-inv');
+    const tc = document.getElementById('iv-tabcount-inv');
   if (tc) {
     tc.textContent = fmtInt(rows.filter(r => r.month === month).length);
   }
@@ -750,13 +757,7 @@ function openInvoiceDoc(id) {
   docModalBody.addEventListener('click', e => {
         const chip = e.target.closest('[data-inv-tpl]');
         if (chip) {
-          template = chip.dataset.invTpl;
-          try {
-            localStorage.setItem('hr:inv:template', template);
-          } catch (_e) {
-            /* private mode */
-          }
-          document.querySelectorAll('[data-inv-tpl]').forEach(b => b.classList.toggle('active', b.dataset.invTpl === template));
+          setTemplate(chip.dataset.invTpl);
           const host = document.getElementById('iv-doc-body');
           if (host) {
             host.innerHTML = renderBody();
@@ -1173,6 +1174,11 @@ export function initInvoices() {
   });
   document.getElementById('iv-generate')?.addEventListener('click', openGenerate);
   document.getElementById('iv-export')?.addEventListener('click', exportCsv);
+  // Page-level template picker — sets the default used by Generate and Print.
+  document.querySelector('.inv-tpl-picker')?.addEventListener('click', e => {
+    const chip = e.target.closest('[data-inv-tpl]');
+    if (chip) { setTemplate(chip.dataset.invTpl); }
+  });
   document.getElementById('lg-client')?.addEventListener('change', e => {
     ledger.client = e.target.value;
     renderLedger();

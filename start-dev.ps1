@@ -11,7 +11,10 @@ Write-Host "Backend starting..."
 Start-Sleep -Seconds 3
 
 $frontendLog = "$logDir\vite.log"
-Start-Process -NoNewWindow -FilePath "cmd.exe" -ArgumentList "/c", "cd /d `"$projectDir`" && npx vite --clearScreen false --port 9173 --host > `"$frontendLog`" 2>&1"
+# No --host: the dev server proxies /auth to the backend, and AUTH_BYPASS=1 is
+# set above, so binding vite to every interface would expose admin-as-anyone
+# to the network. Set DEV_HOST=0.0.0.0 before running if you need LAN access.
+Start-Process -NoNewWindow -FilePath "cmd.exe" -ArgumentList "/c", "cd /d `"$projectDir`" && npx vite --clearScreen false --port 9173 > `"$frontendLog`" 2>&1"
 Write-Host "Frontend starting..."
 Start-Sleep -Seconds 8
 

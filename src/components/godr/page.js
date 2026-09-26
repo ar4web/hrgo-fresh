@@ -8,7 +8,7 @@
 import { t, currentLang, applyI18n, LANG_EVENT } from '../i18n.js';
 import { getSession, destFor } from '../session.js';
 import { escapeHtml as esc } from '../markup.js';
-import { renderPageMeta } from '../hr-locale.js';
+
 import { renderEchart } from '../chart-helper.js';
 import { store } from './store.js';
 import { CATALOG, diagnose, issueParams, connIssueFor, overallOf, scoreOf, tf, pageLabel } from './rules.js';
@@ -108,7 +108,7 @@ function renderKpis(st, overall, score, rowIssues) {
     card.classList.toggle('is-bad', score < 60);
     card.classList.toggle('is-mid', score >= 60 && score < 85);
   }
-  const statusEl = document.getElementById('godr-kpi-status');
+  const statusEl = document.getElementById('godr-kpi-health-sub');
   if (statusEl) {
     statusEl.textContent = t(overall === 'critical' ? 'godr.status.critical' : overall === 'degraded' ? 'godr.status.degraded' : 'godr.status.ok');
     statusEl.className = `godr-kpi-sub ${overall === 'critical' ? 't-err' : overall === 'degraded' ? 't-warn' : 't-ok'}`;
@@ -148,9 +148,9 @@ function renderKpis(st, overall, score, rowIssues) {
     avgSub.textContent = slowest ? tf('godr.kpi.slowest', { p: pageLabel(slowest.key) }) : '—';
   }
 
-  const rttEl = document.getElementById('godr-kpi-rtt');
+  const rttEl = document.getElementById('godr-kpi-conn');
   if (rttEl) rttEl.textContent = st.conn && st.conn.rtt != null ? `${st.conn.rtt} ms` : '—';
-  const rttSub = document.getElementById('godr-kpi-rtt-sub');
+  const rttSub = document.getElementById('godr-kpi-conn-sub');
   if (rttSub) {
     rttSub.textContent = st.conn
       ? `${netLabel(st.conn)} · ${t(SIGNAL_KEY[st.conn.signal] || 'godr.sig.weak')}`
@@ -208,7 +208,7 @@ function renderCharts(st, score) {
 
   // Speedometer — system health score.
   renderEchart(
-    document.getElementById('godr-gauge'),
+    document.getElementById('chart-godr-health'),
     (tk) => ({
       series: [{
         type: 'gauge', min: 0, max: 100, startAngle: 210, endAngle: -30,
@@ -230,7 +230,7 @@ function renderCharts(st, score) {
 
   // RTT trend — one point per monitoring cycle.
   renderEchart(
-    document.getElementById('godr-line'),
+    document.getElementById('chart-godr-rtt'),
     (tk) => ({
       grid: { left: 44, right: 16, top: 16, bottom: 26 },
       tooltip: { trigger: 'axis', textStyle: { color: tk.text, fontSize: 11 }, backgroundColor: tk.bgSurface, borderColor: tk.borderLight },
@@ -261,7 +261,7 @@ function renderCharts(st, score) {
   });
   const total = st.issues.slice(0, 40).length;
   renderEchart(
-    document.getElementById('godr-donut'),
+    document.getElementById('chart-godr-err'),
     (tk) => ({
       title: {
         text: String(total), subtext: t('godr.kpi.issues'),
@@ -296,7 +296,7 @@ function renderCharts(st, score) {
   const colorOf = (p) => p.status === 'ok' ? OK : p.status === 'weak' ? WARN
     : (p.status === 'error' || p.status === 'timeout') ? ERR : p.status === 'lost' ? GRAY : OK;
   renderEchart(
-    document.getElementById('godr-bars'),
+    document.getElementById('chart-godr-pages'),
     (tk) => ({
       grid: { left: 118, right: 52, top: 8, bottom: 24 },
       tooltip: {
@@ -337,20 +337,26 @@ function renderProblems(st) {
   const count = document.getElementById('godr-problem-count');
   if (list) {
     if (!st.issues.length) {
-      list.innerHTML = `<div class="godr-clear">${esc(t('godr.problems.none'))}</div>`;
+      // A <tbody> may only contain rows, so even the empty state spans the
+      // table's columns. Writing a <div> here made the parser hoist it out of
+      // the table entirely.
+      list.innerHTML = `<tr><td colspan="5" class="godr-clear">${esc(t('godr.problems.none'))}</td></tr>`;
     } else {
+      // Rows, not divs: <div> children of <tbody> are hoisted out by the HTML
+      // parser, which left this table permanently empty while the issue cards
+      // appeared as loose blocks above it.
       list.innerHTML = st.issues.slice(0, 40).map((i) => {
         const { d, prob, fix } = issueTexts(i);
         const where = [i.page ? esc(i.page) : '', i.url ? esc(i.url) : '']
           .filter(Boolean).join(' · ');
-        return `<div class="godr-issue">
-          <span class="godr-badge ${sevBadgeClass(d.sev)}">${esc(t(d.sev === 'critical' ? 'godr.sev.critical' : d.sev === 'warning' ? 'godr.sev.warning' : 'godr.sev.info'))}</span>
-          <div class="godr-issue-body">
-            <div class="godr-issue-prob">${esc(prob)}${i.count > 1 ? ` <span class="godr-x">×${i.count}</span>` : ''}</div>
-            ${where ? `<div class="godr-issue-where">${where} · ${esc(fmtTime(i.ts))}</div>` : ''}
-            <div class="godr-issue-fix"><span>${esc(t('godr.conn.fix'))}:</span> ${esc(fix)}</div>
-          </div>
-        </div>`;
+        const sevLabel = t(d.sev === 'critical' ? 'godr.sev.critical' : d.sev === 'warning' ? 'godr.sev.warning' : 'godr.sev.info');
+        return `<tr>
+          <td class="godr-cell-when">${esc(fmtTime(i.ts))}</td>
+          <td class="godr-cell-where">${where || '<span class="godr-dim">—</span>'}</td>
+          <td class="godr-cell-prob">${esc(prob)}${i.count > 1 ? ` <span class="godr-x">×${i.count}</span>` : ''}</td>
+          <td class="godr-cell-fix">${esc(fix)}</td>
+          <td class="godr-cell-sev"><span class="godr-badge ${sevBadgeClass(d.sev)}">${esc(sevLabel)}</span></td>
+        </tr>`;
       }).join('');
     }
   }
@@ -415,12 +421,7 @@ function render() {
   renderCharts(st, score);
   renderTable(st);
   renderProblems(st);
-  renderPageMeta([
-    `${score}`,
-    t(overall === 'critical' ? 'godr.status.critical' : overall === 'degraded' ? 'godr.status.degraded' : 'godr.status.ok'),
-    `${st.issues.length} ${t('godr.kpi.issues')}`
-  ]);
-}
+  }
 
 let cycling = false;
 async function cycle() {
@@ -446,7 +447,10 @@ async function cycle() {
 export function initGoDr() {
   if (!guard()) return;
   applyI18n();
-  document.getElementById('godr-check')?.addEventListener('click', () => cycle());
+  // Both "Check now" buttons (page header and footer) run the same cycle.
+  document.querySelectorAll('#godr-check, #godr-check-foot').forEach(b => {
+    b.addEventListener('click', () => cycle());
+  });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
       const st = store.getState();

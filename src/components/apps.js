@@ -5,7 +5,7 @@
 // deep-link shim that opens the launcher (or ?app=mail) directly.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, setText } from './hr-locale.js';
 import { getSeed, saveImportedRows } from './hr-api.js';
 import { showModal } from './modal.js';
 import { showToast } from './toast.js';
@@ -809,12 +809,7 @@ function ensureLangHook() {
 }
 
 function renderAppsMeta() {
-  renderPageMeta([
-    `${fmtInt(WORKSPACE.length)} ${t('ap.tabApps')}`,
-    `${fmtInt(upcomingMeetings())} ${t('ap.tabMeetings')}`,
-    `${fmtInt(unreadMail())} ${t('ap.tabMail')}`
-  ]);
-}
+  }
 
 function openApp(key) {
   const def = WORKSPACE.find(w => w.key === key);

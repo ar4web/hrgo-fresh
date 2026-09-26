@@ -16,7 +16,6 @@
     <div class="page-header-row">
       <div>
         <h1 class="page-title" data-i18n="nav.invoices">Invoicing</h1>
-        <div class="caption-muted page-meta" data-page-meta></div>
       </div>
     </div>
   </div>
@@ -70,6 +69,36 @@
         </div>
       </div>
     </div>
+
+    <!-- Template picker — sets the default for Generate and Print -->
+    <div class="inv-tpl-picker" role="radiogroup" aria-label="Template" data-i18n-aria="tpl.pick">
+      <span class="inv-tpl-label" data-i18n="tpl.pick">Template</span>
+      <button class="inv-tpl-chip active" data-inv-tpl="zatca" type="button"><span data-i18n="tpl.zatca">ZATCA</span></button>
+      <button class="inv-tpl-chip" data-inv-tpl="house" type="button"><span data-i18n="tpl.house">House</span></button>
+      <button class="inv-tpl-chip" data-inv-tpl="detail" type="button"><span data-i18n="tpl.detail">Detail</span></button>
+    </div>
+
+    <div class="card">
+      <div class="card-body table-wrap">
+        <table class="table emp-table" data-page-length="10">
+          <thead>
+            <tr>
+              <th data-i18n="inv.invoiceH">Invoice</th>
+              <th data-i18n="inv.clientH">Client</th>
+              <th data-i18n="inv.headsH">Heads</th>
+              <th data-i18n="inv.subH">Subtotal</th>
+              <th data-i18n="inv.vatH">VAT 15%</th>
+              <th data-i18n="inv.totalH">Total</th>
+              <th data-i18n="inv.dueH">Due date</th>
+              <th data-i18n="common.status">Status</th>
+              <th class="emp-actions-col" data-i18n="common.actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="iv-rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 
     <!-- ══ TAB: CLIENTS ══ -->
     <section data-tabpanel="clients" hidden>
@@ -125,34 +154,26 @@
     <section data-tabpanel="insights" hidden>
       <div class="row col-4">
         <div class="card"><div class="stat"><div class="stat-icon teal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6L9 17l-5-5"/></svg></div><div class="stat-content"><div class="stat-label" data-i18n="in.collRate">Collection rate</div><div class="stat-value-row"><span class="stat-value" id="in-stat-coll">0%</span></div><div class="stat-subtext" data-i18n="in.collSub">Paid / Billed</div></div></div><div class="stat-spark" id="spark-coll"></div></div>
-        <div class="card"><div class="stat"><div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6L9 17l-5-5"/></svg></div><div class="stat-content"><div class="stat-label" data-i18n="in.avgInv">Avg invoice</div><div class="stat-value-row"><span class="stat-value" id="in-stat-avg">0</span></div><div class="stat-subtext" data-i18n="in.avgSub">Average invoice value</div></div></div>
-        <div class="card"><div class="stat"><div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="stat-content"><div class="stat-label" data-i18n="in.vatDeclared">VAT declared</div><div class="stat-value-row"><span class="stat-value" id="in-stat-vat">0</span></div><div class="stat-subtext" data-i18n="in.vatSub">Total VAT declared</div></div></div>
-        <div class="card"><div class="stat"><div class="stat-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div><div class="stat-content"><div class="stat-label" data-i18n="in.compRate">Compliance</div><div class="stat-value-row"><span class="stat-value" id="in-stat-comp">0%</span></div><div class="stat-subtext" data-i18n="in.compSub">Ajeer-compliant invoices</div></div></div>
+        <div class="card"><div class="stat"><div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 6L9 17l-5-5"/></svg></div><div class="stat-content"><div class="stat-label" data-i18n="in.avgInv">Avg invoice</div><div class="stat-value-row"><span class="stat-value" id="in-stat-avg">0</span></div><div class="stat-subtext" data-i18n="in.avgSub">Average invoice value</div></div></div></div>
+        <div class="card"><div class="stat"><div class="stat-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="stat-content"><div class="stat-label" data-i18n="in.vatDeclared">VAT declared</div><div class="stat-value-row"><span class="stat-value" id="in-stat-vat">0</span></div><div class="stat-subtext" data-i18n="in.vatSub">Total VAT declared</div></div></div></div>
+        <div class="card"><div class="stat"><div class="stat-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg></div><div class="stat-content"><div class="stat-label" data-i18n="in.compRate">Compliance</div><div class="stat-value-row"><span class="stat-value" id="in-stat-comp">0%</span></div><div class="stat-subtext" data-i18n="in.compSub">Ajeer-compliant invoices</div></div></div></div>
       </div>
-    </div>
 
-    <div class="row col-3 stack-gap">
-      <div class="card">
-        <div class="card-header"><div class="card-title" data-i18n="in.byMonthTitle">Billing by month</div></div>
-        <div class="card-body"><div class="chart-box chart-lg" id="chart-iv-month"></div></div>
+      <div class="row col-3 stack-gap">
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="in.byMonthTitle">Billing by month</div></div>
+          <div class="card-body"><div class="chart-box chart-lg" id="chart-iv-month"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="in.agingTitle">Receivables aging</div></div>
+          <div class="card-body"><div class="chart-box chart-lg" id="chart-iv-aging"></div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title" data-i18n="in.byClientTitle">Billing by client</div></div>
+          <div class="card-body"><div class="chart-box chart-lg" id="chart-iv-client"></div></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title" data-i18n="in.agingTitle">Receivables aging</div></div>
-        <div class="card-body"><div class="chart-box chart-lg" id="chart-iv-aging"></div></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><div class="card-title" data-i18n="in.byClientTitle">Billing by client</div></div>
-        <div class="card-body"><div class="chart-box chart-lg" id="chart-iv-client"></div></div>
-      </div>
-    </div>
-
-    <!-- Tabs row -->
-    <div class="inv-tpl-picker" role="radiogroup" aria-label="Template">
-      <span class="inv-tpl-label">Template</span>
-      <button class="inv-tpl-chip active" data-inv-tpl="zatca" type="button"><span data-i18n="tpl.zatca">ZATCA</span></button>
-      <button class="inv-tpl-chip" data-inv-tpl="house" type="button"><span data-i18n="tpl.house">House</span></button>
-      <button class="inv-tpl-chip" data-inv-tpl="detail" type="button"><span data-i18n="tpl.detail">Detail</span></button>
-    </div>
+    </section>
 
 </div>
 </main>

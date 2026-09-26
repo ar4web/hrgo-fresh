@@ -186,7 +186,6 @@ export default defineConfig(({ command }) => ({
           if (!id.includes('node_modules')) return;
           if (/node_modules\/echarts\//.test(id)) return 'vendor-echarts';
           if (/node_modules\/datatables\.net\//.test(id)) return 'vendor-tables';
-          if (/node_modules\/leaflet\//.test(id)) return 'vendor-maps';
         },
         assetFileNames: (assetInfo) => {
           const name = assetInfo.name ?? assetInfo.names?.[0] ?? '';
@@ -208,7 +207,11 @@ export default defineConfig(({ command }) => ({
   server: {
     open: '/src/pages/index.html',
     port: Number(process.env.PORT) || 9173,
-    host: true,
+    // Loopback by default. The dev server proxies /auth and /api straight to
+    // the backend, so binding it to every interface would re-expose whatever
+    // the backend allows (notably AUTH_BYPASS) to the whole network. Set
+    // DEV_HOST=0.0.0.0 to test from a phone on the LAN, knowingly.
+    host: process.env.DEV_HOST || '127.0.0.1',
     allowedHosts: ['.e2b.app'],
     proxy: {
       '/api': {
@@ -234,7 +237,7 @@ export default defineConfig(({ command }) => ({
     allowedHosts: ['.e2b.app']
   },
   optimizeDeps: {
-    include: ['echarts', 'datatables.net', 'leaflet'],
+    include: ['echarts', 'datatables.net'],
     force: false
   },
   css: {

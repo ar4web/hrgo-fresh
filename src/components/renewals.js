@@ -4,7 +4,7 @@
 // patches the employee record through the local overlay.
 
 import { t, currentLang, LANG_EVENT, applyI18n } from './i18n.js';
-import { fmtDate, setText, renderPageMeta } from './hr-locale.js';
+import { fmtDate, setText } from './hr-locale.js';
 import { getSeed, saveImportedRows } from './hr-api.js';
 import { exportData } from './import-export.js';
 import { showModal } from './modal.js';
@@ -107,13 +107,7 @@ function renderStats(rows) {
   setText('rx-stat-critical', fmtInt(count('critical')));
   setText('rx-stat-urgent', fmtInt(count('urgent')));
   setText('rx-stat-soon', fmtInt(count('soon')));
-  renderPageMeta([
-    `${fmtInt(count('expired'))} ${t('rx.expired')}`,
-    `${fmtInt(count('critical'))} ${t('rx.critical')}`,
-    `${fmtInt(count('urgent'))} ${t('rx.urgent')}`,
-    `${fmtInt(count('soon'))} ${t('rx.soon')}`
-  ]);
-}
+  }
 
 // ── Tower ──
 

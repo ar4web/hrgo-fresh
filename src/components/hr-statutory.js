@@ -162,6 +162,16 @@ export function saveSettings(next) {
 
 // ── Dates ────────────────────────────────────────────────────────────────
 
+/**
+ * Local calendar date as YYYY-MM-DD.
+ * `toISOString()` must not be used for this anywhere in the Saudi compliance
+ * code: it serialises to UTC, so local midnight in KSA (UTC+3) becomes 21:00
+ * the previous day. That made "today" read as yesterday between midnight and
+ * 03:00 local, and pushed every computed invoice/ESB/renewal date a day early.
+ */
+export const localIso = (d = new Date()) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
 export function daysUntil(iso, fromIso) {
   const from = fromIso ? new Date(fromIso) : new Date();
   from.setHours(0, 0, 0, 0);
@@ -184,7 +194,7 @@ export function yearsBetween(fromIso, toIso) {
 // ── GOSI ─────────────────────────────────────────────────────────────────
 
 export function gosiPensionRate(atIso) {
-  const at = atIso || new Date().toISOString().slice(0, 10);
+  const at = atIso || localIso();
   let rate = GOSI_VERSIONS[0].pension;
   for (const v of GOSI_VERSIONS) {
     if (at >= v.from) {
@@ -405,7 +415,7 @@ export function nitaqatEstimate(employees, targetPct = 0) {
 
 export function ajeerCheck(assignment, employee, client, todayIso) {
   const reasons = [];
-  const today = todayIso || new Date().toISOString().slice(0, 10);
+  const today = todayIso || localIso();
   if (!assignment) {
     return { ok: false, reasons: ['missing-assignment'] };
   }
@@ -484,7 +494,7 @@ export function renewalChecklist(emp, docs = {}) {
   if (emp.saudi) {
     return [{ key: 'saudi', ok: true, detail: 'no-iqama-chain' }];
   }
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localIso();
   const pp = docs.passportExp ? daysUntil(docs.passportExp, today) : null;
   const ins = docs.insExp ? daysUntil(docs.insExp, today) : null;
   return [
@@ -608,7 +618,7 @@ function permitStatus(exp, todayIso) {
   if (!exp) {
     return 'missing';
   }
-  const today = todayIso || new Date().toISOString().slice(0, 10);
+  const today = todayIso || localIso();
   if (exp < today) {
     return 'expired';
   }
@@ -621,7 +631,7 @@ function returnDeadline(returnedAt) {
   do {
     d.setDate(d.getDate() + 1);
   } while (d.getDay() === 5 || d.getDay() === 6);
-  return d.toISOString().slice(0, 10);
+  return localIso(d);
 }
 
 // Licence scope guard (D11–D12): service vs labour vs both.
@@ -631,7 +641,7 @@ export function invoiceDue(month, billingDay, termsDays = 0) {
   const d = new Date(y, m, 1); // first day of next month (m is 0-based next)
   const day = Math.min(Math.max(1, billingDay || 5), 28);
   d.setDate(day + (Number(termsDays) || 0));
-  return d.toISOString().slice(0, 10);
+  return localIso(d);
 }
 
 // ── Contracts: placeholders + lint + dates (P5) ────────────────────────────
@@ -670,7 +680,7 @@ export function tenureBuckets(employees, todayIso) {
     if (e.st === 'exited' || e.st === 'huroob' || !e.join) {
       continue;
     }
-    const y = yearsBetween(e.join, todayIso || new Date().toISOString().slice(0, 10));
+    const y = yearsBetween(e.join, todayIso || localIso());
     if (y < 1) {
       out.lt1 += 1;
     } else if (y < 3) {
@@ -688,7 +698,7 @@ export function tenureBuckets(employees, todayIso) {
 // Hired = joins in month (any current status). Boarded = onboarding cases
 // reaching final stage 10 that month. Exited = exitDate in month.
 export function separationSeries(employees, onboarding, todayIso, windowMo = 6) {
-  const today = todayIso || new Date().toISOString().slice(0, 10);
+  const today = todayIso || localIso();
   const base = new Date(`${today.slice(0, 7)}-01T00:00:00`);
   const months = [];
   for (let i = windowMo - 1; i >= 0; i--) {
@@ -714,7 +724,7 @@ export function separationSeries(employees, onboarding, todayIso, windowMo = 6) 
 // Per-doc-type bands over payable expats. Missing = no date on file (data
 // gap, shown — never folded into another band).
 export function expiryDeck(employees, docs, todayIso) {
-  const today = todayIso || new Date().toISOString().slice(0, 10);
+  const today = todayIso || localIso();
   const docByEmp = {};
   (docs || []).forEach(d => {
     docByEmp[d.emp] = d;
@@ -748,7 +758,7 @@ export function expiryDeck(employees, docs, todayIso) {
 
 // Iqama countdown bands (days until expiry): 0–30 / 31–60 / 61–90.
 export function iqamaBuckets(employees, todayIso) {
-  const today = todayIso || new Date().toISOString().slice(0, 10);
+  const today = todayIso || localIso();
   const out = { le30: 0, le60: 0, le90: 0 };
   for (const e of employees || []) {
     if (e.saudi || e.st === 'exited' || e.st === 'huroob' || !e.iqamaExp) {

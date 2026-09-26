@@ -15,3 +15,11 @@ coverage
 npm-debug.log*
 .yarn-debug.log*
 .yarn-error.log*
+# The SQLite store holds the HS256 signing key, every user password hash and
+# all live session hashes. It is mounted as a volume at runtime and must never
+# be copied into an image layer.
+server/data
+data
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

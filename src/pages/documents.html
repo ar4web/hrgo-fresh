@@ -16,7 +16,6 @@
     <div class="page-header-row">
       <div>
         <h1 class="page-title" data-i18n="nav.documents">Documents</h1>
-        <div class="caption-muted page-meta" data-page-meta></div>
       </div>
       <div class="page-header-actions">
         <button class="btn btn-primary btn-sm" id="dc-new-tpl" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg> <span data-i18n="doc.newTemplate">New template</span></button>
@@ -39,30 +38,43 @@
 
   <!-- ══ TAB: ISSUED ══ -->
   <section data-tabpanel="issued" hidden>
+    <div class="card emp-toolbar">
+      <div class="card-body emp-toolbar-row">
+        <div class="emp-toolbar-left">
+          <span class="caption-muted" id="dc-count"></span>
+        </div>
+        <div class="emp-toolbar-right" role="toolbar" data-i18n-aria="doc.issuedTitle" aria-label="Issued documents">
+          <button class="btn btn-outline btn-sm" id="dc-export" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg> <span data-i18n="doc.exportExcel">Export Excel</span></button>
+        </div>
+      </div>
+    </div>
     <div class="card">
       <div class="card-header"><div class="card-title" data-i18n="doc.issuedTitle">Issued documents</div></div>
-      <div class="card-body">
-        <table class="table dc-table" data-page-length="10">
+      <div class="card-body table-wrap">
+        <table class="table emp-table" data-page-length="10">
           <thead>
             <tr>
+              <th data-i18n="doc.noH">No.</th>
+              <th data-i18n="doc.issuedH">Issued</th>
               <th data-i18n="doc.nameH">Name</th>
               <th data-i18n="doc.typeH">Type</th>
-              <th data-i18n="doc.issuedH">Issued</th>
-              <th data-i18n="doc.statusH">Status</th>
+              <th data-i18n="doc.empH">Employee</th>
+              <th data-i18n="doc.langH">Language</th>
               <th class="emp-actions-col" data-i18n="common.actions">Actions</th>
             </tr>
           </thead>
-          <tbody id="dc-issued-rows"></tbody>
+          <tbody id="dc-iss-rows"></tbody>
         </table>
       </div>
     </div>
+  </section>
 
   <!-- ══ TAB: SIGNED ══ -->
   <section data-tabpanel="signed" hidden>
     <div class="card">
       <div class="card-header"><div class="card-title" data-i18n="doc.signedTitle">Signed documents</div></div>
       <div class="card-body">
-        <table class="table dc-table" data-page-length="10">
+        <table class="table emp-table" data-page-length="10">
           <thead>
             <tr>
               <th data-i18n="doc.nameH">Name</th>
